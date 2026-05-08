@@ -1,8 +1,8 @@
 # 日志文件
 *.log
 
-# Node.js 依赖目录（如果有）
-# node_modules/
+# Node.js 依赖目录
+node_modules/
 
 # 环境变量文件
 .env

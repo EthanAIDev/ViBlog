@@ -109,6 +109,28 @@
           "desc": "在技术实现之外强化文档与叙事能力，建立\"能运行、能理解、能复盘\"的完整交付方式。"
         }
       ]
-    }
+    },
+    "socialButtons": [
+      {
+        "id": "github",
+        "enabled": true
+      },
+      {
+        "id": "bilibili",
+        "enabled": true
+      },
+      {
+        "id": "qq",
+        "enabled": true
+      },
+      {
+        "id": "wechat",
+        "enabled": true
+      },
+      {
+        "id": "email",
+        "enabled": true
+      }
+    ]
   }
 }
