@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>博客管理后台</title>
+  <link rel="stylesheet" href="./admin.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+</head>
+<body>
+  <div class="admin-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <span class="brand-mark">E.</span>
+          <span class="brand-text">Ethan ViBlog</span>
+        </div>
+        <span class="brand-sub">管理后台</span>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="#pages" class="nav-item active" data-section="pages">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h18v18H3z"/>
+                <path d="M3 9h18"/>
+                <path d="M9 3v18"/>
+              </svg>
+              <span>页面设置</span>
+            </a>
+          </li>
+          <li>
+            <a href="#articles" class="nav-item" data-section="articles">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+              </svg>
+              <span>文章管理</span>
+            </a>
+          </li>
+          <li>
+            <a href="#projects" class="nav-item" data-section="projects">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 7h16M4 12h16M4 17h16"/>
+              </svg>
+              <span>项目管理</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <h1 id="page-title">页面设置</h1>
+        </div>
+        <div class="top-bar-right">
+          <span class="current-time" id="current-time"></span>
+        </div>
+      </header>
+
+      <div class="content-area">
+        <section id="pages-section" class="content-section active">
+          <div class="settings-panel">
+            <div class="settings-tabs" id="settings-tabs">
+              <button class="settings-tab active" data-tab="site">站点设置</button>
+              <button class="settings-tab" data-tab="home">首页设置</button>
+              <button class="settings-tab" data-tab="about">关于我设置</button>
+            </div>
+
+            <div class="settings-tab-content active" id="settings-tab-site">
+              <div class="form-group">
+                <label>站点标题</label>
+                <input type="text" id="site-title" placeholder="例如：Ethan ViBlog | 用感觉编码，用日志留下痕迹。">
+              </div>
+              <div class="form-group">
+                <label>站点描述（SEO description）</label>
+                <textarea id="site-description" rows="3" placeholder="站点描述，用于搜索引擎显示"></textarea>
+              </div>
+              <div class="form-group">
+                <label>站点图标（favicon，相对路径或绝对 URL）</label>
+                <div class="avatar-upload-row">
+                  <input type="text" id="site-favicon" placeholder="例如：favicon.ico">
+                  <button type="button" class="import-btn" id="site-favicon-upload-btn">上传图标</button>
+                </div>
+                <input type="file" id="site-favicon-file-input" accept="image/x-icon,image/png,image/svg+xml,image/webp" style="display:none;">
+              </div>
+              <div class="form-group">
+                <label>社交分享图（OG Image，绝对 URL）</label>
+                <input type="text" id="site-og-image" placeholder="https://example.com/og-image.png">
+              </div>
+            </div>
+
+            <div class="settings-tab-content" id="settings-tab-home">
+              <div class="form-section">
+                <h4>栏目顺序编排</h4>
+                <div id="home-sections-container">
+                  <div class="section-item" data-id="about">
+                    <label>
+                      <input type="checkbox" class="section-enabled" checked>
+                      <span class="section-order">1</span>. <input type="text" class="section-name" value="关于我">
+                    </label>
+                    <input type="text" class="section-eyebrow" placeholder="副标题" value="一个持续把复杂技术翻译成清晰体验的人。">
+                    <button type="button" class="move-up-btn" disabled>↑</button>
+                    <button type="button" class="move-down-btn">↓</button>
+                  </div>
+                  <div class="section-item" data-id="posts">
+                    <label>
+                      <input type="checkbox" class="section-enabled" checked>
+                      <span class="section-order">2</span>. <input type="text" class="section-name" value="最新文章">
+                    </label>
+                    <input type="text" class="section-eyebrow" placeholder="副标题" value="记录实现细节、踩坑过程与可复用方法。">
+                    <button type="button" class="move-up-btn">↑</button>
+                    <button type="button" class="move-down-btn">↓</button>
+                  </div>
+                  <div class="section-item" data-id="projects">
+                    <label>
+                      <input type="checkbox" class="section-enabled" checked>
+                      <span class="section-order">3</span>. <input type="text" class="section-name" value="精选项目">
+                    </label>
+                    <input type="text" class="section-eyebrow" placeholder="副标题" value="围绕检索增强、智能体协作与开发流程自动化的实践。">
+                    <button type="button" class="move-up-btn">↑</button>
+                    <button type="button" class="move-down-btn">↓</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Brand 图标（相对路径或绝对 URL）</label>
+                  <div class="avatar-upload-row">
+                    <input type="text" id="home-brand-icon" placeholder="例如：assets/logo.svg">
+                    <button type="button" class="import-btn" id="home-brand-icon-upload-btn">上传图标</button>
+                  </div>
+                  <input type="file" id="home-brand-icon-file-input" accept="image/*" style="display:none;">
+                </div>
+                <div class="form-group">
+                  <label>Brand 名称</label>
+                  <input type="text" id="home-brand-name" placeholder="例如：Ethan ViBlog">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>首页副标题（Eyebrow）</label>
+                <input type="text" id="home-hero-eyebrow" placeholder="例如：AI Agent Engineer">
+              </div>
+              <div class="form-group">
+                <label>首页主标题</label>
+                <textarea id="home-hero-title" rows="2" placeholder="首页主标题"></textarea>
+              </div>
+              <div class="form-group">
+                <label>首页简介文案</label>
+                <textarea id="home-hero-text" rows="4" placeholder="首页简介"></textarea>
+              </div>
+
+              <div class="form-section">
+                <h4>终端信息设置</h4>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>角色（role）</label>
+                    <input type="text" id="home-terminal-role" placeholder="例如：技术创作者 / AI 构建者">
+                  </div>
+                  <div class="form-group">
+                    <label>专注领域（focus）</label>
+                    <input type="text" id="home-terminal-focus" placeholder="例如：RAG · 智能体 · 产品写作">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>位置（location）</label>
+                    <input type="text" id="home-terminal-location" placeholder="例如：上海 / 远程">
+                  </div>
+                  <div class="form-group">
+                    <label>状态（mode）</label>
+                    <input type="text" id="home-terminal-mode" placeholder="例如：稳扎稳打，深度思考">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>命令行（command）</label>
+                  <input type="text" id="home-terminal-command" placeholder="例如：writing.next()">
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h4>笔记卡片设置</h4>
+                <div id="home-notes-container">
+                  <div class="note-item" data-index="0">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>标签</label>
+                        <input type="text" class="note-label" placeholder="例如：正在构建">
+                      </div>
+                      <div class="form-group">
+                        <label>内容</label>
+                        <input type="text" class="note-content" placeholder="笔记内容">
+                      </div>
+                      <button type="button" class="remove-note-btn">删除</button>
+                    </div>
+                  </div>
+                  <div class="note-item" data-index="1">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>标签</label>
+                        <input type="text" class="note-label" placeholder="例如：写作视角">
+                      </div>
+                      <div class="form-group">
+                        <label>内容</label>
+                        <input type="text" class="note-content" placeholder="笔记内容">
+                      </div>
+                      <button type="button" class="remove-note-btn">删除</button>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" id="add-note-btn">添加笔记卡片</button>
+              </div>
+            </div>
+
+            <div class="settings-tab-content" id="settings-tab-about">
+              <div class="form-group">
+                <label>关于我副标题（Eyebrow）</label>
+                <input type="text" id="about-hero-eyebrow" placeholder="例如：个人简介">
+              </div>
+              <div class="form-group">
+                <label>关于我主标题</label>
+                <textarea id="about-hero-title" rows="2" placeholder="关于我主标题"></textarea>
+              </div>
+              <div class="form-group">
+                <label>关于我简介文案</label>
+                <textarea id="about-hero-text" rows="4" placeholder="关于我简介"></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>个人名称</label>
+                  <input type="text" id="about-profile-name" placeholder="例如：Ethan">
+                </div>
+                <div class="form-group">
+                  <label>个人角色</label>
+                  <input type="text" id="about-profile-role" placeholder="例如：AI Builder · 技术创作者">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>头像地址（相对路径或绝对 URL）</label>
+                <div class="avatar-upload-row">
+                  <input type="text" id="about-avatar-src" placeholder="例如：assets/about-avatar.svg">
+                  <button type="button" class="import-btn" id="about-avatar-upload-btn">上传头像</button>
+                </div>
+                <input type="file" id="about-avatar-file-input" accept="image/*" style="display:none;">
+                <div class="avatar-preview-wrap">
+                  <img id="about-avatar-preview" class="about-avatar-preview" alt="头像预览" style="display:none;">
+                  <span id="about-avatar-preview-empty" class="avatar-preview-empty">未选择头像</span>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>B站外链</label>
+                  <input type="text" id="about-link-bilibili" placeholder="https://space.bilibili.com/">
+                </div>
+                <div class="form-group">
+                  <label>GitHub 外链</label>
+                  <input type="text" id="about-link-github" placeholder="https://github.com/">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>QQ 外链</label>
+                  <input type="text" id="about-link-qq" placeholder="#">
+                </div>
+                <div class="form-group">
+                  <label>微信外链</label>
+                  <input type="text" id="about-link-wechat" placeholder="#">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>邮箱外链</label>
+                <input type="text" id="about-link-email" placeholder="mailto:hello@example.com">
+              </div>
+
+              <div class="form-section">
+                <h4>外链按钮设置</h4>
+                <p class="form-hint">勾选显示按钮，拖拽调整顺序</p>
+                <div id="social-buttons-container">
+                  <div class="social-btn-item" data-id="bilibili" draggable="true">
+                    <span class="drag-handle">&#9776;</span>
+                    <input type="checkbox" class="social-btn-enabled" checked>
+                    <span class="social-btn-name">B站</span>
+                  </div>
+                  <div class="social-btn-item" data-id="github" draggable="true">
+                    <span class="drag-handle">&#9776;</span>
+                    <input type="checkbox" class="social-btn-enabled" checked>
+                    <span class="social-btn-name">GitHub</span>
+                  </div>
+                  <div class="social-btn-item" data-id="qq" draggable="true">
+                    <span class="drag-handle">&#9776;</span>
+                    <input type="checkbox" class="social-btn-enabled" checked>
+                    <span class="social-btn-name">QQ</span>
+                  </div>
+                  <div class="social-btn-item" data-id="wechat" draggable="true">
+                    <span class="drag-handle">&#9776;</span>
+                    <input type="checkbox" class="social-btn-enabled" checked>
+                    <span class="social-btn-name">微信</span>
+                  </div>
+                  <div class="social-btn-item" data-id="email" draggable="true">
+                    <span class="drag-handle">&#9776;</span>
+                    <input type="checkbox" class="social-btn-enabled" checked>
+                    <span class="social-btn-name">邮箱</span>
+                  </div>
+                </div>
+                <div id="social-buttons-debug" style="margin-top:10px;font-size:11px;color:#666;background:#f5f5f5;padding:8px;border-radius:4px;display:none;"></div>
+              </div>
+
+              <div class="form-section">
+                <h4>三个简介卡片</h4>
+                <div id="about-cards-container">
+                  <div class="about-card-item" data-index="0">
+                    <div class="form-group">
+                      <label>卡片1 标题</label>
+                      <input type="text" class="about-card-title" value="个人简介" placeholder="例如：个人简介">
+                    </div>
+                    <div class="form-group">
+                      <label>卡片1 内容</label>
+                      <textarea class="about-card-content" rows="3" placeholder="卡片内容">作为一名技术创作者，我相信好的技术不仅要能工作，还要能被理解。我致力于将复杂的技术概念转化为清晰的产品体验和可复用的方法论。</textarea>
+                    </div>
+                  </div>
+                  <div class="about-card-item" data-index="1">
+                    <div class="form-group">
+                      <label>卡片2 标题</label>
+                      <input type="text" class="about-card-title" value="擅长方向" placeholder="例如：擅长方向">
+                    </div>
+                    <div class="form-group">
+                      <label>卡片2 内容</label>
+                      <textarea class="about-card-content" rows="3" placeholder="卡片内容">关注 RAG 工作流、智能体设计、提示词结构、前端展示体验，以及如何把技术产品讲得更有辨识度。</textarea>
+                    </div>
+                  </div>
+                  <div class="about-card-item" data-index="2">
+                    <div class="form-group">
+                      <label>卡片3 标题</label>
+                      <input type="text" class="about-card-title" value="工作方式" placeholder="例如：工作方式">
+                    </div>
+                    <div class="form-group">
+                      <label>卡片3 内容</label>
+                      <textarea class="about-card-content" rows="3" placeholder="卡片内容">先抓主线，再拆细节。偏好用简洁页面、原型和文章，把一个想法尽快做成可演示、可复用的成果。</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h4>工作流 / 技术栈快照</h4>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>工作流副标题（p标签）</label>
+                    <input type="text" id="about-workflow-eyebrow" value="工作流 / 技术栈快照" placeholder="例如：工作流 / 技术栈快照">
+                  </div>
+                  <div class="form-group">
+                    <label>工作流主标题（h2）</label>
+                    <input type="text" id="about-workflow-title" value="我的默认工作流，是在理性结构里保留一点创作温度。" placeholder="工作流主标题">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>终端命令（每行一条）</label>
+                  <textarea id="about-workflow-commands" rows="4" placeholder="每行一条命令">$ ingest ideas --daily
+$ shape concept --product-thinking
+$ prototype ui --ship-fast
+$ write recap --keep-learning</textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>技术栈卡片标题</label>
+                    <input type="text" id="about-workflow-stack1-title" value="核心技术栈" placeholder="例如：核心技术栈">
+                  </div>
+                  <div class="form-group">
+                    <label>流程卡片标题</label>
+                    <input type="text" id="about-workflow-stack2-title" value="创作流程" placeholder="例如：创作流程">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>技术栈列表（每行一项）</label>
+                    <textarea id="about-workflow-stack1-items" rows="3" placeholder="每行一项">Python / FastAPI / 工具脚本
+HTML / CSS / 轻量 JS
+向量嵌入 / 检索 / 提示词设计</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>流程列表（每行一项）</label>
+                    <textarea id="about-workflow-stack2-items" rows="3" placeholder="每行一项">先搭骨架，再补视觉密度
+先写一句主张，再堆内容细节
+每个页面都要有自己的语气</textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h4>经历时间轴</h4>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>时间轴副标题（p标签）</label>
+                    <input type="text" id="about-timeline-eyebrow" value="经历时间轴" placeholder="例如：经历时间轴">
+                  </div>
+                  <div class="form-group">
+                    <label>时间轴主标题（h2）</label>
+                    <input type="text" id="about-timeline-title" value="把经验沉淀成可复用的方法和作品。" placeholder="时间轴主标题">
+                  </div>
+                </div>
+                <div id="about-timeline-container">
+                  <div class="timeline-item-form" data-index="0">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>时间段</label>
+                        <input type="text" class="timeline-date" value="2026 - 至今" placeholder="例如：2026 - 至今">
+                      </div>
+                      <div class="form-group">
+                        <label>标题</label>
+                        <input type="text" class="timeline-title" value="个人内容与项目体系化" placeholder="标题">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>描述</label>
+                      <textarea class="timeline-desc" rows="2" placeholder="描述">持续迭代个人网站、项目库和文章方法论，将技术输出拆解为可复用模板与实践清单。</textarea>
+                    </div>
+                  </div>
+                  <div class="timeline-item-form" data-index="1">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>时间段</label>
+                        <input type="text" class="timeline-date" value="2024 - 2025" placeholder="例如：2024 - 2025">
+                      </div>
+                      <div class="form-group">
+                        <label>标题</label>
+                        <input type="text" class="timeline-title" value="AI 应用开发实践" placeholder="标题">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>描述</label>
+                      <textarea class="timeline-desc" rows="2" placeholder="描述">围绕 RAG、Prompt 工程和前端展示体验完成多个原型与上线项目，强调可解释性与可维护性。</textarea>
+                    </div>
+                  </div>
+                  <div class="timeline-item-form" data-index="2">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>时间段</label>
+                        <input type="text" class="timeline-date" value="2022 - 2023" placeholder="例如：2022 - 2023">
+                      </div>
+                      <div class="form-group">
+                        <label>标题</label>
+                        <input type="text" class="timeline-title" value="工程基础与表达能力沉淀" placeholder="标题">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>描述</label>
+                      <textarea class="timeline-desc" rows="2" placeholder="描述">在技术实现之外强化文档与叙事能力，建立"能运行、能理解、能复盘"的完整交付方式。</textarea>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" id="add-timeline-btn">添加时间线</button>
+              </div>
+            </div>
+
+            <div class="settings-actions">
+              <button class="btn btn-primary" id="save-page-settings-btn">保存页面设置</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="articles-section" class="content-section">
+          <div class="toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" id="search-input" placeholder="搜索文章标题或标签...">
+            </div>
+            <button class="btn btn-primary" id="add-article-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              <span>添加文章</span>
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="checkbox-col">
+                    <input type="checkbox" id="select-all">
+                  </th>
+                  <th class="id-col">ID</th>
+                  <th class="title-col">标题</th>
+                  <th class="type-col">分类</th>
+                  <th class="tags-col">标签</th>
+                  <th class="date-col">发布日期</th>
+                  <th class="status-col">状态</th>
+                  <th class="actions-col">操作</th>
+                </tr>
+              </thead>
+              <tbody id="articles-table-body">
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination" id="pagination">
+            <button class="pagination-btn" id="prev-page" disabled>上一页</button>
+            <span class="pagination-info">第 <span id="current-page">1</span> / <span id="total-pages">1</span> 页</span>
+            <button class="pagination-btn" id="next-page">下一页</button>
+          </div>
+        </section>
+
+        <section id="projects-section" class="content-section">
+          <div class="toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" id="project-search-input" placeholder="搜索项目标题或摘要...">
+            </div>
+            <button class="btn btn-primary" id="add-project-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              <span>添加项目</span>
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="id-col">ID</th>
+                  <th class="title-col">标题</th>
+                  <th class="tags-col">技术栈</th>
+                  <th class="actions-col">操作</th>
+                </tr>
+              </thead>
+              <tbody id="projects-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="article-modal">
+      <div class="modal-header">
+        <h2 id="modal-title">添加文章</h2>
+        <button class="modal-close" id="modal-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="article-form">
+          <div class="form-group">
+            <label>文章ID</label>
+            <span id="article-id-display" style="display:inline-block;padding:8px 0;font-family:var(--font-mono);font-size:1.05rem;color:var(--accent);font-weight:500;">(新增)</span>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>标题 *</label>
+              <input type="text" id="article-title" name="title" required placeholder="请输入文章标题">
+            </div>
+            <div class="form-group">
+              <label>分类 *</label>
+              <select id="article-type" name="type" required>
+                <option value="">请选择分类</option>
+                <option value="教程">教程</option>
+                <option value="随笔">随笔</option>
+                <option value="实地笔记">实地笔记</option>
+                <option value="构建日志">构建日志</option>
+                <option value="行业观察">行业观察</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>摘要 *</label>
+            <textarea id="article-summary" name="summary" required placeholder="请输入文章摘要" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>标签</label>
+            <input type="text" id="article-tags" name="tags" placeholder="多个标签用逗号分隔">
+          </div>
+          <div class="form-group">
+            <label>发布日期 *</label>
+            <input type="date" id="article-date" name="date" required>
+          </div>
+          <div class="form-group">
+            <label>
+              正文
+              <span class="import-wrap">
+                <span class="import-divider">|</span>
+                <button type="button" class="import-btn" id="import-md-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                  </svg>
+                  导入 Markdown
+                </button>
+                <button type="button" class="import-btn" id="import-images-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <path d="M17 8l-5-5-5 5"/>
+                    <path d="M12 3v12"/>
+                  </svg>
+                  批量选择图片
+                </button>
+                <input type="file" id="md-file-input" accept=".md,.markdown" style="display:none;">
+                <input type="file" id="images-file-input" accept="image/*" multiple style="display:none;">
+              </span>
+            </label>
+            <textarea id="article-content" name="content" placeholder="文章正文内容（支持 Markdown 格式）..." rows="12"></textarea>
+          </div>
+          <!-- 图片导入区域 -->
+          <div class="form-group image-import-section" id="image-import-section" style="display:none;">
+            <label>
+              检测到的图片引用
+              <span class="image-summary" id="image-summary">已匹配 0 / 未匹配 0 / 冲突 0</span>
+              <button type="button" class="btn-rescan" id="btn-rescan-images" title="重新扫描图片引用">重新扫描</button>
+            </label>
+            <div class="image-import-list" id="image-import-list"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-cancel">取消</button>
+        <button class="btn btn-secondary" id="modal-save-draft">保存草稿</button>
+        <button class="btn btn-primary" id="modal-publish">直接发布</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirm-modal-overlay" id="confirm-modal-overlay">
+    <div class="confirm-modal">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M8 15s1.5-2 4-2 4 2 4 2M9 9h.01M15 9h.01"/>
+        </svg>
+      </div>
+      <h3 id="confirm-title">确认删除</h3>
+      <p id="confirm-message">确定要删除这篇文章吗？此操作不可撤销。</p>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" id="confirm-cancel">取消</button>
+        <button class="btn btn-danger" id="confirm-ok">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay" id="project-modal-overlay">
+    <div class="modal" id="project-modal">
+      <div class="modal-header">
+        <h2 id="project-modal-title">添加项目</h2>
+        <button class="modal-close" id="project-modal-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="project-form">
+          <div class="form-group">
+            <label>项目ID *</label>
+            <input type="text" id="project-id" placeholder="例如：p001">
+          </div>
+          <div class="form-group">
+            <label>标题 *</label>
+            <input type="text" id="project-title" placeholder="请输入项目标题">
+          </div>
+          <div class="form-group">
+            <label>项目概述 *</label>
+            <textarea id="project-summary" rows="3" placeholder="请输入项目概述"></textarea>
+          </div>
+          <div class="form-group">
+            <label>技术栈 *</label>
+            <input type="text" id="project-tech-stack" placeholder="多个技术用逗号分隔">
+          </div>
+          <div class="form-group">
+            <label>实现方案 *</label>
+            <textarea id="project-implementation" rows="5" placeholder="每行一条实现方案"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>GitHub 链接</label>
+              <input type="text" id="project-link-github" placeholder="https://github.com/...">
+            </div>
+            <div class="form-group">
+              <label>文档链接</label>
+              <input type="text" id="project-link-docs" placeholder="https://...">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>导入 Markdown</label>
+            <textarea id="project-md-input" rows="6" placeholder="# 项目标题&#10;&#10;## 项目概述&#10;..."></textarea>
+            <button type="button" class="import-btn" id="import-project-md-btn">从 Markdown 填充</button>
+          </div>
+          <div class="form-group">
+            <label>演示图片</label>
+            <div class="import-wrap" style="margin-left:0; margin-bottom:8px;">
+              <button type="button" class="import-btn" id="project-images-btn">上传演示图片</button>
+              <input type="file" id="project-images-input" accept="image/*" multiple style="display:none;">
+            </div>
+            <div class="project-gallery-list" id="project-gallery-list"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="project-modal-cancel">取消</button>
+        <button class="btn btn-primary" id="project-modal-save">保存项目</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  <script src="./admin.js"></script>
+</body>
+</html>

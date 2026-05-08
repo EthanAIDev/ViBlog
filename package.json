@@ -1,0 +1,12 @@
+{
+  "name": "blog-lin-archive",
+  "version": "1.0.0",
+  "description": "Lin Archive 个人技术博客",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build-manifest": "node build-manifest.js"
+  },
+  "keywords": ["blog", "static-site"],
+  "license": "MIT"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "p002",
+  "title": "个人创作者网站系统",
+  "summary": "围绕“内容即作品”理念，重构个人网站的信息架构和视觉系统，统一文章、项目、关于页面的叙事节奏。",
+  "techStack": ["内容系统", "视觉设计", "前端工程"],
+  "implementation": [
+    "从内容策略、页面结构到视觉语言进行一体化设计。",
+    "将文章与项目串联，形成完整的能力展示链路。",
+    "建立可扩展的组件与样式规范，降低后续维护成本。"
+  ],
+  "links": {
+    "github": "https://github.com/example/creator-site-system",
+    "docs": "https://example.feishu.cn/wiki/creator-site-system"
+  },
+  "gallery": [
+    {
+      "src": "images/cover.svg",
+      "alt": "网站首页改版",
+      "caption": "新版首页的结构与视觉节奏"
+    },
+    {
+      "src": "images/flow.svg",
+      "alt": "内容发布流程",
+      "caption": "内容从草稿到发布的标准流程"
+    }
+  ]
+}

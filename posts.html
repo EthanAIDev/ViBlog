@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章 | Lin Archive</title>
+  <meta name="description" content="技术文章、AI应用、RAG与智能体开发的深度思考">
+  <meta property="og:title" content="文章 | Lin Archive">
+  <meta property="og:description" content="技术文章、AI应用、RAG与智能体开发的深度思考">
+  <meta property="og:type" content="website">
+  <script>
+    document.documentElement.classList.add("js");
+  </script>
+  <link rel="icon" type="image/x-icon" href="">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="site-shell">
+    <div class="ambient ambient-left" aria-hidden="true"></div>
+    <div class="ambient ambient-right" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="index.html" aria-label="返回首页">
+          <img class="brand-icon-img" src="" alt="" style="display:none;">
+          <span class="brand-mark">L.</span>
+          <span class="brand-text">Lin Archive</span>
+        </a>
+        <nav class="nav">
+          <a href="posts.html">文章</a>
+          <a href="projects.html">项目</a>
+          <a href="about.html">关于我</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="posts">
+      <section class="hero reveal">
+        <div class="hero-copy">
+          <p class="eyebrow">精选文章</p>
+          <h1>文章不是堆信息，而是为未来的自己留下高密度坐标。</h1>
+          <p class="hero-text">
+            我记录 AI 应用、RAG、智能体开发和个人创作过程，把复杂系统拆成清晰的文章、原型和可复用的方法。
+          </p>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="posts-container">
+          <div class="posts-list">
+            <div class="waterfall" id="posts-grid">
+            </div>
+            <div class="no-results" id="no-results" style="display: none;">
+              <p>没有找到匹配的文章</p>
+            </div>
+            <div class="pagination-controls" id="pagination-controls" style="display: none;"></div>
+          </div>
+          <aside class="filter-panel">
+            <h3 class="filter-panel-title">搜索</h3>
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <input type="text" id="search-input" placeholder="搜索文章..." />
+            </div>
+            <h3 class="filter-panel-title">分类</h3>
+            <div class="category-filters" id="category-filters">
+              <button class="category-filter active" data-category="all">全部</button>
+            </div>
+            <h3 class="filter-panel-title">标签</h3>
+            <div class="tag-filters" id="tag-filters">
+              <button class="tag-filter active" data-tag="all">全部</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <div>
+        <p class="footer-legal">© 2025-2026 Ethan. All rights reserved. <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a></p>
+      </div>
+      <div class="footer-contact">
+        <a href="mailto:hello@example.com">hello@example.com</a>
+        <a href="#posts">回到顶部</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

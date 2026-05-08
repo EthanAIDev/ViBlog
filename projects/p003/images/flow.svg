@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#ece3d5"/>
+  <text x="600" y="94" text-anchor="middle" fill="#4a4338" font-size="34" font-family="Microsoft YaHei, Segoe UI, sans-serif">提示词实验工作流</text>
+  <g fill="rgba(255,255,255,0.54)" stroke="#7c7060" stroke-width="2">
+    <rect x="110" y="250" width="200" height="120" rx="16"/>
+    <rect x="370" y="250" width="200" height="120" rx="16"/>
+    <rect x="630" y="250" width="200" height="120" rx="16"/>
+    <rect x="890" y="250" width="200" height="120" rx="16"/>
+  </g>
+  <g fill="#5f5548" font-size="20" font-family="Microsoft YaHei, Segoe UI, sans-serif" text-anchor="middle">
+    <text x="210" y="320">模板选择</text>
+    <text x="470" y="320">执行实验</text>
+    <text x="730" y="320">结果对比</text>
+    <text x="990" y="320">沉淀复盘</text>
+  </g>
+  <g stroke="#7c7060" stroke-width="2">
+    <path d="M310 310h60M570 310h60M830 310h60"/>
+  </g>
+</svg>

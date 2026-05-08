@@ -1,0 +1,51 @@
+[
+  {
+    "type": "实地笔记",
+    "title": "从 Token 到 Softmax：大模型生成全过程解析笔记",
+    "date": "2026-04-22",
+    "displayDate": "2026.04.22",
+    "tags": [
+      "Token",
+      "大模型"
+    ],
+    "summary": "本文详细拆解了现代大语言模型（LLM）从接收一个输入 Token 到输出下一个 Token 概率分布的完整流程。内容涵盖五个核心阶段，提供**专业术语解释**与**通俗比喻**对照，适合深度学习初学者及从业者参考",
+    "id": "10000002",
+    "file": "10000002/index.md",
+    "thumbnail": "",
+    "href": "article.html?id=10000002"
+  },
+  {
+    "type": "教程",
+    "title": "【DeepSeek+LoRA+FastAPI】开发人员如何微调大模型并暴露接口给后端调用",
+    "date": "2026-04-18",
+    "displayDate": "2026.04.18",
+    "tags": [
+      "DeepSeek",
+      "LoRA",
+      "FastAPI",
+      "微调"
+    ],
+    "summary": "想要尝试模型微调的小伙伴有福了，跟着这个文档操作可以快速上手实现一个模型微调的小demo",
+    "id": "10000003",
+    "file": "10000003/index.md",
+    "thumbnail": "10000003_001.png",
+    "href": "article.html?id=10000003"
+  },
+  {
+    "type": "教程",
+    "title": "近年 AI 应用技术串讲与优质文档分享｜Agent、Skill、OpenClaw、Harness……",
+    "date": "2026-03-06",
+    "displayDate": "2026.03.06",
+    "tags": [
+      "Agent",
+      "Skill",
+      "OpenClaw",
+      "Harness"
+    ],
+    "summary": "近年来的技术名词层出不穷，学的慢最后可能就不用学了...",
+    "id": "10000001",
+    "file": "10000001/index.md",
+    "thumbnail": "10000001_001.png",
+    "href": "article.html?id=10000001"
+  }
+]

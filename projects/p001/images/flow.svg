@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#ece3d4"/>
+  <text x="600" y="90" text-anchor="middle" fill="#4a4339" font-size="34" font-family="Microsoft YaHei, Segoe UI, sans-serif">检索增强问答流程</text>
+  <g fill="none" stroke="#7a6d5b" stroke-width="2">
+    <rect x="130" y="250" width="220" height="120" rx="16"/>
+    <rect x="490" y="250" width="220" height="120" rx="16"/>
+    <rect x="850" y="250" width="220" height="120" rx="16"/>
+    <path d="M350 310h140M710 310h140"/>
+  </g>
+  <g fill="#5e5447" font-size="22" font-family="Microsoft YaHei, Segoe UI, sans-serif" text-anchor="middle">
+    <text x="240" y="318">问题理解</text>
+    <text x="600" y="318">多路召回</text>
+    <text x="960" y="318">答案生成</text>
+  </g>
+</svg>

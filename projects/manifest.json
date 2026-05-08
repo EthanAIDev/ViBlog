@@ -1,0 +1,23 @@
+[
+  {
+    "id": "p001",
+    "title": "AI 知识库问答原型",
+    "summary": "面向技术内容团队的问答原型，重点解决“找得到、答得准、可追溯”三个核心问题。",
+    "cover": "images/cover.svg",
+    "href": "project.html?id=p001"
+  },
+  {
+    "id": "p002",
+    "title": "个人创作者网站系统",
+    "summary": "围绕“内容即作品”理念，重构个人网站的信息架构和视觉系统，统一文章、项目、关于页面的叙事节奏。",
+    "cover": "images/cover.svg",
+    "href": "project.html?id=p002"
+  },
+  {
+    "id": "p003",
+    "title": "智能体提示词工作台",
+    "summary": "一个面向日常实验的提示词与任务编排工作台，帮助把“临时想法”沉淀成可复用的流程。",
+    "cover": "images/cover.svg",
+    "href": "project.html?id=p003"
+  }
+]

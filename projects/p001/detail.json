@@ -1,0 +1,27 @@
+{
+  "id": "p001",
+  "title": "AI 知识库问答原型",
+  "summary": "面向技术内容团队的问答原型，重点解决“找得到、答得准、可追溯”三个核心问题。",
+  "techStack": ["RAG", "FastAPI", "向量检索"],
+  "implementation": [
+    "从文档切分、向量化、检索到答案生成，搭建完整链路。",
+    "引入多路召回与重排序，提升复杂问题的命中质量。",
+    "输出引用片段和来源，增强答案的可验证性。"
+  ],
+  "links": {
+    "github": "https://github.com/example/rag-kb-prototype",
+    "docs": "https://example.feishu.cn/wiki/rag-kb-prototype"
+  },
+  "gallery": [
+    {
+      "src": "images/cover.svg",
+      "alt": "知识库问答首页",
+      "caption": "问答入口与引用展示区"
+    },
+    {
+      "src": "images/flow.svg",
+      "alt": "检索流程图",
+      "caption": "从提问到答案生成的链路流程"
+    }
+  ]
+}

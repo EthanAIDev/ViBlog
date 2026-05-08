@@ -1,0 +1,27 @@
+{
+  "id": "p003",
+  "title": "智能体提示词工作台",
+  "summary": "一个面向日常实验的提示词与任务编排工作台，帮助把“临时想法”沉淀成可复用的流程。",
+  "techStack": ["Agent", "Prompt 工程", "工作流"],
+  "implementation": [
+    "把角色设定、任务模板和执行约束统一收纳。",
+    "支持版本对比、结果归档和实验复盘。",
+    "让每次试验都能快速复用、快速回看。"
+  ],
+  "links": {
+    "github": "https://github.com/example/prompt-workbench",
+    "docs": "https://example.feishu.cn/wiki/prompt-workbench"
+  },
+  "gallery": [
+    {
+      "src": "images/cover.svg",
+      "alt": "提示词工作台首页",
+      "caption": "模板管理与执行入口"
+    },
+    {
+      "src": "images/flow.svg",
+      "alt": "实验记录流程",
+      "caption": "从模板调用到结果归档的链路"
+    }
+  ]
+}

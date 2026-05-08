@@ -1,0 +1,15 @@
+{
+  "id": "10000003",
+  "title": "【DeepSeek+LoRA+FastAPI】开发人员如何微调大模型并暴露接口给后端调用",
+  "type": "教程",
+  "date": "2026-04-18",
+  "displayDate": "2026.04.18",
+  "tags": [
+    "DeepSeek",
+    "LoRA",
+    "FastAPI",
+    "微调"
+  ],
+  "summary": "想要尝试模型微调的小伙伴有福了，跟着这个文档操作可以快速上手实现一个模型微调的小demo",
+  "status": "published"
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#efe8da"/>
+      <stop offset="100%" stop-color="#e7ddcb"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="url(#g1)"/>
+  <rect x="120" y="120" width="960" height="480" rx="28" fill="rgba(255,255,255,0.55)" stroke="rgba(23,21,18,0.14)"/>
+  <text x="600" y="300" text-anchor="middle" fill="#4a4339" font-size="48" font-family="Microsoft YaHei, Segoe UI, sans-serif">AI 知识库问答原型</text>
+  <text x="600" y="356" text-anchor="middle" fill="#6d6559" font-size="24" font-family="Microsoft YaHei, Segoe UI, sans-serif">项目示意图 · Cover</text>
+</svg>

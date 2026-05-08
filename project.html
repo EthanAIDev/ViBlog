@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>项目详情 | Lin Archive</title>
+  <meta name="description" content="项目详情展示页">
+  <meta property="og:type" content="article">
+  <script>
+    document.documentElement.classList.add("js");
+  </script>
+  <link rel="icon" type="image/x-icon" href="">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="site-shell">
+    <div class="ambient ambient-left" aria-hidden="true"></div>
+    <div class="ambient ambient-right" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="index.html" aria-label="返回首页">
+          <img class="brand-icon-img" src="" alt="" style="display:none;">
+          <span class="brand-mark">L.</span>
+          <span class="brand-text">Lin Archive</span>
+        </a>
+        <nav class="nav">
+          <a href="posts.html">文章</a>
+          <a href="projects.html">项目</a>
+          <a href="about.html">关于我</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="project-detail-container" id="project-detail-container">
+      <div class="project-detail-header" id="project-detail-header">
+        <div class="loading" id="loading">
+          <p>加载中...</p>
+        </div>
+      </div>
+
+      <div class="project-detail-body" id="project-detail-body"></div>
+      <nav class="project-detail-nav" id="project-detail-nav" aria-label="项目上下篇导航" style="display: none;"></nav>
+    </main>
+
+    <footer class="footer">
+      <div>
+        <p class="footer-legal">© 2025-2026 Ethan. All rights reserved. <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a></p>
+      </div>
+      <div class="footer-contact">
+        <a href="mailto:hello@example.com">hello@example.com</a>
+        <a href="#top">回到顶部</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="./script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      loadProjectDetail();
+    });
+
+    function getUrlParam(name) {
+      var urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    function loadJson(url) {
+      return fetch(url + "?" + Date.now()).then(function(res) {
+        if (!res.ok) {
+          throw new Error("加载失败");
+        }
+        return res.json();
+      });
+    }
+
+    async function loadProjectDetail() {
+      var projectId = getUrlParam("id");
+      if (!projectId) {
+        showProjectError("未指定项目");
+        return;
+      }
+
+      try {
+        var manifest = await loadJson("./projects/manifest.json");
+        var currentIndex = manifest.findIndex(function(item) {
+          return item.id === projectId;
+        });
+        if (currentIndex === -1) {
+          showProjectError("未找到对应项目");
+          return;
+        }
+
+        var detail = await loadJson("./projects/" + projectId + "/detail.json");
+        renderProjectPage(detail, manifest, currentIndex);
+      } catch (error) {
+        showProjectError("项目详情加载失败");
+      }
+    }
+
+    function showProjectError(message) {
+      var header = document.getElementById("project-detail-header");
+      var body = document.getElementById("project-detail-body");
+      header.innerHTML = '<div class="project-not-found"><h1>项目未找到</h1><p>' + message + '</p><p><a href="projects.html">返回项目列表</a></p></div>';
+      body.innerHTML = "";
+    }
+
+    function listToHtml(items) {
+      if (!Array.isArray(items) || items.length === 0) {
+        return "";
+      }
+      return "<ul>" + items.map(function(item) {
+        return "<li>" + item + "</li>";
+      }).join("") + "</ul>";
+    }
+
+    function galleryToHtml(items, projectId) {
+      if (!Array.isArray(items) || items.length === 0) {
+        return "";
+      }
+      return (
+        '<div class="project-gallery-grid">' +
+        items.map(function(item) {
+          return (
+            "<figure>" +
+              '<img src="./projects/' + projectId + "/" + item.src + '" alt="' + (item.alt || '') + '" loading="lazy">' +
+              "<figcaption>" + (item.caption || '') + "</figcaption>" +
+            "</figure>"
+          );
+        }).join("") +
+        "</div>"
+      );
+    }
+
+    function renderProjectPage(detail, manifest, currentIndex) {
+      document.title = detail.title + " | 项目详情 | Lin Archive";
+
+      var header = document.getElementById("project-detail-header");
+      var body = document.getElementById("project-detail-body");
+      var links = detail.links || {};
+
+      header.innerHTML =
+        '<div class="project-detail-title-block">' +
+          '<h1 class="project-detail-title">' + detail.title + "</h1>" +
+          '<div class="project-detail-links">' +
+            '<a class="button button-primary" href="' + (links.github || '#') + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
+            '<a class="button button-secondary" href="' + (links.docs || '#') + '" target="_blank" rel="noopener noreferrer">文档</a>' +
+          "</div>" +
+        "</div>";
+
+      body.innerHTML =
+        '<section class="project-detail-section">' +
+          "<h2>项目概述</h2>" +
+          "<p>" + (detail.summary || '') + "</p>" +
+        "</section>" +
+        '<section class="project-detail-section">' +
+          "<h2>技术栈</h2>" +
+          listToHtml(detail.techStack) +
+        "</section>" +
+        '<section class="project-detail-section">' +
+          "<h2>实现方案</h2>" +
+          listToHtml(detail.implementation) +
+        "</section>" +
+        '<section class="project-detail-section">' +
+          "<h2>链接</h2>" +
+          '<div class="project-detail-links">' +
+            '<a class="button button-primary" href="' + (links.github || '#') + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
+            '<a class="button button-secondary" href="' + (links.docs || '#') + '" target="_blank" rel="noopener noreferrer">文档</a>' +
+          "</div>" +
+        "</section>" +
+        '<section class="project-detail-section">' +
+          "<h2>演示图片</h2>" +
+          galleryToHtml(detail.gallery, detail.id) +
+        "</section>";
+
+      renderProjectNavigation(manifest, currentIndex);
+    }
+
+    function renderProjectNavigation(manifest, currentIndex) {
+      var nav = document.getElementById("project-detail-nav");
+      if (!nav) return;
+
+      var prev = manifest[currentIndex + 1] || null;
+      var next = manifest[currentIndex - 1] || null;
+
+      function navItem(item, label, direction) {
+        if (!item) {
+          return '<div class="article-post-nav-link is-empty" aria-hidden="true"></div>';
+        }
+        return (
+          '<a class="article-post-nav-link ' + direction + '" href="' + item.href + '">' +
+            '<span class="article-post-nav-label">' + label + "</span>" +
+            '<span class="article-post-nav-title">' + item.title + "</span>" +
+          "</a>"
+        );
+      }
+
+      nav.innerHTML = navItem(prev, "上一个项目", "prev") + navItem(next, "下一个项目", "next");
+      nav.style.display = "flex";
+    }
+  </script>
+</body>
+</html>

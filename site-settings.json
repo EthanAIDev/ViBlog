@@ -1,0 +1,114 @@
+{
+  "site": {
+    "title": "ViBlog| 用感觉编码，用日志留下痕迹。",
+    "description": "AI Agent 开发工程师的静态博客主页，聚焦 RAG、工作流编排、工具调用与可复用工程实践。",
+    "favicon": "assets/avatars/site-favicon_1778245171979_blog.png",
+    "ogImage": ""
+  },
+  "home": {
+    "brandName": "Ethan ViBlog",
+    "brandIcon": "assets/avatars/home-brand-icon_1778245280013_blog.png",
+    "heroEyebrow": "AI Agent Engineer",
+    "heroTitle": "把 AI Agent 做成可运行、可复用、可维护的系统。",
+    "heroText": "专注 RAG、工作流编排与工具调用，持续把原型推进到可上线、可迭代的产品形态。",
+    "terminal": {
+      "role": "",
+      "focus": "",
+      "location": "长沙",
+      "mode": "",
+      "command": ""
+    },
+    "notes": [
+      {
+        "label": "正在构建",
+        "content": "面向中文场景的AI知识应用与个人表达"
+      },
+      {
+        "label": "写作视角",
+        "content": "偏实战、偏结构化，想要尽量把事情讲清楚"
+      }
+    ],
+    "sections": [
+      {
+        "id": "about",
+        "name": "关于我",
+        "eyebrow": "一个持续把复杂技术翻译成清晰体验的人。",
+        "enabled": true,
+        "order": 1
+      },
+      {
+        "id": "posts",
+        "name": "最新文章",
+        "eyebrow": "记录实现细节、踩坑过程与可复用方法。",
+        "enabled": true,
+        "order": 2
+      },
+      {
+        "id": "projects",
+        "name": "精选项目",
+        "eyebrow": "围绕检索增强、智能体协作与开发流程自动化的实践。",
+        "enabled": true,
+        "order": 3
+      }
+    ]
+  },
+  "about": {
+    "heroEyebrow": "个人简介",
+    "heroTitle": "一个持续把复杂技术翻译成清晰体验的人。",
+    "heroText": "我偏爱那些介于工程与内容之间的工作：一边搭系统，一边写文档、做表达，让方案既能运行，也能被理解。",
+    "profileName": "Ethan Lin",
+    "profileRole": "AI Builder · 技术创作者",
+    "avatarSrc": "assets/avatars/about_avatar_1778227616150_bolgpic.jpg",
+    "links": {
+      "bilibili": "https://space.bilibili.com/32848155",
+      "github": "https://github.com/EthanAIDev",
+      "qq": "208600679",
+      "wechat": "wechat",
+      "email": "ethandev@qq.com"
+    },
+    "cards": [
+      {
+        "title": "个人简介",
+        "content": "作为一名技术创作者，我相信好的技术不仅要能工作，还要能被理解。我致力于将复杂的技术概念转化为清晰的产品体验和可复用的方法论。"
+      },
+      {
+        "title": "擅长方向",
+        "content": "关注 RAG 工作流、智能体设计、提示词结构、前端展示体验，以及如何把技术产品讲得更有辨识度。"
+      },
+      {
+        "title": "工作方式",
+        "content": "先抓主线，再拆细节。偏好用简洁页面、原型和文章，把一个想法尽快做成可演示、可复用的成果。"
+      }
+    ],
+    "workflow": {
+      "eyebrow": "工作流 / 技术栈快照",
+      "title": "我的默认工作流，是在理性结构里保留一点创作温度。",
+      "commands": "$ ingest ideas --daily\n$ shape concept --product-thinking\n$ prototype ui --ship-fast\n$ write recap --keep-learning",
+      "stack1Title": "核心技术栈",
+      "stack2Title": "创作流程",
+      "stack1Items": "Python / FastAPI / 工具脚本\nHTML / CSS / 轻量 JS\n向量嵌入 / 检索 / 提示词设计",
+      "stack2Items": "先搭骨架，再补视觉密度\n先写一句主张，再堆内容细节\n每个页面都要有自己的语气"
+    },
+    "timeline": {
+      "eyebrow": "经历时间轴",
+      "title": "把经验沉淀成可复用的方法和作品。",
+      "items": [
+        {
+          "date": "2026 - 至今",
+          "title": "个人内容与项目体系化",
+          "desc": "持续迭代个人网站、项目库和文章方法论，将技术输出拆解为可复用模板与实践清单。"
+        },
+        {
+          "date": "2024 - 2025",
+          "title": "AI 应用开发实践",
+          "desc": "围绕 RAG、Prompt 工程和前端展示体验完成多个原型与上线项目，强调可解释性与可维护性。"
+        },
+        {
+          "date": "2022 - 2023",
+          "title": "工程基础与表达能力沉淀",
+          "desc": "在技术实现之外强化文档与叙事能力，建立\"能运行、能理解、能复盘\"的完整交付方式。"
+        }
+      ]
+    }
+  }
+}

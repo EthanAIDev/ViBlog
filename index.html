@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethan ViBlog | 技术创作者博客</title>
+  <meta
+    name="description"
+    content="AI Agent 开发工程师的静态博客主页，聚焦 RAG、工作流编排、工具调用与可复用工程实践。"
+  >
+  <meta property="og:title" content="Ethan ViBlog | 技术创作者博客">
+  <meta property="og:description" content="AI Agent 开发工程师的静态博客主页，聚焦 RAG、工作流编排、工具调用与可复用工程实践。">
+  <meta property="og:image" content="">
+  <meta property="og:type" content="website">
+  <script>
+    document.documentElement.classList.add("js");
+  </script>
+  <link rel="icon" type="image/x-icon" href="">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="site-shell">
+    <div class="ambient ambient-left" aria-hidden="true"></div>
+    <div class="ambient ambient-right" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="#home" aria-label="返回首页">
+          <img class="brand-icon-img" src="" alt="" style="display:none;">
+          <span class="brand-mark">E.</span>
+          <span class="brand-text">Ethan ViBlog</span>
+        </a>
+        <nav class="nav">
+          <a href="posts.html">文章</a>
+          <a href="projects.html">项目</a>
+          <a href="about.html">关于我</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="home">
+      <section class="hero reveal">
+        <div class="hero-copy">
+          <p class="eyebrow">AI Agent Engineer</p>
+          <h1>把 AI Agent 做成可运行、可复用、可维护的系统。</h1>
+          <p class="hero-text">
+            我专注 RAG、工作流编排与工具调用，持续把原型推进到可上线、可迭代的产品形态。
+          </p>
+          <p class="hero-stats" id="hero-stats">加载中...</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#projects">查看项目</a>
+            <a class="button button-secondary" href="#posts">阅读文章</a>
+          </div>
+        </div>
+
+        <aside class="hero-terminal" aria-label="工作状态摘要">
+          <div class="terminal-window">
+            <div class="terminal-bar">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="terminal-body">
+              <p><span class="prompt">$</span> profile.status</p>
+              <p><span class="dim">role</span>: <span class="role">技术创作者 / AI 构建者</span></p>
+              <p><span class="dim">focus</span>: <span class="focus">RAG · 智能体 · 产品写作</span></p>
+              <p><span class="dim">location</span>: <span class="location">上海 / 远程</span></p>
+              <p><span class="dim">mode</span>: <span class="mode">稳扎稳打，深度思考</span></p>
+              <p class="cursor-line"><span class="prompt">$</span> <span class="command">writing.next()</span></p>
+            </div>
+          </div>
+
+          <div class="hero-notes">
+            <article class="note-card">
+              <span class="note-label">正在构建</span>
+              <p>面向中文场景的 AI 知识应用与个人品牌表达。</p>
+            </article>
+            <article class="note-card">
+              <span class="note-label">写作视角</span>
+              <p>偏实战、偏结构化，尽量把“怎么做”说清楚。</p>
+            </article>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section section-about reveal" id="about">
+        <div class="section-heading">
+          <p class="eyebrow">关于我</p>
+          <h2>AI Agent 开发工程师，关注可交付、可维护、可复盘的工程结果。</h2>
+        </div>
+        <div class="about-grid">
+          <article class="about-card">
+            <h3>工作定位</h3>
+            <p>
+              以工程实现为核心，补齐文档与表达，让复杂系统既能运行，也能被团队理解和接手。
+            </p>
+          </article>
+          <article class="about-card">
+            <h3>擅长方向</h3>
+            <p>
+              RAG 工作流、Multi-Agent 协作、Tool Calling 与 Prompt 约束设计，面向真实业务场景落地。
+            </p>
+          </article>
+          <article class="about-card">
+            <h3>工作方式</h3>
+            <p>
+              先定义边界，再搭最小可用骨架，随后迭代稳定性与可维护性，保证每个版本都可演示、可复用。
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal" id="posts">
+        <div class="section-heading">
+          <p class="eyebrow">最新文章</p>
+          <h2>记录实现细节、踩坑过程与可复用方法。</h2>
+        </div>
+        <div class="card-grid" id="posts-grid">
+          <article class="content-card post-card">
+            <div class="card-topline">
+              <span class="card-type">随笔</span>
+              <time datetime="2026-04-08">2026.04.08</time>
+            </div>
+            <h3>从 Demo 到产品：RAG 项目最容易被忽略的三层设计</h3>
+            <p>整理检索质量、回答约束与交互反馈之间的关系，避免项目停留在“能跑”阶段。</p>
+            <div class="tag-row">
+              <span>RAG</span>
+              <span>架构</span>
+              <span>产品</span>
+            </div>
+          </article>
+
+          <article class="content-card post-card">
+            <div class="card-topline">
+              <span class="card-type">实地笔记</span>
+              <time datetime="2026-03-27">2026.03.27</time>
+            </div>
+            <h3>智能体工作流设计笔记：什么时候该让模型停下来</h3>
+            <p>围绕工具调用、状态收敛和用户感知，讨论一个智能体如何更像同事，而不是失控脚本。</p>
+            <div class="tag-row">
+              <span>智能体</span>
+              <span>用户体验</span>
+              <span>决策</span>
+            </div>
+          </article>
+
+          <article class="content-card post-card">
+            <div class="card-topline">
+              <span class="card-type">构建日志</span>
+              <time datetime="2026-02-18">2026.02.18</time>
+            </div>
+            <h3>做个人技术品牌主页时，我如何避免它看起来像标准模板</h3>
+            <p>从文案、节奏、视觉语言到交互颗粒度，记录如何让页面更像“作品”，而不是“素材拼装”。</p>
+            <div class="tag-row">
+              <span>设计</span>
+              <span>前端</span>
+              <span>品牌</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal" id="projects">
+        <div class="section-heading">
+          <p class="eyebrow">精选项目</p>
+          <h2>围绕检索增强、智能体协作与开发流程自动化的实践。</h2>
+        </div>
+        <div class="card-grid" id="projects-grid"></div>
+      </section>
+
+
+    </main>
+
+    <footer class="footer reveal">
+      <div>
+        <p class="footer-legal">© 2025-2026 Ethan. All rights reserved. <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a></p>
+      </div>
+      <div class="footer-contact">
+        <a href="mailto:hello@example.com">hello@example.com</a>
+        <a href="#home">回到顶部</a>
+      </div>
+    </footer>
+  </div>
+
+  <noscript>
+    <div class="noscript-banner">JavaScript 已关闭，页面仍可正常阅读；动态卡片渲染与滚动渐入效果已停用。</div>
+  </noscript>
+
+  <script src="./script.js"></script>
+</body>
+</html>

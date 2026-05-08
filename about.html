@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>关于我 | Lin Archive</title>
+  <meta name="description" content="技术创作者、AI Builder，专注于RAG、智能体开发和个人品牌表达">
+  <meta property="og:title" content="关于我 | Lin Archive">
+  <meta property="og:description" content="技术创作者、AI Builder，专注于RAG、智能体开发和个人品牌表达">
+  <meta property="og:type" content="website">
+  <script>
+    document.documentElement.classList.add("js");
+  </script>
+  <link rel="icon" type="image/x-icon" href="">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="site-shell">
+    <div class="ambient ambient-left" aria-hidden="true"></div>
+    <div class="ambient ambient-right" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="index.html" aria-label="返回首页">
+          <img class="brand-icon-img" src="" alt="" style="display:none;">
+          <span class="brand-mark">L.</span>
+          <span class="brand-text">Lin Archive</span>
+        </a>
+        <nav class="nav">
+          <a href="posts.html">文章</a>
+          <a href="projects.html">项目</a>
+          <a href="about.html">关于我</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="about">
+      <section class="hero reveal">
+        <div class="hero-copy">
+          <p class="eyebrow">个人简介</p>
+          <h1>一个持续把复杂技术翻译成清晰体验的人。</h1>
+          <p class="hero-text">
+            我偏爱那些介于工程与内容之间的工作：一边搭系统，一边写文档、做表达，让方案既能运行，也能被理解。
+          </p>
+        </div>
+        <aside class="about-profile-card" aria-label="个人信息卡片">
+          <div class="about-avatar-wrap">
+            <img class="about-avatar" src="assets/about-avatar.svg" alt="Ethan 头像">
+          </div>
+          <div class="about-profile-meta">
+            <p class="about-name">Ethan Lin</p>
+            <p class="about-role">AI Builder · 技术创作者</p>
+          </div>
+          <div class="about-profile-links">
+            <a class="button button-secondary about-link-btn" data-btn-id="bilibili" href="https://space.bilibili.com/" target="_blank" rel="noopener noreferrer" aria-label="B站" title="B站">
+              <img class="about-link-icon" src="assets/social-icons/bilibili.png" alt="">
+            </a>
+            <a class="button button-secondary about-link-btn" data-btn-id="github" href="https://github.com/" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
+              <img class="about-link-icon" src="assets/social-icons/github.png" alt="">
+            </a>
+            <a class="button button-secondary about-link-btn" id="qq-btn" data-btn-id="qq" href="javascript:void(0);" onclick="copyQQ();" aria-label="QQ" title="QQ">
+              <img class="about-link-icon" src="assets/social-icons/QQ.png" alt="">
+            </a>
+            <a class="button button-secondary about-link-btn" id="wechat-btn" data-btn-id="wechat" href="javascript:void(0);" onclick="copyWechat();" aria-label="微信" title="微信">
+              <img class="about-link-icon" src="assets/social-icons/wechat-fill.png" alt="">
+            </a>
+            <a class="button button-secondary about-link-btn" id="email-btn" data-btn-id="email" href="javascript:void(0);" onclick="copyEmail();" aria-label="邮箱" title="邮箱">
+              <img class="about-link-icon" src="assets/social-icons/youxiang.png" alt="">
+            </a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section section-about reveal">
+        <div class="about-grid">
+          <article class="about-card">
+            <h3>个人简介</h3>
+            <p>
+              作为一名技术创作者，我相信好的技术不仅要能工作，还要能被理解。我致力于将复杂的技术概念转化为清晰的产品体验和可复用的方法论。
+            </p>
+          </article>
+          <article class="about-card">
+            <h3>擅长方向</h3>
+            <p>
+              关注 RAG 工作流、智能体设计、提示词结构、前端展示体验，以及如何把技术产品讲得更有辨识度。
+            </p>
+          </article>
+          <article class="about-card">
+            <h3>工作方式</h3>
+            <p>
+              先抓主线，再拆细节。偏好用简洁页面、原型和文章，把一个想法尽快做成可演示、可复用的成果。
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section-workflow reveal">
+        <div class="section-heading">
+          <p class="eyebrow">工作流 / 技术栈快照</p>
+          <h2>我的默认工作流，是在理性结构里保留一点创作温度。</h2>
+        </div>
+
+        <div class="workflow-grid">
+          <article class="terminal-panel">
+            <div class="terminal-header">
+              <span class="terminal-title">workflow.log</span>
+              <span class="terminal-state">stable</span>
+            </div>
+            <div class="terminal-content">
+              <p><span class="prompt">$</span> ingest ideas --daily</p>
+              <p><span class="prompt">$</span> shape concept --product-thinking</p>
+              <p><span class="prompt">$</span> prototype ui --ship-fast</p>
+              <p><span class="prompt">$</span> write recap --keep-learning</p>
+            </div>
+          </article>
+
+          <div class="stack-columns">
+            <article class="stack-card">
+              <h3>核心技术栈</h3>
+              <ul>
+                <li>Python / FastAPI / 工具脚本</li>
+                <li>HTML / CSS / 轻量 JS</li>
+                <li>向量嵌入 / 检索 / 提示词设计</li>
+              </ul>
+            </article>
+
+            <article class="stack-card">
+              <h3>创作流程</h3>
+              <ul>
+                <li>先搭骨架，再补视觉密度</li>
+                <li>先写一句主张，再堆内容细节</li>
+                <li>每个页面都要有自己的语气</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-timeline reveal">
+        <div class="section-heading">
+          <p class="eyebrow">经历时间轴</p>
+          <h2>把经验沉淀成可复用的方法和作品。</h2>
+        </div>
+        <div class="timeline-list">
+          <article class="timeline-item">
+            <p class="timeline-date">2026 - 至今</p>
+            <div class="timeline-card">
+              <h3>个人内容与项目体系化</h3>
+              <p>持续迭代个人网站、项目库和文章方法论，将技术输出拆解为可复用模板与实践清单。</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <p class="timeline-date">2024 - 2025</p>
+            <div class="timeline-card">
+              <h3>AI 应用开发实践</h3>
+              <p>围绕 RAG、Prompt 工程和前端展示体验完成多个原型与上线项目，强调可解释性与可维护性。</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <p class="timeline-date">2022 - 2023</p>
+            <div class="timeline-card">
+              <h3>工程基础与表达能力沉淀</h3>
+              <p>在技术实现之外强化文档与叙事能力，建立“能运行、能理解、能复盘”的完整交付方式。</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <div>
+        <p class="footer-legal">© 2025-2026 Ethan. All rights reserved. <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a></p>
+      </div>
+      <div class="footer-contact">
+        <a href="mailto:hello@example.com">hello@example.com</a>
+        <a href="#about">回到顶部</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
