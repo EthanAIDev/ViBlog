@@ -1,0 +1,14 @@
+/*
+  Cache-Control: public, max-age=600
+
+/*.html
+  Cache-Control: no-cache, must-revalidate
+
+/site-settings.json
+  Cache-Control: no-cache, must-revalidate
+
+/articles/manifest.json
+  Cache-Control: no-cache, must-revalidate
+
+/projects/manifest.json
+  Cache-Control: no-cache, must-revalidate

@@ -2,6 +2,20 @@ var posts = [];
 var projects = [];
 var BLOG_START_DATE = "2025-06-18";
 var siteSettings = null;
+var siteSettingsPromise = null;
+var hasSetupHeaderScrollEffect = false;
+var hasSetupShellNavigation = false;
+var currentPageInitToken = 0;
+var currentShellNavigationToken = 0;
+
+var SHELL_PAGE_MAP = {
+  "index.html": true,
+  "posts.html": true,
+  "projects.html": true,
+  "about.html": true,
+  "article.html": true,
+  "project.html": true
+};
 
 function parseSiteSettingsPayload(text) {
   if (typeof text !== "string" || !text.trim()) return null;
@@ -106,6 +120,34 @@ function loadSiteSettings() {
   });
 }
 
+function ensureSiteSettingsLoaded() {
+  if (siteSettings) {
+    return Promise.resolve(siteSettings);
+  }
+  if (siteSettingsPromise) {
+    return siteSettingsPromise;
+  }
+  siteSettingsPromise = loadSiteSettings().then(function(settings) {
+    siteSettings = settings;
+    return siteSettings;
+  }).finally(function() {
+    siteSettingsPromise = null;
+  });
+  return siteSettingsPromise;
+}
+
+function normalizePageName(pathname) {
+  if (!pathname || pathname === "/") {
+    return "index.html";
+  }
+  var parts = pathname.split("/");
+  var last = parts[parts.length - 1];
+  if (!last) {
+    return "index.html";
+  }
+  return last.toLowerCase();
+}
+
 function applySiteSettings() {
   if (!siteSettings) return;
   var site = siteSettings.site || {};
@@ -150,11 +192,15 @@ function applySiteSettings() {
     }
     if (headerBrandMark) {
       var brandMark = brandLink.querySelector('.brand-mark');
-      if (brandMark) brandMark.textContent = headerBrandMark;
+      if (brandMark && brandMark.textContent !== headerBrandMark) {
+        brandMark.textContent = headerBrandMark;
+      }
     }
     if (headerBrandName) {
       var brandText = brandLink.querySelector('.brand-text');
-      if (brandText) brandText.textContent = headerBrandName;
+      if (brandText && brandText.textContent !== headerBrandName) {
+        brandText.textContent = headerBrandName;
+      }
     }
   }
 }
@@ -803,6 +849,9 @@ function highlightCurrentSection() {
 }
 
 function setupHeaderScrollEffect() {
+  if (hasSetupHeaderScrollEffect) {
+    return;
+  }
   var topbar = document.querySelector(".topbar");
   if (!topbar) {
     return;
@@ -823,6 +872,7 @@ function setupHeaderScrollEffect() {
     updateHeaderStyle();
     window.addEventListener("scroll", updateHeaderStyle, { passive: true });
   });
+  hasSetupHeaderScrollEffect = true;
 }
 
 var currentFilter = "all";
@@ -833,6 +883,16 @@ var postsPerPage = 10;
 var postsGridRef = null;
 var noResultsRef = null;
 var paginationControlsRef = null;
+
+function resetPostFilteringState() {
+  currentFilter = "all";
+  currentCategory = "all";
+  currentSearch = "";
+  currentPage = 1;
+  postsGridRef = null;
+  noResultsRef = null;
+  paginationControlsRef = null;
+}
 
 function setupPostFiltering() {
   postsGridRef = document.getElementById("posts-grid");
@@ -1043,48 +1103,943 @@ function renderPaginationControls(totalPages) {
   paginationControlsRef.replaceChildren(fragment);
 }
 
-function init() {
-  loadSiteSettings().then(function() {
+var externalScriptPromises = {};
+var externalStyleApplied = {};
+var articleLightboxBound = false;
+var articleOutlineScrollHandler = null;
+var articleOutlineActiveId = "";
+var pageScrollHideTimer = null;
+var hasBoundPageScrollIndicator = false;
+var outlineScrollHideTimer = null;
+
+var ARTICLE_DEPENDENCIES = {
+  katexCss: "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css",
+  highlightCss: "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-light.min.css",
+  katexJs: "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js",
+  markedJs: "https://cdn.jsdelivr.net/npm/marked/marked.min.js",
+  mermaidJs: "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js",
+  hljsJs: "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"
+};
+
+function loadExternalScriptOnce(src) {
+  if (externalScriptPromises[src]) {
+    return externalScriptPromises[src];
+  }
+
+  var existing = document.querySelector('script[src="' + src + '"]');
+  if (existing) {
+    externalScriptPromises[src] = Promise.resolve();
+    return externalScriptPromises[src];
+  }
+
+  externalScriptPromises[src] = new Promise(function(resolve, reject) {
+    var script = document.createElement("script");
+    script.src = src;
+    script.onload = function() { resolve(); };
+    script.onerror = function() { reject(new Error("脚本加载失败")); };
+    document.head.appendChild(script);
+  });
+  return externalScriptPromises[src];
+}
+
+function loadExternalStyleOnce(href) {
+  if (externalStyleApplied[href]) {
+    return;
+  }
+  if (document.querySelector('link[rel="stylesheet"][href="' + href + '"]')) {
+    externalStyleApplied[href] = true;
+    return;
+  }
+  var link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = href;
+  document.head.appendChild(link);
+  externalStyleApplied[href] = true;
+}
+
+function ensureArticleDependenciesLoaded() {
+  loadExternalStyleOnce(ARTICLE_DEPENDENCIES.katexCss);
+  loadExternalStyleOnce(ARTICLE_DEPENDENCIES.highlightCss);
+
+  return Promise.all([
+    typeof marked !== "undefined" ? Promise.resolve() : loadExternalScriptOnce(ARTICLE_DEPENDENCIES.markedJs),
+    typeof mermaid !== "undefined" ? Promise.resolve() : loadExternalScriptOnce(ARTICLE_DEPENDENCIES.mermaidJs),
+    typeof katex !== "undefined" ? Promise.resolve() : loadExternalScriptOnce(ARTICLE_DEPENDENCIES.katexJs),
+    typeof hljs !== "undefined" ? Promise.resolve() : loadExternalScriptOnce(ARTICLE_DEPENDENCIES.hljsJs)
+  ]);
+}
+
+function ensureArticleLightboxElement() {
+  var lightbox = document.getElementById("img-lightbox");
+  if (lightbox) {
+    return lightbox;
+  }
+  lightbox = document.createElement("div");
+  lightbox.className = "img-lightbox";
+  lightbox.id = "img-lightbox";
+
+  var close = document.createElement("span");
+  close.className = "img-lightbox-close";
+  close.textContent = "×";
+
+  var img = document.createElement("img");
+  img.src = "";
+  img.alt = "查看大图";
+
+  lightbox.appendChild(close);
+  lightbox.appendChild(img);
+  document.body.appendChild(lightbox);
+  return lightbox;
+}
+
+function getUrlParam(name) {
+  var urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+function getAdjacentArticles(manifest, articleId) {
+  if (!Array.isArray(manifest) || manifest.length === 0) {
+    return { prevArticle: null, nextArticle: null };
+  }
+
+  var currentIndex = manifest.findIndex(function(item) {
+    return item && item.id === articleId;
+  });
+
+  if (currentIndex === -1) {
+    return { prevArticle: null, nextArticle: null };
+  }
+
+  var prevArticle = manifest[currentIndex + 1] || null;
+  var nextArticle = manifest[currentIndex - 1] || null;
+
+  return {
+    prevArticle: prevArticle,
+    nextArticle: nextArticle
+  };
+}
+
+function showArticleError(message) {
+  var headerSection = document.querySelector(".article-header-section");
+  if (!headerSection) return;
+  headerSection.innerHTML = '<div class="article-not-found"><h2>文章未找到</h2><p>' + message + '</p><p><a href="posts.html">返回文章列表</a></p></div>';
+}
+
+function renderArticleNavigation(prevArticle, nextArticle) {
+  var nav = document.getElementById("article-post-nav");
+  if (!nav) return;
+
+  function buildNavItem(article, direction) {
+    if (!article) {
+      return '<div class="article-post-nav-link is-empty" aria-hidden="true"></div>';
+    }
+
+    var label = direction === "prev" ? "< 上一篇" : "下一篇 >";
+    return (
+      '<a class="article-post-nav-link ' + direction + '" href="' + article.href + '">' +
+        '<span class="article-post-nav-label">' + label + "</span>" +
+        '<span class="article-post-nav-title">' + article.title + "</span>" +
+      "</a>"
+    );
+  }
+
+  nav.innerHTML = buildNavItem(prevArticle, "prev") + buildNavItem(nextArticle, "next");
+  nav.style.display = "flex";
+}
+
+function setupImageLightbox() {
+  var lightbox = ensureArticleLightboxElement();
+  var lightboxImg = lightbox.querySelector("img");
+  var closeBtn = lightbox.querySelector(".img-lightbox-close");
+  var articleBody = document.getElementById("article-body");
+
+  if (!articleBody || !lightboxImg || !closeBtn) return;
+
+  function open(src) {
+    lightboxImg.src = src;
+    lightbox.classList.add("show");
+    document.body.style.overflow = "hidden";
+  }
+
+  function close() {
+    lightbox.classList.remove("show");
+    document.body.style.overflow = "";
+  }
+
+  articleBody.querySelectorAll("img").forEach(function(img) {
+    img.addEventListener("click", function() {
+      open(img.src);
+    });
+  });
+
+  if (!articleLightboxBound) {
+    lightbox.addEventListener("click", function(e) {
+      if (e.target === lightbox) close();
+    });
+    closeBtn.addEventListener("click", close);
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape" && lightbox.classList.contains("show")) {
+        close();
+      }
+    });
+    articleLightboxBound = true;
+  }
+}
+
+function setupAdmonitions() {
+  var blocks = document.querySelectorAll(".article-body blockquote");
+  blocks.forEach(function(block) {
+    var firstP = block.querySelector("p");
+    if (!firstP) return;
+
+    var raw = firstP.textContent.trim();
+    var match = raw.match(/^\[!(NOTE|TIP|WARNING|IMPORTANT)\]\s*(.*)$/i);
+    if (!match) return;
+
+    var type = match[1].toLowerCase();
+    var titleText = match[2].trim();
+    block.classList.add("callout-" + type);
+
+    var title = document.createElement("p");
+    title.className = "callout-title";
+    title.textContent = titleText || ({
+      note: "Note",
+      tip: "Tip",
+      warning: "Warning",
+      important: "Important"
+    })[type];
+
+    firstP.remove();
+    block.insertBefore(title, block.firstChild);
+  });
+}
+
+function setupCodeBlocks() {
+  function applyLineNumbers(codeEl) {
+    var highlighted = codeEl.innerHTML.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    var lines = highlighted.split("\n");
+    if (lines.length > 1 && lines[lines.length - 1] === "") {
+      lines.pop();
+    }
+    if (lines.length === 0) {
+      lines = [""];
+    }
+
+    var numberedHtml = lines.map(function(line, index) {
+      return (
+        '<span class="code-line">' +
+          '<span class="code-line-number">' + (index + 1) + "</span>" +
+          '<span class="code-line-text">' + (line === "" ? "&nbsp;" : line) + "</span>" +
+        "</span>"
+      );
+    }).join("");
+
+    codeEl.innerHTML = numberedHtml;
+  }
+
+  var pres = document.querySelectorAll(".article-body pre");
+  pres.forEach(function(pre) {
+    if (pre.getAttribute("data-processed")) return;
+    pre.setAttribute("data-processed", "true");
+
+    var code = pre.querySelector("code");
+    if (!code) return;
+    var sourceText = code.textContent.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+    if (typeof hljs !== "undefined") {
+      hljs.highlightElement(code);
+    }
+    applyLineNumbers(code);
+
+    var lang = "";
+    if (code.className) {
+      var match = code.className.match(/language-(\w+)/);
+      if (match) lang = match[1];
+    }
+
+    var header = document.createElement("div");
+    header.className = "code-header";
+
+    var langSpan = document.createElement("span");
+    langSpan.className = "code-lang";
+    langSpan.textContent = lang || "code";
+    header.appendChild(langSpan);
+
+    var copyBtn = document.createElement("button");
+    copyBtn.className = "code-copy-btn";
+    copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+    copyBtn.appendChild(document.createTextNode("复制"));
+    copyBtn.addEventListener("click", function() {
+      navigator.clipboard.writeText(sourceText).then(function() {
+        copyBtn.classList.add("copied");
+        copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+        copyBtn.appendChild(document.createTextNode("已复制"));
+        setTimeout(function() {
+          copyBtn.classList.remove("copied");
+          copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+          copyBtn.appendChild(document.createTextNode("复制"));
+        }, 2000);
+      });
+    });
+    header.appendChild(copyBtn);
+
+    var wrapper = document.createElement("div");
+    wrapper.className = "code-block";
+    pre.parentNode.insertBefore(wrapper, pre);
+    wrapper.appendChild(header);
+    wrapper.appendChild(pre);
+  });
+}
+
+function renderMermaidCharts() {
+  var mermaidEls = document.querySelectorAll(".mermaid");
+  if (mermaidEls.length === 0 || typeof mermaid === "undefined") return;
+
+  mermaid.initialize({ startOnLoad: false, theme: "neutral" });
+  mermaidEls.forEach(function(el) {
+    if (el.getAttribute("data-processed")) return;
+    el.setAttribute("data-processed", "true");
+    var id = "mermaid-" + Math.random().toString(36).slice(2, 8);
+    mermaid.render(id, el.textContent.trim()).then(function(result) {
+      el.innerHTML = result.svg;
+    }).catch(function(err) {
+      el.innerHTML = '<pre style="color:#c62828;background:rgba(198,40,40,0.06);padding:1rem;border-radius:8px;">Mermaid 图表渲染失败: ' + err.message + '\n\n原始代码:\n' + el.textContent.trim() + "</pre>";
+    });
+  });
+}
+
+function renderMathBlocks() {
+  if (typeof katex === "undefined") return;
+
+  document.querySelectorAll(".math-inline").forEach(function(el) {
+    if (el.getAttribute("data-rendered")) return;
+    el.setAttribute("data-rendered", "true");
+    try {
+      katex.render(el.textContent, el, { throwOnError: false });
+    } catch (e) {
+      el.innerHTML = '<code style="color:#c62828">' + el.textContent + "</code>";
+    }
+  });
+
+  document.querySelectorAll(".math-block").forEach(function(el) {
+    if (el.getAttribute("data-rendered")) return;
+    el.setAttribute("data-rendered", "true");
+    try {
+      katex.render(el.textContent, el, { throwOnError: false, displayMode: true });
+    } catch (e) {
+      el.innerHTML = '<code style="color:#c62828">' + el.textContent + "</code>";
+    }
+  });
+}
+
+function markPageScrollbarActive() {
+  if (!document || !document.documentElement) return;
+  document.documentElement.classList.add("is-scrolling-page");
+  if (pageScrollHideTimer) {
+    clearTimeout(pageScrollHideTimer);
+  }
+  pageScrollHideTimer = setTimeout(function() {
+    document.documentElement.classList.remove("is-scrolling-page");
+  }, 700);
+}
+
+function setupPageScrollbarIndicator() {
+  if (hasBoundPageScrollIndicator) return;
+  window.addEventListener("scroll", markPageScrollbarActive, { passive: true });
+  window.addEventListener("wheel", markPageScrollbarActive, { passive: true });
+  window.addEventListener("touchmove", markPageScrollbarActive, { passive: true });
+  hasBoundPageScrollIndicator = true;
+}
+
+function bindOutlineScrollbarIndicator(outlineContainer, outlineNav) {
+  if (!outlineContainer || !outlineNav) return;
+  if (outlineNav.dataset.scrollIndicatorBound === "1") return;
+
+  function markOutlineScrollbarActive() {
+    outlineContainer.classList.add("is-scrolling-outline");
+    if (outlineScrollHideTimer) {
+      clearTimeout(outlineScrollHideTimer);
+    }
+    outlineScrollHideTimer = setTimeout(function() {
+      outlineContainer.classList.remove("is-scrolling-outline");
+    }, 700);
+  }
+
+  outlineNav.addEventListener("scroll", markOutlineScrollbarActive, { passive: true });
+  outlineNav.addEventListener("wheel", markOutlineScrollbarActive, { passive: true });
+  outlineNav.addEventListener("touchmove", markOutlineScrollbarActive, { passive: true });
+  outlineNav.dataset.scrollIndicatorBound = "1";
+}
+
+function generateArticleOutline() {
+  var outlineContainer = document.getElementById("article-outline");
+  var outlineNav = document.getElementById("outline-nav");
+  var articleBody = document.getElementById("article-body");
+
+  if (!outlineContainer || !outlineNav || !articleBody) return;
+
+  var headings = articleBody.querySelectorAll("h1, h2, h3, h4");
+  if (headings.length === 0) {
+    outlineContainer.style.display = "none";
+    return;
+  }
+
+  outlineContainer.style.display = "block";
+  var fragment = document.createDocumentFragment();
+  outlineNav.innerHTML = "";
+
+  headings.forEach(function(heading, index) {
+    var id = "heading-" + index;
+    heading.id = id;
+
+    var link = document.createElement("a");
+    link.href = "#" + id;
+    link.className = "outline-link " + heading.tagName.toLowerCase();
+    var text = document.createElement("span");
+    text.className = "outline-link-text";
+    text.textContent = heading.textContent;
+    link.appendChild(text);
+    link.setAttribute("aria-label", "跳转到 " + heading.textContent);
+
+    link.addEventListener("click", function(e) {
+      e.preventDefault();
+      var targetHeading = document.getElementById(id);
+      if (targetHeading) {
+        var offsetTop = targetHeading.offsetTop - 100;
+        window.scrollTo({ top: offsetTop, behavior: "smooth" });
+      }
+    });
+
+    fragment.appendChild(link);
+  });
+
+  outlineNav.appendChild(fragment);
+  articleOutlineActiveId = "";
+  bindOutlineScrollbarIndicator(outlineContainer, outlineNav);
+
+  function ensureActiveOutlineLinkVisible(activeLink) {
+    if (!activeLink || !outlineNav) return;
+    var navRect = outlineNav.getBoundingClientRect();
+    var linkRect = activeLink.getBoundingClientRect();
+    var padding = 10;
+
+    if (linkRect.top < navRect.top + padding || linkRect.bottom > navRect.bottom - padding) {
+      activeLink.scrollIntoView({ block: "nearest", inline: "nearest" });
+    }
+  }
+
+  function updateActiveHeading() {
+    var currentId = null;
+    var scrollTop = window.scrollY + 120;
+
+    headings.forEach(function(heading) {
+      if (heading.offsetTop <= scrollTop) {
+        currentId = heading.id;
+      }
+    });
+
+    if (!currentId || currentId === articleOutlineActiveId) return;
+
+    document.querySelectorAll(".outline-link.active").forEach(function(el) {
+      el.classList.remove("active");
+    });
+
+    var activeLink = document.querySelector('.outline-link[href="#' + currentId + '"]');
+    if (activeLink) {
+      activeLink.classList.add("active");
+      ensureActiveOutlineLinkVisible(activeLink);
+      articleOutlineActiveId = currentId;
+    }
+  }
+
+  updateActiveHeading();
+  if (articleOutlineScrollHandler) {
+    window.removeEventListener("scroll", articleOutlineScrollHandler);
+  }
+  articleOutlineScrollHandler = function() {
+    updateActiveHeading();
+  };
+  window.addEventListener("scroll", articleOutlineScrollHandler);
+}
+
+function renderArticleData(article) {
+  var headerSection = document.querySelector(".article-header-section");
+  var body = document.getElementById("article-body");
+  if (!headerSection || !body) return;
+
+  document.title = article.title + " | Lin Archive";
+
+  headerSection.innerHTML =
+    '<div class="article-header-content">' +
+      '<h1 class="article-title">' + article.title + "</h1>" +
+      '<div class="article-meta">' +
+        '<span class="article-meta-item article-date">' +
+          '<svg class="article-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+            '<rect x="3" y="4" width="18" height="18" rx="2"></rect>' +
+            '<line x1="16" y1="2" x2="16" y2="6"></line>' +
+            '<line x1="8" y1="2" x2="8" y2="6"></line>' +
+            '<line x1="3" y1="10" x2="21" y2="10"></line>' +
+          "</svg>" +
+          "<span>" + article.displayDate + "</span>" +
+        "</span>" +
+        '<span class="article-meta-divider" aria-hidden="true"></span>' +
+        '<div class="article-meta-item article-tag-group">' +
+          '<svg class="article-meta-icon article-meta-icon-tags" viewBox="4 4 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">' +
+            '<path d="M7 4.5h10A1.5 1.5 0 0 1 18.5 6v13.2a.6.6 0 0 1-.96.48L12 15.4l-5.54 4.28a.6.6 0 0 1-.96-.48V6A1.5 1.5 0 0 1 7 4.5Z"></path>' +
+            '<line x1="9.2" y1="8.3" x2="14.8" y2="8.3"></line>' +
+          "</svg>" +
+          '<div class="article-tags">' +
+            article.tags.map(function(tag) { return "<span>" + tag + "</span>"; }).join("") +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+      '<div class="article-header-divider" aria-hidden="true"></div>' +
+    "</div>";
+
+  body.innerHTML = article.content;
+  setupAdmonitions();
+  setupImageLightbox();
+  setupCodeBlocks();
+  renderArticleNavigation(article.prevArticle, article.nextArticle);
+  generateArticleOutline();
+  renderMermaidCharts();
+  renderMathBlocks();
+}
+
+function loadArticlePage() {
+  var articleRoot = document.getElementById("article-container");
+  if (!articleRoot) return;
+
+  var articleId = getUrlParam("id");
+  if (!articleId) {
+    showArticleError("未指定文章");
+    return;
+  }
+
+  ensureArticleDependenciesLoaded().then(function() {
+    return Promise.all([
+      fetch("./articles/" + articleId + "/meta.json?" + Date.now()),
+      fetch("./articles/" + articleId + "/index.md?" + Date.now()),
+      fetch("./articles/manifest.json?" + Date.now())
+    ]);
+  }).then(function(responses) {
+    var metaRes = responses[0];
+    var mdRes = responses[1];
+    var manifestRes = responses[2];
+
+    if (!metaRes.ok || !mdRes.ok) {
+      throw new Error("文章不存在");
+    }
+
+    return Promise.all([
+      metaRes.json(),
+      mdRes.text(),
+      manifestRes.ok ? manifestRes.json() : Promise.resolve([])
+    ]);
+  }).then(function(results) {
+    var meta = results[0];
+    var mdText = results[1];
+    var manifest = results[2];
+    var adjacent = getAdjacentArticles(manifest, articleId);
+
+    var preprocessed = mdText.replace(/!\[\[([^\]]+)\]\]/g, "![]($1)");
+    preprocessed = preprocessed.replace(/\$\$([\s\S]*?)\$\$/g, function(_, latex) {
+      return "\n<div class=\"math-block\">" + latex.trim() + "</div>\n";
+    });
+    preprocessed = preprocessed.replace(/(?<!\$)\$(?!\$)([^\$\n]+?)\$(?!\$)/g, function(_, latex) {
+      return '<span class="math-inline">' + latex.trim() + "</span>";
+    });
+
+    var contentHtml = preprocessed;
+    if (typeof marked !== "undefined") {
+      marked.setOptions({ breaks: false });
+      contentHtml = marked.parse(preprocessed);
+    }
+
+    contentHtml = contentHtml.replace(/<img src="([^"]+)"/g, '<img src="./articles/' + articleId + '/$1"');
+    contentHtml = contentHtml.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, '<div class="mermaid">\n$1\n</div>');
+    contentHtml = contentHtml.replace(/<pre><code>mermaid\n([\s\S]*?)<\/code><\/pre>/g, '<div class="mermaid">\n$1\n</div>');
+
+    renderArticleData({
+      type: meta.type,
+      title: meta.title,
+      date: meta.date,
+      displayDate: meta.displayDate,
+      tags: meta.tags || [],
+      summary: meta.summary,
+      content: contentHtml,
+      prevArticle: adjacent.prevArticle,
+      nextArticle: adjacent.nextArticle
+    });
+  }).catch(function(err) {
+    showArticleError(err.message || "文章加载失败");
+  });
+}
+
+function loadJson(url) {
+  return fetch(url + "?" + Date.now()).then(function(res) {
+    if (!res.ok) {
+      throw new Error("加载失败");
+    }
+    return res.json();
+  });
+}
+
+function showProjectError(message) {
+  var header = document.getElementById("project-detail-header");
+  var body = document.getElementById("project-detail-body");
+  if (!header || !body) return;
+  header.innerHTML = '<div class="project-not-found"><h1>项目未找到</h1><p>' + message + '</p><p><a href="projects.html">返回项目列表</a></p></div>';
+  body.innerHTML = "";
+}
+
+function listToHtml(items) {
+  if (!Array.isArray(items) || items.length === 0) {
+    return "";
+  }
+  return "<ul>" + items.map(function(item) {
+    return "<li>" + item + "</li>";
+  }).join("") + "</ul>";
+}
+
+function galleryToHtml(items, projectId) {
+  if (!Array.isArray(items) || items.length === 0) {
+    return "";
+  }
+  return (
+    '<div class="project-gallery-grid">' +
+    items.map(function(item) {
+      return (
+        "<figure>" +
+          '<img src="./projects/' + projectId + "/" + item.src + '" alt="' + (item.alt || "") + '" loading="lazy">' +
+          "<figcaption>" + (item.caption || "") + "</figcaption>" +
+        "</figure>"
+      );
+    }).join("") +
+    "</div>"
+  );
+}
+
+function renderProjectNavigation(manifest, currentIndex) {
+  var nav = document.getElementById("project-detail-nav");
+  if (!nav) return;
+
+  var prev = manifest[currentIndex + 1] || null;
+  var next = manifest[currentIndex - 1] || null;
+
+  function navItem(item, label, direction) {
+    if (!item) {
+      return '<div class="article-post-nav-link is-empty" aria-hidden="true"></div>';
+    }
+    return (
+      '<a class="article-post-nav-link ' + direction + '" href="' + item.href + '">' +
+        '<span class="article-post-nav-label">' + label + "</span>" +
+        '<span class="article-post-nav-title">' + item.title + "</span>" +
+      "</a>"
+    );
+  }
+
+  nav.innerHTML = navItem(prev, "上一个项目", "prev") + navItem(next, "下一个项目", "next");
+  nav.style.display = "flex";
+}
+
+function renderProjectPage(detail, manifest, currentIndex) {
+  document.title = detail.title + " | 项目详情 | Lin Archive";
+
+  var header = document.getElementById("project-detail-header");
+  var body = document.getElementById("project-detail-body");
+  if (!header || !body) return;
+  var links = detail.links || {};
+
+  header.innerHTML =
+    '<div class="project-detail-title-block">' +
+      '<h1 class="project-detail-title">' + detail.title + "</h1>" +
+      '<div class="project-detail-links">' +
+        '<a class="button button-primary" href="' + (links.github || "#") + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
+        '<a class="button button-secondary" href="' + (links.docs || "#") + '" target="_blank" rel="noopener noreferrer">文档</a>' +
+      "</div>" +
+    "</div>";
+
+  body.innerHTML =
+    '<section class="project-detail-section">' +
+      "<h2>项目概述</h2>" +
+      "<p>" + (detail.summary || "") + "</p>" +
+    "</section>" +
+    '<section class="project-detail-section">' +
+      "<h2>技术栈</h2>" +
+      listToHtml(detail.techStack) +
+    "</section>" +
+    '<section class="project-detail-section">' +
+      "<h2>实现方案</h2>" +
+      listToHtml(detail.implementation) +
+    "</section>" +
+    '<section class="project-detail-section">' +
+      "<h2>链接</h2>" +
+      '<div class="project-detail-links">' +
+        '<a class="button button-primary" href="' + (links.github || "#") + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
+        '<a class="button button-secondary" href="' + (links.docs || "#") + '" target="_blank" rel="noopener noreferrer">文档</a>' +
+      "</div>" +
+    "</section>" +
+    '<section class="project-detail-section">' +
+      "<h2>演示图片</h2>" +
+      galleryToHtml(detail.gallery, detail.id) +
+    "</section>";
+
+  renderProjectNavigation(manifest, currentIndex);
+}
+
+function loadProjectDetailPage() {
+  var projectRoot = document.getElementById("project-detail-container");
+  if (!projectRoot) return;
+
+  var projectId = getUrlParam("id");
+  if (!projectId) {
+    showProjectError("未指定项目");
+    return;
+  }
+
+  loadJson("./projects/manifest.json").then(function(manifest) {
+    var currentIndex = manifest.findIndex(function(item) {
+      return item.id === projectId;
+    });
+    if (currentIndex === -1) {
+      showProjectError("未找到对应项目");
+      return null;
+    }
+    return loadJson("./projects/" + projectId + "/detail.json").then(function(detail) {
+      renderProjectPage(detail, manifest, currentIndex);
+      return true;
+    });
+  }).catch(function() {
+    showProjectError("项目详情加载失败");
+  });
+}
+
+function updateNavCurrentByPath(pathname) {
+  var currentPage = normalizePageName(pathname);
+  if (currentPage === "article.html") {
+    currentPage = "posts.html";
+  } else if (currentPage === "project.html") {
+    currentPage = "projects.html";
+  }
+  var links = document.querySelectorAll(".nav a");
+  links.forEach(function(link) {
+    var href = link.getAttribute("href") || "";
+    if (!href || href.charAt(0) === "#") {
+      link.removeAttribute("aria-current");
+      return;
+    }
+    var target = normalizePageName(new URL(href, window.location.href).pathname);
+    if (target === currentPage) {
+      link.setAttribute("aria-current", "true");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+}
+
+function syncPersistentHeaderState() {
+  var brand = document.querySelector(".brand");
+  if (brand) {
+    brand.setAttribute("href", "index.html");
+  }
+  updateNavCurrentByPath(window.location.pathname);
+}
+
+function syncFooterFromDocument(nextDoc) {
+  var currentFooter = document.querySelector(".footer");
+  var nextFooter = nextDoc.querySelector(".footer");
+  if (!currentFooter || !nextFooter) {
+    return;
+  }
+  currentFooter.innerHTML = nextFooter.innerHTML;
+  currentFooter.className = nextFooter.className;
+  currentFooter.classList.add("is-visible");
+}
+
+function syncHeadFromDocument(nextDoc) {
+  if (nextDoc.title) {
+    document.title = nextDoc.title;
+  }
+  var metaPairs = [
+    ['meta[name="description"]', 'meta[name="description"]'],
+    ['meta[property="og:title"]', 'meta[property="og:title"]'],
+    ['meta[property="og:description"]', 'meta[property="og:description"]'],
+    ['meta[property="og:type"]', 'meta[property="og:type"]']
+  ];
+  metaPairs.forEach(function(pair) {
+    var currentMeta = document.querySelector(pair[0]);
+    var nextMeta = nextDoc.querySelector(pair[1]);
+    if (currentMeta && nextMeta) {
+      currentMeta.setAttribute("content", nextMeta.getAttribute("content") || "");
+    }
+  });
+}
+
+function syncBodyClassFromDocument(nextDoc) {
+  if (!nextDoc || !nextDoc.body || !document.body) {
+    return;
+  }
+  document.body.className = nextDoc.body.className || "";
+}
+
+function isShellNavigationTarget(urlObj) {
+  if (!urlObj || urlObj.origin !== window.location.origin) {
+    return false;
+  }
+  var pageName = normalizePageName(urlObj.pathname);
+  if (!SHELL_PAGE_MAP[pageName]) {
+    return false;
+  }
+  if (pageName === "article.html" || pageName === "project.html") {
+    return true;
+  }
+  return !urlObj.search;
+}
+
+function runShellNavigation(url, shouldPushState) {
+  var targetUrl = new URL(url, window.location.href);
+  if (!isShellNavigationTarget(targetUrl)) {
+    window.location.href = targetUrl.toString();
+    return;
+  }
+
+  var navToken = ++currentShellNavigationToken;
+  fetch(targetUrl.toString(), { credentials: "same-origin" }).then(function(res) {
+    if (!res.ok) {
+      throw new Error("页面加载失败");
+    }
+    return res.text();
+  }).then(function(html) {
+    if (navToken !== currentShellNavigationToken) {
+      return;
+    }
+    var parser = new DOMParser();
+    var nextDoc = parser.parseFromString(html, "text/html");
+    var nextMain = nextDoc.querySelector("main");
+    var currentMain = document.querySelector("main");
+    if (!nextMain || !currentMain) {
+      window.location.href = targetUrl.toString();
+      return;
+    }
+
+    currentMain.replaceWith(nextMain);
+    syncBodyClassFromDocument(nextDoc);
+    syncHeadFromDocument(nextDoc);
+    syncFooterFromDocument(nextDoc);
+    if (shouldPushState) {
+      history.pushState({ shellNav: true }, "", targetUrl.toString());
+    }
+    window.scrollTo(0, 0);
+    initPage();
+  }).catch(function() {
+    window.location.href = targetUrl.toString();
+  });
+}
+
+function setupShellNavigation() {
+  if (hasSetupShellNavigation) {
+    return;
+  }
+  document.addEventListener("click", function(e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+      return;
+    }
+    var link = e.target.closest("a[href]");
+    if (!link) {
+      return;
+    }
+    if (link.target && link.target !== "_self") {
+      return;
+    }
+    if (link.hasAttribute("download")) {
+      return;
+    }
+    var href = link.getAttribute("href") || "";
+    if (!href || href.charAt(0) === "#") {
+      return;
+    }
+    if (/^(mailto:|tel:|javascript:)/i.test(href)) {
+      return;
+    }
+
+    var targetUrl = new URL(href, window.location.href);
+    if (!isShellNavigationTarget(targetUrl)) {
+      return;
+    }
+
+    e.preventDefault();
+    runShellNavigation(targetUrl.toString(), true);
+  });
+
+  window.addEventListener("popstate", function() {
+    var targetUrl = new URL(window.location.href);
+    if (!isShellNavigationTarget(targetUrl)) {
+      window.location.reload();
+      return;
+    }
+    runShellNavigation(targetUrl.toString(), false);
+  });
+  hasSetupShellNavigation = true;
+}
+
+function initPage() {
+  var token = ++currentPageInitToken;
+  resetPostFilteringState();
+  syncPersistentHeaderState();
+  setupRevealAnimation();
+  highlightCurrentSection();
+
+  ensureSiteSettingsLoaded().then(function() {
+    if (token !== currentPageInitToken) {
+      return;
+    }
     applySiteSettings();
     applyHomeSettings();
     applyAboutSettings();
   }).finally(function() {
+    if (token !== currentPageInitToken) {
+      return;
+    }
     markHeaderSettingsReady();
     markAboutSettingsReady();
   });
 
-  setupRevealAnimation();
-  highlightCurrentSection();
-  setupHeaderScrollEffect();
-
   var postsGrid = document.getElementById("posts-grid");
   var projectsList = document.getElementById("projects-list");
   var projectsGrid = document.getElementById("projects-grid");
+  var articleContainer = document.getElementById("article-container");
+  var projectDetailContainer = document.getElementById("project-detail-container");
 
-  if (projectsList) {
-    // load via manifest below
+  if (articleContainer) {
+    loadArticlePage();
   }
-  if (projectsGrid) {
-    // load via manifest below
+  if (projectDetailContainer) {
+    loadProjectDetailPage();
   }
 
   if (postsGrid) {
     var isPostsListPage = !!document.getElementById("category-filters") && !!document.getElementById("tag-filters");
 
     loadPostsFromManifest().then(function() {
+      if (token !== currentPageInitToken) {
+        return;
+      }
       renderHeroStats();
       if (isPostsListPage) {
         setupPostFiltering();
       } else {
         renderHomeLatestPosts();
       }
-    }).catch(function(err) {
-      console.error('文章列表加载失败:', err.message);
+    }).catch(function() {
+      if (token !== currentPageInitToken) {
+        return;
+      }
       renderHeroStats();
       if (isPostsListPage) {
         if (noResultsRef) {
-          noResultsRef.style.display = 'block';
-          postsGrid.style.display = 'none';
+          noResultsRef.style.display = "block";
+          postsGrid.style.display = "none";
         }
       }
     });
@@ -1092,6 +2047,9 @@ function init() {
 
   if (projectsList || projectsGrid) {
     loadProjectsFromManifest().then(function() {
+      if (token !== currentPageInitToken) {
+        return;
+      }
       renderHeroStats();
       if (projectsList) {
         renderCollection("projects-list", projects, createProjectCard);
@@ -1099,11 +2057,20 @@ function init() {
       if (projectsGrid) {
         renderCollection("projects-grid", projects.slice(0, 3), createHomeProjectCard);
       }
-    }).catch(function(err) {
-      console.error("项目列表加载失败:", err.message);
+    }).catch(function() {
+      if (token !== currentPageInitToken) {
+        return;
+      }
       renderHeroStats();
     });
   }
+}
+
+function initSiteShell() {
+  setupPageScrollbarIndicator();
+  setupHeaderScrollEffect();
+  setupShellNavigation();
+  initPage();
 }
 
 function copyToClipboard(text, successMsg) {
@@ -1177,7 +2144,7 @@ function copyEmail() {
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init, { once: true });
+  document.addEventListener("DOMContentLoaded", initSiteShell, { once: true });
 } else {
-  init();
+  initSiteShell();
 }
