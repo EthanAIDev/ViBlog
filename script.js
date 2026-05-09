@@ -1789,10 +1789,6 @@ function renderProjectPage(detail, manifest, currentIndex) {
   header.innerHTML =
     '<div class="project-detail-title-block">' +
       '<h1 class="project-detail-title">' + detail.title + "</h1>" +
-      '<div class="project-detail-links">' +
-        '<a class="button button-primary" href="' + (links.github || "#") + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
-        '<a class="button button-secondary" href="' + (links.docs || "#") + '" target="_blank" rel="noopener noreferrer">文档</a>' +
-      "</div>" +
     "</div>";
 
   body.innerHTML =
