@@ -809,6 +809,11 @@ main {
   visibility: hidden;
 }
 
+.js.header-pending-settings .brand-mark,
+.js.header-pending-settings .brand-text {
+  visibility: hidden;
+}
+
 .copy-toast {
   position: fixed;
   bottom: 2rem;

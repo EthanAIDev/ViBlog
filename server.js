@@ -224,7 +224,9 @@ function readSiteSettings() {
       title: '',
       description: '',
       favicon: '',
-      ogImage: ''
+      ogImage: '',
+      headerBrandMark: '',
+      headerBrandName: ''
     },
     home: {
       brandName: '',
@@ -310,7 +312,9 @@ function readSiteSettings() {
         title: String(raw.site.title || defaults.site.title),
         description: String(raw.site.description || defaults.site.description),
         favicon: String(raw.site.favicon || defaults.site.favicon),
-        ogImage: String(raw.site.ogImage || defaults.site.ogImage)
+        ogImage: String(raw.site.ogImage || defaults.site.ogImage),
+        headerBrandMark: String(raw.site.headerBrandMark || defaults.site.headerBrandMark),
+        headerBrandName: String(raw.site.headerBrandName || defaults.site.headerBrandName)
       },
       home: {
         brandName: String(raw.home.brandName || defaults.home.brandName),
@@ -671,6 +675,8 @@ async function handleSaveSiteSettings(req, res) {
       settings.site.description = String(data.site.description || '');
       settings.site.favicon = String(data.site.favicon || '');
       settings.site.ogImage = String(data.site.ogImage || '');
+      settings.site.headerBrandMark = String(data.site.headerBrandMark || '');
+      settings.site.headerBrandName = String(data.site.headerBrandName || '');
     }
     if (data.home && typeof data.home === 'object') {
       settings.home.brandName = String(data.home.brandName || '');
@@ -816,7 +822,10 @@ function handleUploadSiteAsset(req, res) {
   var ext = path.extname(filename || '').toLowerCase();
   if (!ext) ext = '.png';
 
-  var validExts = { 'site-favicon': /^\.(png|jpg|jpeg|gif|webp|svg|bmp|ico)$/, 'home-brand-icon': /^\.(png|jpg|jpeg|gif|webp|svg)$/ };
+  var validExts = {
+    'site-favicon': /^\.(png|jpg|jpeg|gif|webp|svg|bmp|ico)$/,
+    'home-brand-icon': /^\.(png|jpg|jpeg|gif|webp|svg)$/
+  };
   var allowed = validExts[assetType];
   if (!allowed || !allowed.test(ext)) {
     res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });

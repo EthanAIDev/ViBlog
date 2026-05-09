@@ -43,6 +43,14 @@ function markAboutSettingsReady() {
   document.documentElement.classList.add("about-settings-ready");
 }
 
+function markHeaderSettingsReady() {
+  if (!document || !document.documentElement) return;
+  var brandRoot = document.querySelector(".brand");
+  if (!brandRoot) return;
+  document.documentElement.classList.remove("header-pending-settings");
+  document.documentElement.classList.add("header-settings-ready");
+}
+
 function formatMonthFromDate(dateString) {
   var d = new Date(dateString);
   if (Number.isNaN(d.getTime())) return "";
@@ -102,6 +110,8 @@ function applySiteSettings() {
   if (!siteSettings) return;
   var site = siteSettings.site || {};
   var home = siteSettings.home || {};
+  var headerBrandMark = "";
+  var headerBrandName = "";
 
   if (site.title) {
     document.title = site.title;
@@ -123,28 +133,28 @@ function applySiteSettings() {
     if (ogImage) ogImage.setAttribute('content', site.ogImage);
   }
 
+  if (typeof site.headerBrandMark === "string" && site.headerBrandMark.trim()) {
+    headerBrandMark = site.headerBrandMark.trim();
+  }
+  if (typeof site.headerBrandName === "string" && site.headerBrandName.trim()) {
+    headerBrandName = site.headerBrandName.trim();
+  } else if (typeof home.brandName === "string" && home.brandName.trim()) {
+    headerBrandName = home.brandName.trim();
+  }
+
   var brandLink = document.querySelector('.brand');
   if (brandLink) {
-    if (home.brandIcon) {
-      var existingIcon = brandLink.querySelector('.brand-icon-img');
-      if (existingIcon) {
-        existingIcon.src = home.brandIcon;
-      } else {
-        var iconImg = document.createElement('img');
-        iconImg.className = 'brand-icon-img';
-        iconImg.src = home.brandIcon;
-        iconImg.alt = '';
-        var mark = brandLink.querySelector('.brand-mark');
-        if (mark) {
-          brandLink.insertBefore(iconImg, mark);
-        } else {
-          brandLink.insertBefore(iconImg, brandLink.firstChild);
-        }
-      }
+    var existingIcon = brandLink.querySelector('.brand-icon-img');
+    if (existingIcon && existingIcon.style) {
+      existingIcon.style.display = "none";
     }
-    if (home.brandName) {
+    if (headerBrandMark) {
+      var brandMark = brandLink.querySelector('.brand-mark');
+      if (brandMark) brandMark.textContent = headerBrandMark;
+    }
+    if (headerBrandName) {
       var brandText = brandLink.querySelector('.brand-text');
-      if (brandText) brandText.textContent = home.brandName;
+      if (brandText) brandText.textContent = headerBrandName;
     }
   }
 }
@@ -1039,6 +1049,7 @@ function init() {
     applyHomeSettings();
     applyAboutSettings();
   }).finally(function() {
+    markHeaderSettingsReady();
     markAboutSettingsReady();
   });
 

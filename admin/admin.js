@@ -58,7 +58,6 @@ function init() {
 function initPageSettings() {
   setupPageSettingsTabs();
   setupSiteFaviconUpload();
-  setupHomeBrandIconUpload();
   setupAboutAvatarUpload();
   setupAboutAvatarPreviewBinding();
   setupNotesEvents();
@@ -179,26 +178,6 @@ function setupSiteFaviconUpload() {
   });
 }
 
-function setupHomeBrandIconUpload() {
-  var uploadBtn = document.getElementById('home-brand-icon-upload-btn');
-  var fileInput = document.getElementById('home-brand-icon-file-input');
-  if (!uploadBtn || !fileInput) return;
-
-  uploadBtn.addEventListener('click', function() {
-    fileInput.click();
-  });
-
-  fileInput.addEventListener('change', function(e) {
-    var file = (e.target.files || [])[0];
-    if (!file) return;
-    uploadSiteAsset(file, 'home-brand-icon', function(src) {
-      setInputValue('home-brand-icon', src);
-      showToast('Brand 图标上传成功，记得点击"保存页面设置"');
-    });
-    fileInput.value = '';
-  });
-}
-
 function uploadSiteAsset(file, assetType, onSuccess) {
   var reader = new FileReader();
 
@@ -272,11 +251,24 @@ function loadPageSettingsFromServer() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/api/site-settings?' + Date.now(), true);
   xhr.onload = function() {
-    if (xhr.status !== 200) return;
+    if (xhr.status !== 200) {
+      showToast('加载页面设置失败：HTTP ' + xhr.status, true);
+      return;
+    }
     var resp = {};
-    try { resp = JSON.parse(xhr.responseText || '{}'); } catch (e) { return; }
+    try { resp = JSON.parse(xhr.responseText || '{}'); } catch (e) {
+      showToast('加载页面设置失败：返回内容不是 JSON', true);
+      return;
+    }
+    if (!resp || resp.success !== true || !resp.settings || typeof resp.settings !== 'object') {
+      showToast('加载页面设置失败：接口响应格式无效', true);
+      return;
+    }
     var settings = resp.settings || {};
     fillPageSettingsForm(settings);
+  };
+  xhr.onerror = function() {
+    showToast('加载页面设置失败：网络错误', true);
   };
   xhr.send();
 }
@@ -292,9 +284,8 @@ function fillPageSettingsForm(settings) {
   setInputValue('site-description', site.description);
   setInputValue('site-favicon', site.favicon);
   setInputValue('site-og-image', site.ogImage);
-
-  setInputValue('home-brand-icon', home.brandIcon);
-  setInputValue('home-brand-name', home.brandName);
+  setInputValue('site-header-brand-mark', site.headerBrandMark || 'E.');
+  setInputValue('site-header-brand-name', site.headerBrandName || home.brandName || '');
   setInputValue('home-hero-eyebrow', home.heroEyebrow);
   setInputValue('home-hero-title', home.heroTitle);
   setInputValue('home-hero-text', home.heroText);
@@ -633,11 +624,11 @@ function collectPageSettingsForm() {
       title: getInputValue('site-title'),
       description: getInputValue('site-description'),
       favicon: getInputValue('site-favicon'),
-      ogImage: getInputValue('site-og-image')
+      ogImage: getInputValue('site-og-image'),
+      headerBrandMark: getInputValue('site-header-brand-mark'),
+      headerBrandName: getInputValue('site-header-brand-name')
     },
     home: {
-      brandName: getInputValue('home-brand-name'),
-      brandIcon: getInputValue('home-brand-icon'),
       heroEyebrow: getInputValue('home-hero-eyebrow'),
       heroTitle: getInputValue('home-hero-title'),
       heroText: getInputValue('home-hero-text'),
@@ -905,11 +896,22 @@ function setupSavePageSettings() {
       } else if (debugEl) {
         debugEl.textContent = '保存失败! 状态: ' + xhr.status + ' 响应: ' + xhr.responseText.substring(0, 200);
       }
-      if (xhr.status === 200) {
-        showToast('页面设置已保存');
-      } else {
+      if (xhr.status !== 200) {
         showToast('页面设置保存失败', true);
+        return;
       }
+      var resp = null;
+      try {
+        resp = JSON.parse(xhr.responseText || '{}');
+      } catch (e) {
+        showToast('页面设置保存失败：返回内容不是 JSON', true);
+        return;
+      }
+      if (!resp || resp.success !== true) {
+        showToast('页面设置保存失败：接口响应无效', true);
+        return;
+      }
+      showToast('页面设置已保存');
     };
     xhr.onerror = function() {
       showToast('无法连接服务器', true);
