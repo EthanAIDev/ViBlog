@@ -35,6 +35,14 @@ function requestSiteSettings(url) {
   });
 }
 
+function markAboutSettingsReady() {
+  if (!document || !document.documentElement) return;
+  var aboutRoot = document.getElementById("about");
+  if (!aboutRoot) return;
+  document.documentElement.classList.remove("about-pending-settings");
+  document.documentElement.classList.add("about-settings-ready");
+}
+
 function formatMonthFromDate(dateString) {
   var d = new Date(dateString);
   if (Number.isNaN(d.getTime())) return "";
@@ -1030,6 +1038,8 @@ function init() {
     applySiteSettings();
     applyHomeSettings();
     applyAboutSettings();
+  }).finally(function() {
+    markAboutSettingsReady();
   });
 
   setupRevealAnimation();

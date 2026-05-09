@@ -804,6 +804,11 @@ main {
   object-fit: contain;
 }
 
+.js.about-pending-settings .about-avatar-wrap,
+.js.about-pending-settings .about-profile-links {
+  visibility: hidden;
+}
+
 .copy-toast {
   position: fixed;
   bottom: 2rem;
