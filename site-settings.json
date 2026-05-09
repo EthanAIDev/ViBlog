@@ -125,7 +125,7 @@
       },
       {
         "id": "wechat",
-        "enabled": true
+        "enabled": false
       },
       {
         "id": "email",

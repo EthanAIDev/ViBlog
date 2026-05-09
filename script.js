@@ -3,6 +3,38 @@ var projects = [];
 var BLOG_START_DATE = "2025-06-18";
 var siteSettings = null;
 
+function parseSiteSettingsPayload(text) {
+  if (typeof text !== "string" || !text.trim()) return null;
+  try {
+    var parsed = JSON.parse(text);
+    if (parsed && typeof parsed === "object") {
+      if (parsed.settings && typeof parsed.settings === "object") return parsed.settings;
+      if (parsed.site || parsed.home || parsed.about) return parsed;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+function requestSiteSettings(url) {
+  return new Promise(function(resolve) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url + (url.indexOf("?") >= 0 ? "&" : "?") + Date.now(), true);
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(parseSiteSettingsPayload(xhr.responseText || ""));
+      } else {
+        resolve(null);
+      }
+    };
+    xhr.onerror = function() {
+      resolve(null);
+    };
+    xhr.send();
+  });
+}
+
 function formatMonthFromDate(dateString) {
   var d = new Date(dateString);
   if (Number.isNaN(d.getTime())) return "";
@@ -46,27 +78,15 @@ function renderHeroStats() {
 }
 
 function loadSiteSettings() {
-  return new Promise(function(resolve) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/site-settings?" + Date.now(), true);
-    xhr.onload = function() {
-      if (xhr.status === 200) {
-        try {
-          var resp = JSON.parse(xhr.responseText || "{}");
-          siteSettings = resp.settings || null;
-        } catch (e) {
-          siteSettings = null;
-        }
-      } else {
-        siteSettings = null;
-      }
-      resolve(siteSettings);
-    };
-    xhr.onerror = function() {
-      siteSettings = null;
-      resolve(siteSettings);
-    };
-    xhr.send();
+  return requestSiteSettings("/api/site-settings").then(function(settings) {
+    if (settings) {
+      siteSettings = settings;
+      return siteSettings;
+    }
+    return requestSiteSettings("./site-settings.json").then(function(fileSettings) {
+      siteSettings = fileSettings;
+      return siteSettings;
+    });
   });
 }
 
@@ -386,7 +406,6 @@ function applyAboutTimeline(timeline) {
 }
 
 function applySocialButtons(socialButtons) {
-  console.log('[script] applySocialButtons called with:', JSON.stringify(socialButtons));
   var defaults = [
     { id: 'bilibili', enabled: true },
     { id: 'github', enabled: true },
@@ -1113,12 +1132,12 @@ function showToast(message) {
 }
 
 function copyQQ() {
-  var qqNumber = siteSettings.about.links.qq || "208600679";
+  var qqNumber = (siteSettings && siteSettings.about && siteSettings.about.links && siteSettings.about.links.qq) || "208600679";
   copyToClipboard(qqNumber, "QQ号已复制到剪贴板");
 }
 
 function copyWechat() {
-  var wechatId = siteSettings.about.links.wechat || "";
+  var wechatId = (siteSettings && siteSettings.about && siteSettings.about.links && siteSettings.about.links.wechat) || "";
   if (wechatId && wechatId !== "#") {
     copyToClipboard(wechatId, "微信号已复制到剪贴板");
   } else {
