@@ -2215,21 +2215,21 @@ main {
   background: var(--scrollbar-track);
 }
 
-.article-outline:hover .outline-nav,
-.article-outline:focus-within .outline-nav,
-.article-outline.is-scrolling-outline .outline-nav {
+.article-outline.has-overflow:hover .outline-nav,
+.article-outline.has-overflow:focus-within .outline-nav,
+.article-outline.has-overflow.is-scrolling-outline .outline-nav {
   scrollbar-width: thin;
 }
 
-.article-outline:hover .outline-nav::-webkit-scrollbar,
-.article-outline:focus-within .outline-nav::-webkit-scrollbar,
-.article-outline.is-scrolling-outline .outline-nav::-webkit-scrollbar {
+.article-outline.has-overflow:hover .outline-nav::-webkit-scrollbar,
+.article-outline.has-overflow:focus-within .outline-nav::-webkit-scrollbar,
+.article-outline.has-overflow.is-scrolling-outline .outline-nav::-webkit-scrollbar {
   width: var(--scrollbar-size);
 }
 
-.article-outline:hover .outline-nav::-webkit-scrollbar-thumb,
-.article-outline:focus-within .outline-nav::-webkit-scrollbar-thumb,
-.article-outline.is-scrolling-outline .outline-nav::-webkit-scrollbar-thumb {
+.article-outline.has-overflow:hover .outline-nav::-webkit-scrollbar-thumb,
+.article-outline.has-overflow:focus-within .outline-nav::-webkit-scrollbar-thumb,
+.article-outline.has-overflow.is-scrolling-outline .outline-nav::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb-hover);
 }
 
@@ -2241,15 +2241,17 @@ main {
   width: 100%;
   min-width: 0;
   min-height: 1.8rem;
-  padding: 0.15rem 0;
-  border: none;
-  border-radius: 0;
+  padding: 0.18rem 0.32rem;
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
   background: transparent;
   color: var(--muted);
   font-size: 0.88rem;
   text-decoration: none;
   transition:
     color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
     opacity 180ms ease;
 }
 
@@ -2271,12 +2273,21 @@ main {
 
 .outline-link:hover {
   color: var(--text);
-  opacity: 0.9;
+  opacity: 1;
+  background: rgba(23, 21, 18, 0.06);
+  border-color: rgba(23, 21, 18, 0.1);
 }
 
 .outline-link.active {
   color: var(--accent);
   font-weight: 600;
+  background: var(--accent-soft);
+  border-color: rgba(173, 93, 54, 0.35);
+}
+
+.outline-link.active:hover {
+  background: rgba(173, 93, 54, 0.16);
+  border-color: rgba(173, 93, 54, 0.5);
 }
 
 .outline-link.h1 {
@@ -2288,7 +2299,7 @@ main {
 }
 
 .outline-link.h2 {
-  padding-left: 0.75rem;
+  padding-left: 1rem;
 }
 
 .outline-link.h2::before {
@@ -2296,7 +2307,7 @@ main {
 }
 
 .outline-link.h3 {
-  padding-left: 1.5rem;
+  padding-left: 1.68rem;
   font-size: 0.88rem;
 }
 
@@ -2305,7 +2316,7 @@ main {
 }
 
 .outline-link.h4 {
-  padding-left: 2.25rem;
+  padding-left: 2.35rem;
   font-size: 0.85rem;
 }
 

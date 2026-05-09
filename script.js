@@ -1111,6 +1111,10 @@ var articleOutlineActiveId = "";
 var pageScrollHideTimer = null;
 var hasBoundPageScrollIndicator = false;
 var outlineScrollHideTimer = null;
+var currentOutlineContainer = null;
+var currentOutlineNav = null;
+var hasBoundOutlineOverflowResize = false;
+var outlineOverflowRafId = null;
 
 var ARTICLE_DEPENDENCIES = {
   katexCss: "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css",
@@ -1451,11 +1455,37 @@ function setupPageScrollbarIndicator() {
   hasBoundPageScrollIndicator = true;
 }
 
+function refreshOutlineOverflowState() {
+  if (!currentOutlineContainer || !currentOutlineNav) return;
+  var hasOverflow = (currentOutlineNav.scrollHeight - currentOutlineNav.clientHeight) > 1;
+  currentOutlineContainer.classList.toggle("has-overflow", hasOverflow);
+  if (!hasOverflow) {
+    currentOutlineContainer.classList.remove("is-scrolling-outline");
+  }
+}
+
+function scheduleOutlineOverflowStateRefresh() {
+  if (outlineOverflowRafId) {
+    cancelAnimationFrame(outlineOverflowRafId);
+  }
+  outlineOverflowRafId = requestAnimationFrame(function() {
+    outlineOverflowRafId = null;
+    refreshOutlineOverflowState();
+  });
+}
+
+function setupOutlineOverflowResizeHandler() {
+  if (hasBoundOutlineOverflowResize) return;
+  window.addEventListener("resize", scheduleOutlineOverflowStateRefresh, { passive: true });
+  hasBoundOutlineOverflowResize = true;
+}
+
 function bindOutlineScrollbarIndicator(outlineContainer, outlineNav) {
   if (!outlineContainer || !outlineNav) return;
   if (outlineNav.dataset.scrollIndicatorBound === "1") return;
 
   function markOutlineScrollbarActive() {
+    if (!outlineContainer.classList.contains("has-overflow")) return;
     outlineContainer.classList.add("is-scrolling-outline");
     if (outlineScrollHideTimer) {
       clearTimeout(outlineScrollHideTimer);
@@ -1515,7 +1545,12 @@ function generateArticleOutline() {
 
   outlineNav.appendChild(fragment);
   articleOutlineActiveId = "";
+  currentOutlineContainer = outlineContainer;
+  currentOutlineNav = outlineNav;
   bindOutlineScrollbarIndicator(outlineContainer, outlineNav);
+  setupOutlineOverflowResizeHandler();
+  scheduleOutlineOverflowStateRefresh();
+  setTimeout(scheduleOutlineOverflowStateRefresh, 120);
 
   function ensureActiveOutlineLinkVisible(activeLink) {
     if (!activeLink || !outlineNav) return;
