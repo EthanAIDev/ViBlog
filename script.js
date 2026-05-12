@@ -643,10 +643,12 @@ function createProjectCard(project, index) {
   var projectHref = project.href || "#";
   var projectCover = project.cover || "";
 
-  card.innerHTML = '<div class="project-main"><h3><a href="' + projectHref + '">' + projectTitle + '</a></h3><p>' + projectSummary + '</p></div>';
+  card.innerHTML =
+    '<h3 class="project-card-title"><a href="' + projectHref + '">' + projectTitle + "</a></h3>" +
+    '<p class="project-card-summary">' + projectSummary + "</p>";
   if (projectCover) {
     var thumb = document.createElement("div");
-    thumb.className = "card-thumb";
+    thumb.className = "card-thumb project-card-thumb";
     var thumbLink = document.createElement("a");
     thumbLink.href = projectHref;
     var thumbImg = document.createElement("img");
@@ -1173,6 +1175,13 @@ function ensureArticleDependenciesLoaded() {
   ]);
 }
 
+function ensureMarkedLoaded() {
+  if (typeof marked !== "undefined") {
+    return Promise.resolve();
+  }
+  return loadExternalScriptOnce(ARTICLE_DEPENDENCIES.markedJs);
+}
+
 function ensureArticleLightboxElement() {
   var lightbox = document.getElementById("img-lightbox");
   if (lightbox) {
@@ -1252,12 +1261,16 @@ function renderArticleNavigation(prevArticle, nextArticle) {
 }
 
 function setupImageLightbox() {
+  bindLightboxForImages("#article-body");
+}
+
+function bindLightboxForImages(containerSelector) {
   var lightbox = ensureArticleLightboxElement();
   var lightboxImg = lightbox.querySelector("img");
   var closeBtn = lightbox.querySelector(".img-lightbox-close");
-  var articleBody = document.getElementById("article-body");
+  var container = document.querySelector(containerSelector);
 
-  if (!articleBody || !lightboxImg || !closeBtn) return;
+  if (!container || !lightboxImg || !closeBtn) return;
 
   function open(src) {
     lightboxImg.src = src;
@@ -1270,7 +1283,7 @@ function setupImageLightbox() {
     document.body.style.overflow = "";
   }
 
-  articleBody.querySelectorAll("img").forEach(function(img) {
+  container.querySelectorAll("img").forEach(function(img) {
     img.addEventListener("click", function() {
       open(img.src);
     });
@@ -1728,13 +1741,29 @@ function showProjectError(message) {
   body.innerHTML = "";
 }
 
-function listToHtml(items) {
-  if (!Array.isArray(items) || items.length === 0) {
-    return "";
+function markdownFallbackToHtml(text) {
+  var escaped = escapeHtml(String(text || ""));
+  var blocks = escaped.split(/\r?\n\r?\n/).map(function(item) { return item.trim(); }).filter(Boolean);
+  if (blocks.length === 0) return "";
+  return blocks.map(function(block) {
+    if (/^[-*]\s+/m.test(block)) {
+      var lines = block.split(/\r?\n/).filter(Boolean);
+      return "<ul>" + lines.map(function(line) {
+        return "<li>" + line.replace(/^[-*]\s+/, "") + "</li>";
+      }).join("") + "</ul>";
+    }
+    return "<p>" + block.replace(/\r?\n/g, "<br>") + "</p>";
+  }).join("");
+}
+
+function projectMarkdownToHtml(mdText) {
+  var text = String(mdText || "").trim();
+  if (!text) return "";
+  if (typeof marked !== "undefined") {
+    marked.setOptions({ breaks: true });
+    return marked.parse(text);
   }
-  return "<ul>" + items.map(function(item) {
-    return "<li>" + item + "</li>";
-  }).join("") + "</ul>";
+  return markdownFallbackToHtml(text);
 }
 
 function galleryToHtml(items, projectId) {
@@ -1785,6 +1814,11 @@ function renderProjectPage(detail, manifest, currentIndex) {
   var body = document.getElementById("project-detail-body");
   if (!header || !body) return;
   var links = detail.links || {};
+  var githubLink = String(links.github || "").trim();
+  var docsLink = String(links.docs || "").trim();
+  var overviewMd = detail.overviewMd || detail.summary || "";
+  var techStackMd = detail.techStackMd || (Array.isArray(detail.techStack) ? detail.techStack.map(function(item) { return "- " + item; }).join("\n") : "");
+  var implementationMd = detail.implementationMd || (Array.isArray(detail.implementation) ? detail.implementation.map(function(item) { return "- " + item; }).join("\n") : "");
 
   header.innerHTML =
     '<div class="project-detail-title-block">' +
@@ -1794,21 +1828,21 @@ function renderProjectPage(detail, manifest, currentIndex) {
   body.innerHTML =
     '<section class="project-detail-section">' +
       "<h2>项目概述</h2>" +
-      "<p>" + (detail.summary || "") + "</p>" +
+      '<div class="article-body project-markdown-body">' + projectMarkdownToHtml(overviewMd) + "</div>" +
     "</section>" +
     '<section class="project-detail-section">' +
       "<h2>技术栈</h2>" +
-      listToHtml(detail.techStack) +
+      '<div class="article-body project-markdown-body">' + projectMarkdownToHtml(techStackMd) + "</div>" +
     "</section>" +
     '<section class="project-detail-section">' +
       "<h2>实现方案</h2>" +
-      listToHtml(detail.implementation) +
+      '<div class="article-body project-markdown-body">' + projectMarkdownToHtml(implementationMd) + "</div>" +
     "</section>" +
     '<section class="project-detail-section">' +
       "<h2>链接</h2>" +
       '<div class="project-detail-links">' +
-        '<a class="button button-primary" href="' + (links.github || "#") + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
-        '<a class="button button-secondary" href="' + (links.docs || "#") + '" target="_blank" rel="noopener noreferrer">文档</a>' +
+        (githubLink ? ('<a class="button button-primary" href="' + githubLink + '" target="_blank" rel="noopener noreferrer">GitHub</a>') : "") +
+        (docsLink ? ('<a class="button button-secondary" href="' + docsLink + '" target="_blank" rel="noopener noreferrer">文档</a>') : "") +
       "</div>" +
     "</section>" +
     '<section class="project-detail-section">' +
@@ -1816,6 +1850,7 @@ function renderProjectPage(detail, manifest, currentIndex) {
       galleryToHtml(detail.gallery, detail.id) +
     "</section>";
 
+  bindLightboxForImages("#project-detail-body .project-gallery-grid");
   renderProjectNavigation(manifest, currentIndex);
 }
 
@@ -1829,7 +1864,9 @@ function loadProjectDetailPage() {
     return;
   }
 
-  loadJson("./projects/manifest.json").then(function(manifest) {
+  ensureMarkedLoaded().then(function() {
+    return loadJson("./projects/manifest.json");
+  }).then(function(manifest) {
     var currentIndex = manifest.findIndex(function(item) {
       return item.id === projectId;
     });

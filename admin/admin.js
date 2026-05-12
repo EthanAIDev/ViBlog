@@ -1116,9 +1116,9 @@ function openProjectModal(projectId) {
   var title = document.getElementById('project-modal-title');
   var idInput = document.getElementById('project-id');
   var titleInput = document.getElementById('project-title');
-  var summaryInput = document.getElementById('project-summary');
-  var techInput = document.getElementById('project-tech-stack');
-  var implInput = document.getElementById('project-implementation');
+  var overviewMdInput = document.getElementById('project-overview-md');
+  var techMdInput = document.getElementById('project-tech-stack-md');
+  var implMdInput = document.getElementById('project-implementation-md');
   var githubInput = document.getElementById('project-link-github');
   var docsInput = document.getElementById('project-link-docs');
   var mdInput = document.getElementById('project-md-input');
@@ -1137,9 +1137,9 @@ function openProjectModal(projectId) {
       var project = resp.project || {};
       if (idInput) { idInput.value = project.id || ''; idInput.disabled = true; }
       if (titleInput) titleInput.value = project.title || '';
-      if (summaryInput) summaryInput.value = project.summary || '';
-      if (techInput) techInput.value = Array.isArray(project.techStack) ? project.techStack.join(', ') : '';
-      if (implInput) implInput.value = Array.isArray(project.implementation) ? project.implementation.join('\n') : '';
+      if (overviewMdInput) overviewMdInput.value = project.overviewMd || project.summary || '';
+      if (techMdInput) techMdInput.value = project.techStackMd || (Array.isArray(project.techStack) ? project.techStack.map(function(item) { return '- ' + item; }).join('\n') : '');
+      if (implMdInput) implMdInput.value = project.implementationMd || (Array.isArray(project.implementation) ? project.implementation.map(function(item) { return '- ' + item; }).join('\n') : '');
       if (githubInput) githubInput.value = project.links && project.links.github ? project.links.github : '';
       if (docsInput) docsInput.value = project.links && project.links.docs ? project.links.docs : '';
       projectGalleryItems = Array.isArray(project.gallery) ? project.gallery.slice() : [];
@@ -1151,9 +1151,9 @@ function openProjectModal(projectId) {
   } else {
     if (idInput) { idInput.value = ''; idInput.disabled = false; }
     if (titleInput) titleInput.value = '';
-    if (summaryInput) summaryInput.value = '';
-    if (techInput) techInput.value = '';
-    if (implInput) implInput.value = '';
+    if (overviewMdInput) overviewMdInput.value = '';
+    if (techMdInput) techMdInput.value = '';
+    if (implMdInput) implMdInput.value = '';
     if (githubInput) githubInput.value = '';
     if (docsInput) docsInput.value = '';
     if (mdInput) mdInput.value = '';
@@ -1229,60 +1229,73 @@ function importProjectMarkdown() {
 
   var parsed = parseProjectMarkdown(text);
   if (document.getElementById('project-title')) document.getElementById('project-title').value = parsed.title;
-  if (document.getElementById('project-summary')) document.getElementById('project-summary').value = parsed.summary;
-  if (document.getElementById('project-tech-stack')) document.getElementById('project-tech-stack').value = parsed.techStack.join(', ');
-  if (document.getElementById('project-implementation')) document.getElementById('project-implementation').value = parsed.implementation.join('\n');
+  if (document.getElementById('project-overview-md')) document.getElementById('project-overview-md').value = parsed.overviewMd;
+  if (document.getElementById('project-tech-stack-md')) document.getElementById('project-tech-stack-md').value = parsed.techStackMd;
+  if (document.getElementById('project-implementation-md')) document.getElementById('project-implementation-md').value = parsed.implementationMd;
 }
 
 function parseProjectMarkdown(mdText) {
   var lines = String(mdText || '').split(/\r?\n/);
   var title = '';
-  var summary = '';
-  var techStack = [];
-  var implementation = [];
+  var overviewLines = [];
+  var techStackLines = [];
+  var implementationLines = [];
   var section = '';
-  var summaryCaptured = false;
+  var firstSectionSeen = false;
 
   lines.forEach(function(rawLine) {
-    var line = String(rawLine || '').trim();
-    if (!line) return;
+    var line = String(rawLine || '');
+    var trimmed = line.trim();
+    if (!trimmed) {
+      if (section === 'overview') overviewLines.push('');
+      if (section === 'techStack') techStackLines.push('');
+      if (section === 'implementation') implementationLines.push('');
+      return;
+    }
     if (!title) {
-      var h1 = line.match(/^#\s+(.+)$/);
+      var h1 = trimmed.match(/^#\s+(.+)$/);
       if (h1) {
         title = h1[1].trim();
         return;
       }
     }
-    var h2 = line.match(/^##\s+(.+)$/);
+    var h2 = trimmed.match(/^##\s+(.+)$/);
     if (h2) {
-      section = h2[1].trim();
+      firstSectionSeen = true;
+      var sectionTitle = h2[1].trim();
+      if (/技术栈/.test(sectionTitle)) section = 'techStack';
+      else if (/实现方案/.test(sectionTitle) || /方案/.test(sectionTitle)) section = 'implementation';
+      else if (/项目概述/.test(sectionTitle) || /概述/.test(sectionTitle)) section = 'overview';
+      else section = '';
       return;
     }
-    if (!summaryCaptured && !section && !line.startsWith('-')) {
-      summary = summary ? summary + ' ' + line : line;
-      summaryCaptured = true;
+
+    if (!firstSectionSeen && !section) {
+      overviewLines.push(line);
       return;
     }
-    var bullet = line.match(/^[-*]\s+(.+)$/);
-    if (bullet) {
-      if (/技术栈/.test(section)) techStack.push(bullet[1].trim());
-      else if (/实现方案/.test(section) || /方案/.test(section)) implementation.push(bullet[1].trim());
-      return;
-    }
-    if (/实现方案/.test(section)) {
-      implementation.push(line);
-      return;
-    }
-    if (/技术栈/.test(section)) {
-      techStack.push(line);
-    }
+
+    if (section === 'overview') overviewLines.push(line);
+    if (section === 'techStack') techStackLines.push(line);
+    if (section === 'implementation') implementationLines.push(line);
   });
+
+  function trimMarkdownBlock(text) {
+    return String(text || '').replace(/^\s+|\s+$/g, '');
+  }
+
+  var overviewMd = trimMarkdownBlock(overviewLines.join('\n'));
+  var techStackMd = trimMarkdownBlock(techStackLines.join('\n'));
+  var implementationMd = trimMarkdownBlock(implementationLines.join('\n'));
+
+  if (!techStackMd) techStackMd = '- ';
+  if (!implementationMd) implementationMd = '- ';
 
   return {
     title: title,
-    summary: summary,
-    techStack: techStack.filter(Boolean),
-    implementation: implementation.filter(Boolean)
+    overviewMd: overviewMd,
+    techStackMd: techStackMd,
+    implementationMd: implementationMd
   };
 }
 
@@ -1338,13 +1351,13 @@ function uploadProjectImages(files) {
 function saveProject() {
   var projectId = String(document.getElementById('project-id').value || '').trim();
   var title = String(document.getElementById('project-title').value || '').trim();
-  var summary = String(document.getElementById('project-summary').value || '').trim();
-  var techStack = String(document.getElementById('project-tech-stack').value || '').split(',').map(function(item) { return item.trim(); }).filter(Boolean);
-  var implementation = String(document.getElementById('project-implementation').value || '').split(/\r?\n/).map(function(item) { return item.trim(); }).filter(Boolean);
+  var overviewMd = String(document.getElementById('project-overview-md').value || '').trim();
+  var techStackMd = String(document.getElementById('project-tech-stack-md').value || '').trim();
+  var implementationMd = String(document.getElementById('project-implementation-md').value || '').trim();
   var github = String(document.getElementById('project-link-github').value || '').trim();
   var docs = String(document.getElementById('project-link-docs').value || '').trim();
 
-  if (!projectId || !title || !summary || techStack.length === 0 || implementation.length === 0) {
+  if (!projectId || !title || !overviewMd || !techStackMd || !implementationMd) {
     showToast('请补全项目必填项', true);
     return;
   }
@@ -1353,9 +1366,9 @@ function saveProject() {
     project: {
       id: projectId,
       title: title,
-      summary: summary,
-      techStack: techStack,
-      implementation: implementation,
+      overviewMd: overviewMd,
+      techStackMd: techStackMd,
+      implementationMd: implementationMd,
       links: { github: github, docs: docs },
       gallery: projectGalleryItems
     }

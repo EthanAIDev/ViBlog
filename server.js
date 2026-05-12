@@ -414,17 +414,53 @@ function loadProjectDetail(projectId) {
   return readJsonFile(path.join(PROJECTS_DIR, projectId, 'detail.json'), null);
 }
 
+function markdownToPlainText(md) {
+  return String(md || '')
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, ' ')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^>\s?/gm, '')
+    .replace(/[*_~]/g, '')
+    .replace(/\r?\n+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function normalizeProjectDetail(detail, fallbackId) {
   detail = detail && typeof detail === 'object' ? detail : {};
   var links = detail.links && typeof detail.links === 'object' ? detail.links : {};
   var gallery = Array.isArray(detail.gallery) ? detail.gallery : [];
+  var summary = String(detail.summary || '').trim();
+  var overviewMd = String(detail.overviewMd || '').trim();
+  var techStackMd = String(detail.techStackMd || '').trim();
+  var implementationMd = String(detail.implementationMd || '').trim();
+  var normalizedTechStack = Array.isArray(detail.techStack) ? detail.techStack.map(function(item) { return String(item || '').trim(); }).filter(Boolean) : [];
+  var normalizedImplementation = Array.isArray(detail.implementation) ? detail.implementation.map(function(item) { return String(item || '').trim(); }).filter(Boolean) : [];
+
+  if (!overviewMd && summary) {
+    overviewMd = summary;
+  }
+  if (!techStackMd && normalizedTechStack.length > 0) {
+    techStackMd = normalizedTechStack.map(function(item) { return '- ' + item; }).join('\n');
+  }
+  if (!implementationMd && normalizedImplementation.length > 0) {
+    implementationMd = normalizedImplementation.map(function(item) { return '- ' + item; }).join('\n');
+  }
+  if (!summary) {
+    summary = markdownToPlainText(overviewMd);
+  }
 
   return {
     id: String(detail.id || fallbackId || '').trim(),
     title: String(detail.title || '').trim(),
-    summary: String(detail.summary || '').trim(),
-    techStack: Array.isArray(detail.techStack) ? detail.techStack.map(function(item) { return String(item || '').trim(); }).filter(Boolean) : [],
-    implementation: Array.isArray(detail.implementation) ? detail.implementation.map(function(item) { return String(item || '').trim(); }).filter(Boolean) : [],
+    summary: summary,
+    overviewMd: overviewMd,
+    techStackMd: techStackMd,
+    implementationMd: implementationMd,
+    techStack: normalizedTechStack,
+    implementation: normalizedImplementation,
     links: {
       github: String(links.github || '').trim(),
       docs: String(links.docs || '').trim()
@@ -992,7 +1028,7 @@ function serveStatic(req, res, filePath) {
 
 var server = http.createServer(function(req, res) {
   var parsedUrl = url.parse(req.url, true);
-  var pathname = parsedUrl.pathname;
+  var pathname = decodeURIComponent(parsedUrl.pathname);
   var method = req.method.toUpperCase();
 
   res.setHeader('Access-Control-Allow-Origin', '*');

@@ -1,27 +1,36 @@
 {
   "id": "p001",
-  "title": "AI 知识库问答原型",
-  "summary": "面向技术内容团队的问答原型，重点解决“找得到、答得准、可追溯”三个核心问题。",
-  "techStack": ["RAG", "FastAPI", "向量检索"],
-  "implementation": [
-    "从文档切分、向量化、检索到答案生成，搭建完整链路。",
-    "引入多路召回与重排序，提升复杂问题的命中质量。",
-    "输出引用片段和来源，增强答案的可验证性。"
-  ],
+  "title": "企业经营分析 AI Agent 平台",
+  "summary": "Agentic BI Copilot 是一个面向管理层和运营团队的企业经营分析 AI Agent 原型。项目围绕电商经营分析场景构建，支持用户用自然语言提出问题，例如“为什么最近利润下降？”“哪个渠道 ROI 最高？”“最近有哪些异常指标？”。系统会自动完成意图识别、分析计划生成、SQL/RAG 混合分析、图表生成、下钻分析和 Trace 追踪，帮助使用者从经营驾驶舱快速进入可解释的分析闭环。 项目重点不是单次 Text-to-SQL，而是完整的 Agentic BI 工作流：系统先把经营问题拆解为多个分析任务，再通过 SQL Tool 查询结构化数据，结合指标口径知识库生成洞察，并通过 SSE 将每一步执行过程实时展示在前端。当前实现适合本地演示、面试作品集和经营分析 Agent 架构讲解",
+  "overviewMd": "Agentic BI Copilot 是一个面向管理层和运营团队的企业经营分析 AI Agent 原型。项目围绕电商经营分析场景构建，支持用户用自然语言提出问题，例如“为什么最近利润下降？”“哪个渠道 ROI 最高？”“最近有哪些异常指标？”。系统会自动完成意图识别、分析计划生成、SQL/RAG 混合分析、图表生成、下钻分析和 Trace 追踪，帮助使用者从经营驾驶舱快速进入可解释的分析闭环。\n\n项目重点不是单次 Text-to-SQL，而是完整的 Agentic BI 工作流：系统先把经营问题拆解为多个分析任务，再通过 SQL Tool 查询结构化数据，结合指标口径知识库生成洞察，并通过 SSE 将每一步执行过程实时展示在前端。当前实现适合本地演示、面试作品集和经营分析 Agent 架构讲解",
+  "techStackMd": "| 类别 | 技术 | 项目中的作用 |\n|---|---|---|\n| 前端框架 | Next.js 15、React 19、TypeScript | 构建经营驾驶舱、ChatBI 工作台、图表面板和 Trace 展示 |\n| 图表展示 | ECharts | 展示利润趋势、区域/渠道对比、退款分析等经营图表 |\n| 后端框架 | FastAPI、Pydantic | 提供分析 API、SSE 流式接口、下钻接口和类型化响应 |\n| 数据处理 | pandas、numpy、SQLAlchemy | 支持本地 CSV、SQLite 和可配置数据库的数据查询与分析 |\n| 模型接入 | OpenAI-compatible SDK、Qwen3 配置 | 支持意图规划、SQL 生成和洞察增强，可在模型不可用时回退到启发式规则 |\n| Agent 编排 | 自研 WorkflowService | 负责意图识别、任务队列、SQL Tool 调用、动态追加任务和最终响应拼装 |\n| 安全治理 | SQL 只读校验、QueryGateway | 限制 `SELECT/WITH`，拦截 DDL/DML、多语句、系统表和非白名单表访问 |\n| 知识层 | JSON 知识库、语义层 YAML | 管理指标口径、业务术语、字段说明、分析范式和任务映射 |\n| 可观测性 | SSE Trace、Run Record、Prompt Record | 实时展示 workflow 节点、工具调用、SQL 执行、模型调用和最终结果 |\n| 工程化 | PowerShell 启停脚本、unittest、浏览器截图脚本 | 支持本地一键启动、后端测试和演示截图采集 |",
+  "implementationMd": "### 1. 总体架构\n\n```text\n用户\n  -> Next.js 前端工作台\n  -> FastAPI API / SSE\n  -> WorkflowService\n     -> Intent Planner\n     -> RAG Knowledge Service\n     -> SQL Task Layer\n     -> SQL Generator\n     -> Query Gateway\n     -> Query Executor\n     -> Result Analyzer\n     -> Chart Planner\n     -> Trace / Run Record\n  -> CSV / SQLite / 可配置数据库\n```\n\n前端提供两个核心入口：经营驾驶舱和 ChatBI 工作台。驾驶舱用于管理层快速查看目标进度、核心 KPI、年度趋势和经营预警；ChatBI 工作台用于承接自然语言追问，展示对话、图表、结论和 Agent Trace。\n\n后端以 FastAPI 作为统一入口，核心分析逻辑集中在 `WorkflowService`。每次请求进入后，系统会先解析多轮上下文和意图，再生成分析计划与 SQL 任务队列，随后循环执行任务、校验 SQL、查询数据、生成洞察、追加任务并记录 Trace。\n\n### 2. 核心业务流程\n\n```text\n用户提问\n  -> 会话上下文补全\n  -> 意图识别：intent / metric / dimension / time_range\n  -> Planner 生成分析计划\n  -> 构建 SQL 任务队列\n  -> 循环执行任务\n     -> 检查预算和终止条件\n     -> 生成 SQL\n     -> SQL 只读安全校验\n     -> 执行 SQL\n     -> 生成阶段性洞察和图表\n     -> 判断是否追加分析任务\n  -> 输出最终洞察、图表、SQL 调用、Trace、建议追问\n```\n\n以“为什么最近利润下降？”为例，系统会识别为利润根因分析，默认按最近 30 天处理。Planner 会拆解出利润趋势、退款率、退款商品/供应商、区域利润等任务；SQL 层根据语义配置生成任务查询；Result Analyzer 对利润变化、退款压力、区域结构和商品集中度进行归因；最后前端展示趋势图、表格、核心结论和每一步工具调用。\n\n### 3. 安全与治理\n\n系统对 SQL 查询做了多层治理。代码层只允许 `SELECT/WITH` 查询，禁止多语句执行和 DDL/DML 关键字；QueryGateway 进一步限制系统表、非白名单表和高风险集合操作；Workflow 层设置最大迭代次数、最大 SQL 调用次数和总执行超时，避免 Agent 因动态追加任务进入无限循环。\n\n### 4. 可观测与演示能力\n\n项目定义了统一的 SSE Trace 协议，事件包括 `workflow_started`、`plan_created`、`task_started`、`tool_call`、`tool_result`、`analysis_update`、`chart_ready`、`insight_ready`、`workflow_completed` 和 `workflow_failed`。前端可以实时展示 Agent 的执行过程，使面试官或业务使用者清楚看到系统如何从问题一步步推导到结论。",
+  "techStack": [],
+  "implementation": [],
   "links": {
-    "github": "https://github.com/example/rag-kb-prototype",
-    "docs": "https://example.feishu.cn/wiki/rag-kb-prototype"
+    "github": "https://github.com/EthanAIDev/Agentic-BI-Copilot",
+    "docs": ""
   },
   "gallery": [
     {
-      "src": "images/cover.svg",
-      "alt": "知识库问答首页",
-      "caption": "问答入口与引用展示区"
+      "src": "images/01-cockpit-overview_1778576638871.png",
+      "alt": "驾驶舱总览",
+      "caption": "驾驶舱总览"
     },
     {
-      "src": "images/flow.svg",
-      "alt": "检索流程图",
-      "caption": "从提问到答案生成的链路流程"
+      "src": "images/02-chatbi-running-trace_1778576671405.png",
+      "alt": "运行跟踪",
+      "caption": "运行跟踪"
+    },
+    {
+      "src": "images/03-chatbi-result-insights_1778576678731.png",
+      "alt": "结果洞察",
+      "caption": "结果洞察"
+    },
+    {
+      "src": "images/04-chart-drilldown-or-detail_1778576692221.png",
+      "alt": "图表钻取",
+      "caption": "图表钻取"
     }
   ]
 }
