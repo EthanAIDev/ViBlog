@@ -1,27 +1,51 @@
 {
   "id": "p003",
-  "title": "智能体提示词工作台",
-  "summary": "一个面向日常实验的提示词与任务编排工作台，帮助把“临时想法”沉淀成可复用的流程。",
-  "techStack": ["Agent", "Prompt 工程", "工作流"],
-  "implementation": [
-    "把角色设定、任务模板和执行约束统一收纳。",
-    "支持版本对比、结果归档和实验复盘。",
-    "让每次试验都能快速复用、快速回看。"
-  ],
+  "title": "ViBlog 个人技术博客",
+  "summary": "ViBlog 是一个纯前端驱动的静态个人技术博客系统，采用 Vibe Coding 方式构建，支持文章管理、项目展示和响应式设计，无需复杂后端即可运行。 核心特性： - 文章管理：Markdown 格式文章，自动化生成列表和详情页 - 项目展示：支持项目详情和图片画廊 - 响应式设计：适配桌面端和移动端 - 管理后台：支持文章/项目/配置的增删改查",
+  "overviewMd": "ViBlog 是一个纯前端驱动的静态个人技术博客系统，采用 Vibe Coding 方式构建，支持文章管理、项目展示和响应式设计，无需复杂后端即可运行。\n\n**核心特性：**\n\n- 文章管理：Markdown 格式文章，自动化生成列表和详情页\n- 项目展示：支持项目详情和图片画廊\n- 响应式设计：适配桌面端和移动端\n- 管理后台：支持文章/项目/配置的增删改查",
+  "techStackMd": "**前端：** HTML5 + CSS3 + JavaScript + marked.js\n\n**后端：** Node.js（原生 http/fs 模块，无需额外框架）\n\n**数据存储：** JSON 配置文件 + Markdown 文章内容 + 图片资源",
+  "implementationMd": "### 项目结构\n\n```\nViBlog/\n├── index.html          # 首页\n├── article.html        # 文章详情页\n├── posts.html          # 文章列表页\n├── project.html        # 项目详情页\n├── projects.html       # 项目列表页\n├── admin/              # 管理后台\n├── articles/           # 文章目录（manifest.json + [文章ID]/）\n├── projects/           # 项目目录（manifest.json + [项目ID]/）\n├── assets/             # 静态资源\n├── styles.css          # 全局样式\n├── script.js           # 前端脚本\n├── server.js           # Node.js 服务器\n└── site-settings.json  # 网站配置\n```\n\n### 核心模块\n\n**1. 文章管理系统**\n\n- 文章存储在 `articles/[文章ID]/` 目录，包含 `index.md` 和 `meta.json`\n- `build-manifest.js` 自动扫描生成 `manifest.json` 索引\n- 前端动态加载并渲染文章列表和详情页\n\n**2. 项目展示系统**\n\n- 项目配置存储在 `projects/[项目ID]/detail.json`\n- 支持 Markdown 格式的概述、技术栈、实现方案\n- 图片画廊支持中英文文件名，URL 编码正确解析\n\n**3. 管理后台**\n\n提供文章管理、项目管理、网站设置三大功能，通过 RESTful API 与后端交互。\n\n**API 接口：**\n\n```\nPOST /api/articles/save         # 保存文章\nDELETE /api/articles/:id       # 删除文章\nPOST /api/projects/save        # 保存项目\nDELETE /api/projects/:id       # 删除项目\nGET  /api/site-settings        # 获取网站设置\nPOST /api/site-settings        # 保存网站设置\n```\n\n### 技术要点\n\n**服务器处理：**\n- 使用 `decodeURIComponent()` 正确解码中文路径\n- 静态文件服务限制访问范围在项目根目录内\n- 支持 CORS 跨域资源共享\n\n**性能优化：**\n- 图片懒加载（`loading=\"lazy\"`）\n- manifest 索引减少重复请求\n- CSS 变量实现主题复用",
+  "techStack": [],
+  "implementation": [],
   "links": {
-    "github": "https://github.com/example/prompt-workbench",
-    "docs": "https://example.feishu.cn/wiki/prompt-workbench"
+    "github": "https://github.com/EthanAIDev/ViBlog",
+    "docs": ""
   },
   "gallery": [
     {
-      "src": "images/cover.svg",
-      "alt": "提示词工作台首页",
-      "caption": "模板管理与执行入口"
+      "src": "images/01-首页_1778583670515.png",
+      "alt": "01-首页",
+      "caption": "01-首页"
     },
     {
-      "src": "images/flow.svg",
-      "alt": "实验记录流程",
-      "caption": "从模板调用到结果归档的链路"
+      "src": "images/02-文章列表_1778583680957.png",
+      "alt": "02-文章列表",
+      "caption": "02-文章列表"
+    },
+    {
+      "src": "images/03-项目列表_1778583684341.png",
+      "alt": "03-项目列表",
+      "caption": "03-项目列表"
+    },
+    {
+      "src": "images/04-关于我_1778583696485.png",
+      "alt": "04-关于我",
+      "caption": "04-关于我"
+    },
+    {
+      "src": "images/05-后台-页面设置_1778583771424.png",
+      "alt": "05-后台-页面设置",
+      "caption": "05-后台-页面设置"
+    },
+    {
+      "src": "images/06-后台-文章管理_1778583776833.png",
+      "alt": "06-后台-文章管理",
+      "caption": "06-后台-文章管理"
+    },
+    {
+      "src": "images/07-后台-项目管理_1778583782201.png",
+      "alt": "07-后台-项目管理",
+      "caption": "07-后台-项目管理"
     }
   ]
 }

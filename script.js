@@ -886,6 +886,11 @@ var postsGridRef = null;
 var noResultsRef = null;
 var paginationControlsRef = null;
 
+var projectsCurrentPage = 1;
+var projectsPerPage = 6;
+var projectsListRef = null;
+var projectsPaginationRef = null;
+
 function resetPostFilteringState() {
   currentFilter = "all";
   currentCategory = "all";
@@ -1103,6 +1108,91 @@ function renderPaginationControls(totalPages) {
   fragment.appendChild(nextBtn);
 
   paginationControlsRef.replaceChildren(fragment);
+}
+
+function renderProjectsWithPagination() {
+  if (!projectsListRef) {
+    return;
+  }
+
+  var totalPages = Math.ceil(projects.length / projectsPerPage);
+  if (projectsCurrentPage > totalPages) {
+    projectsCurrentPage = totalPages;
+  }
+  var startIndex = (projectsCurrentPage - 1) * projectsPerPage;
+  var endIndex = startIndex + projectsPerPage;
+  var pageProjects = projects.slice(startIndex, endIndex);
+
+  var fragment = document.createDocumentFragment();
+  pageProjects.forEach(function(project, index) {
+    fragment.appendChild(createProjectCard(project, index));
+  });
+  projectsListRef.replaceChildren(fragment);
+  renderProjectsPaginationControls(totalPages);
+}
+
+function renderProjectsPaginationControls(totalPages) {
+  if (!projectsPaginationRef) {
+    return;
+  }
+
+  if (totalPages <= 1) {
+    projectsPaginationRef.style.display = "none";
+    projectsPaginationRef.replaceChildren();
+    return;
+  }
+
+  projectsPaginationRef.style.display = "flex";
+  var fragment = document.createDocumentFragment();
+
+  var prevBtn = document.createElement("button");
+  prevBtn.type = "button";
+  prevBtn.className = "pagination-btn pagination-nav-btn";
+  prevBtn.textContent = "上一页";
+  prevBtn.disabled = projectsCurrentPage === 1;
+  prevBtn.addEventListener("click", function() {
+    if (projectsCurrentPage > 1) {
+      projectsCurrentPage -= 1;
+      renderProjectsWithPagination();
+    }
+  });
+  fragment.appendChild(prevBtn);
+
+  for (var i = 1; i <= totalPages; i += 1) {
+    var pageBtn = document.createElement("button");
+    pageBtn.type = "button";
+    pageBtn.className = "pagination-btn";
+    if (i === projectsCurrentPage) {
+      pageBtn.classList.add("active");
+    }
+    pageBtn.textContent = String(i);
+    if (i === projectsCurrentPage) {
+      pageBtn.setAttribute("aria-current", "page");
+    }
+    pageBtn.addEventListener("click", function(e) {
+      var targetPage = parseInt(e.currentTarget.textContent, 10);
+      if (!Number.isNaN(targetPage) && targetPage !== projectsCurrentPage) {
+        projectsCurrentPage = targetPage;
+        renderProjectsWithPagination();
+      }
+    });
+    fragment.appendChild(pageBtn);
+  }
+
+  var nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.className = "pagination-btn pagination-nav-btn";
+  nextBtn.textContent = "下一页";
+  nextBtn.disabled = projectsCurrentPage === totalPages;
+  nextBtn.addEventListener("click", function() {
+    if (projectsCurrentPage < totalPages) {
+      projectsCurrentPage += 1;
+      renderProjectsWithPagination();
+    }
+  });
+  fragment.appendChild(nextBtn);
+
+  projectsPaginationRef.replaceChildren(fragment);
 }
 
 var externalScriptPromises = {};
@@ -2120,7 +2210,9 @@ function initPage() {
       }
       renderHeroStats();
       if (projectsList) {
-        renderCollection("projects-list", projects, createProjectCard);
+        projectsListRef = document.getElementById("projects-list");
+        projectsPaginationRef = document.getElementById("projects-pagination-controls");
+        renderProjectsWithPagination();
       }
       if (projectsGrid) {
         renderCollection("projects-grid", projects.slice(0, 3), createHomeProjectCard);
