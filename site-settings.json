@@ -60,7 +60,7 @@
     "heroText": "我偏爱那些介于工程与内容之间的工作：一边搭系统，一边写文档、做表达，让方案既能运行，也能被理解。",
     "profileName": "Ethan",
     "profileRole": "AI Builder · 技术创作者",
-    "avatarSrc": "assets/avatars/about_avatar_1778227616150_bolgpic.jpg",
+    "avatarSrc": "assets/avatars/about_avatar_1778829837878_notion头像.jpg",
     "links": {
       "bilibili": "https://space.bilibili.com/32848155",
       "github": "https://github.com/EthanAIDev",
@@ -119,7 +119,7 @@
       },
       {
         "id": "bilibili",
-        "enabled": true
+        "enabled": false
       },
       {
         "id": "qq",
