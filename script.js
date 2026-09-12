@@ -446,7 +446,6 @@
   var externalScriptPromises = {};
   var externalStyleApplied = {};
   var lightboxBound = false;
-  var outlineScrollHandler = null;
 
   var ARTICLE_DEPENDENCIES = {
     katexCss: "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css",
@@ -675,20 +674,17 @@
     nav.style.display = "flex";
   }
 
-  function generateArticleOutline() {
-    var outlineCard = document.getElementById("article-outline");
-    var outlineNav = document.getElementById("outline-nav");
-    var articleBody = document.getElementById("article-body");
-    if (!outlineCard || !outlineNav || !articleBody) return;
+  function setupOutline(bodyEl, cardEl, navEl, stateKey) {
+    if (!cardEl || !navEl || !bodyEl) return;
 
-    var headings = $all("h1, h2, h3, h4", articleBody);
-    if (headings.length === 0) { outlineCard.style.display = "none"; return; }
+    var headings = $all("h1, h2, h3, h4", bodyEl);
+    if (headings.length === 0) { cardEl.style.display = "none"; return; }
 
-    outlineCard.style.display = "block";
-    outlineNav.innerHTML = "";
+    cardEl.style.display = "block";
+    navEl.innerHTML = "";
 
     headings.forEach(function (heading, index) {
-      var id = "heading-" + index;
+      var id = (navEl.id || "outline") + "-h-" + index;
       heading.id = id;
       var link = document.createElement("a");
       link.href = "#" + id;
@@ -699,10 +695,13 @@
         var target = document.getElementById(id);
         if (target) window.scrollTo({ top: target.offsetTop - 96, behavior: "smooth" });
       });
-      outlineNav.appendChild(link);
+      navEl.appendChild(link);
     });
 
-    var activeId = "";
+    if (!setupOutline.states) setupOutline.states = {};
+    var st = setupOutline.states[stateKey] || (setupOutline.states[stateKey] = { activeId: "", handler: null });
+    if (st.handler) window.removeEventListener("scroll", st.handler);
+    st.activeId = "";
 
     function updateActive() {
       var currentId = null;
@@ -710,29 +709,53 @@
       headings.forEach(function (heading) {
         if (heading.offsetTop <= scrollTop) currentId = heading.id;
       });
-      if (!currentId || currentId === activeId) return;
-      $all(".outline-link.active").forEach(function (el) { el.classList.remove("active"); });
-      var activeLink = $('.outline-link[href="#' + currentId + '"]');
+      if (!currentId) {
+        // 滚回首个标题之上时清除残留高亮
+        if (st.activeId) {
+          $all(".outline-link.active", navEl).forEach(function (el) { el.classList.remove("active"); });
+          st.activeId = "";
+        }
+        return;
+      }
+      if (currentId === st.activeId) return;
+      $all(".outline-link.active", navEl).forEach(function (el) { el.classList.remove("active"); });
+      var activeLink = navEl.querySelector('.outline-link[href="#' + currentId + '"]');
       if (activeLink) {
         activeLink.classList.add("active");
-        var navRect = outlineNav.getBoundingClientRect();
-        var linkRect = activeLink.getBoundingClientRect();
-        if (linkRect.top < navRect.top + 10 || linkRect.bottom > navRect.bottom - 10) {
-          activeLink.scrollIntoView({ block: "nearest" });
+        // 仅滚动目录容器自身；严禁 scrollIntoView，否则会把整页拽向目录位置
+        var linkTop = activeLink.getBoundingClientRect().top - navEl.getBoundingClientRect().top + navEl.scrollTop;
+        if (linkTop < navEl.scrollTop + 10 || linkTop > navEl.scrollTop + navEl.clientHeight - 10 - activeLink.offsetHeight) {
+          navEl.scrollTop = Math.max(0, linkTop - navEl.clientHeight / 2 + activeLink.offsetHeight / 2);
         }
-        activeId = currentId;
+        st.activeId = currentId;
       }
     }
 
     updateActive();
-    if (outlineScrollHandler) window.removeEventListener("scroll", outlineScrollHandler);
-    outlineScrollHandler = function () { updateActive(); };
-    window.addEventListener("scroll", outlineScrollHandler, { passive: true });
+    st.handler = function () { updateActive(); };
+    window.addEventListener("scroll", st.handler, { passive: true });
+  }
+
+  // 内容就绪：移除骨架屏，淡入真实内容
+  function revealContent(skeletonId, ids) {
+    var sk = document.getElementById(skeletonId);
+    if (sk) sk.remove();
+    ids.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.hidden = false;
+        // 先强制 reflow 再挂动画类，确保从 display:none 恢复时动画可靠启动
+        void el.offsetWidth;
+        el.classList.add("fade-up");
+      }
+    });
   }
 
   function showArticleError(message) {
+    revealContent("article-skeleton", ["article-body"]);
     var headerSection = $(".article-header-section");
     if (headerSection) {
+      headerSection.hidden = false;
       headerSection.innerHTML = '<div class="article-not-found"><h2>文章未找到</h2><p>' + escapeHtml(message) +
         '</p><p><a href="posts.html">← 返回文章列表</a></p></div>';
     }
@@ -750,6 +773,7 @@
         '<h1 class="article-title">' + escapeHtml(article.title) + "</h1>" +
         '<div class="article-meta">' +
           '<span class="article-meta-item article-date"><span>' + escapeHtml(article.displayDate || article.date || "") + "</span></span>" +
+          (article.readingTime ? '<span class="article-meta-divider" aria-hidden="true"></span><span class="article-meta-item"><span>约 ' + article.readingTime + " 分钟</span></span>" : "") +
           '<span class="article-meta-divider" aria-hidden="true"></span>' +
           '<div class="article-meta-item article-tag-group"><div class="article-tags">' +
             (article.tags || []).map(function (tag) { return "<span>" + escapeHtml(tag) + "</span>"; }).join("") +
@@ -763,7 +787,10 @@
     bindLightboxForImages("#article-body");
     setupCodeBlocks();
     renderArticleNavigation(document.getElementById("article-post-nav"), article.prevArticle, article.nextArticle, "< 上一篇", "下一篇 >");
-    generateArticleOutline();
+    revealContent("article-skeleton", ["article-body"]);
+    headerSection.hidden = false;
+    headerSection.classList.add("fade-up");
+    setupOutline(body, document.getElementById("article-outline"), document.getElementById("outline-nav"), "article");
     renderMermaidCharts();
     renderMathBlocks();
   }
@@ -812,11 +839,13 @@
       contentHtml = contentHtml.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, '<div class="mermaid">\n$1\n</div>');
       contentHtml = contentHtml.replace(/<pre><code>mermaid\n([\s\S]*?)<\/code><\/pre>/g, '<div class="mermaid">\n$1\n</div>');
 
+      var readingTime = Math.max(1, Math.round(mdText.replace(/```[\s\S]*?```/g, "").length / 450));
       renderArticleData({
         title: meta.title,
         date: meta.date,
         displayDate: meta.displayDate,
         tags: meta.tags || [],
+        readingTime: readingTime,
         content: contentHtml,
         prevArticle: adjacent.prevArticle,
         nextArticle: adjacent.nextArticle
@@ -901,15 +930,18 @@
     var prev = manifest[currentIndex + 1] || null;
     var next = manifest[currentIndex - 1] || null;
     renderArticleNavigation(document.getElementById("project-detail-nav"), prev, next, "< 上一个项目", "下一个项目 >");
+    revealContent("project-skeleton", ["project-detail-header", "project-detail-body"]);
+    setupOutline(body, document.getElementById("project-outline"), document.getElementById("project-outline-nav"), "project");
   }
 
   function showProjectError(message) {
+    revealContent("project-skeleton", ["project-detail-body"]);
     var header = document.getElementById("project-detail-header");
-    var body = document.getElementById("project-detail-body");
-    if (!header || !body) return;
-    header.innerHTML = '<div class="project-not-found"><h1>项目未找到</h1><p>' + escapeHtml(message) +
-      '</p><p><a href="projects.html">← 返回项目列表</a></p></div>';
-    body.innerHTML = "";
+    if (header) {
+      header.hidden = false;
+      header.innerHTML = '<div class="project-not-found"><h1>项目未找到</h1><p>' + escapeHtml(message) +
+        '</p><p><a href="projects.html">← 返回项目列表</a></p></div>';
+    }
   }
 
   function loadProjectDetailPage() {
