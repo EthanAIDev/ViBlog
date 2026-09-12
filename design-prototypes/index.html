@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViBlog 新前端设计方案选型</title>
+<style>
+:root{
+  --bg:#f6f6f8;--card:#fff;--ink:#17171c;--ink2:#5a5a64;--line:#e8e8ee;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;padding:60px 24px}
+.wrap{max-width:1060px;margin:0 auto}
+h1{font-size:30px;letter-spacing:-.02em;margin-bottom:10px}
+.sub{color:var(--ink2);margin-bottom:46px;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.opt{
+  background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  text-decoration:none;color:inherit;display:flex;flex-direction:column;
+  transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s;
+}
+.opt:hover{transform:translateY(-5px);box-shadow:0 20px 48px rgba(23,23,28,.12)}
+.thumb{height:150px;position:relative;display:grid;place-items:center}
+.t1{background:linear-gradient(135deg,#0b0b10,#171730 60%,#0a1f2e)}
+.t1 b{color:#a99bff;font-size:22px;letter-spacing:.5px}
+.t2{background:#fbfaf7;border-bottom:1px solid #eee7d8}
+.t2 b{font-family:Georgia,"Songti SC",serif;color:#161412;font-size:24px}
+.t2 b em{color:#d64b12;font-style:normal}
+.t3{background:#f4f4f6}
+.t3 b{color:#5b5bd6;font-size:22px}
+.body{padding:22px 24px 26px;flex:1}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;color:#fff;border-radius:99px;padding:3px 10px;margin-bottom:12px}
+.t1n{background:#5b5bd6}.t2n{background:#d64b12}.t3n{background:#0e7ae6}
+.body h2{font-size:18px;margin-bottom:8px;letter-spacing:-.01em}
+.body p{font-size:13.5px;color:var(--ink2)}
+.open{margin-top:16px;font-size:13.5px;font-weight:650;color:var(--ink)}
+.opt:hover .open{color:inherit}
+.note{margin-top:40px;font-size:13px;color:var(--ink2);border-top:1px solid var(--line);padding-top:20px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ViBlog 新前端 · 三版设计方案</h1>
+  <p class="sub">同一份内容，三种气质。点开完整原型对比，选定后我们再全面开工。</p>
+  <div class="grid">
+    <a class="opt" href="v1-dark-ai-lab.html">
+      <div class="thumb t1"><b>▚ AI Lab</b></div>
+      <div class="body">
+        <span class="tag t1n">方案 A · 深色科技</span>
+        <h2>Dark AI Lab</h2>
+        <p>近黑背景 + 紫青渐变光晕 + 玻璃卡片 + 终端美学。Linear / Vercel 气质，AI 工程师身份拉满，适合作品集展示与面试演示。</p>
+        <span class="open">打开原型 →</span>
+      </div>
+    </a>
+    <a class="opt" href="v2-editorial.html">
+      <div class="thumb t2"><b>「写作<em>即</em>表达」</b></div>
+      <div class="body">
+        <span class="tag t2n">方案 B · 极简编辑部</span>
+        <h2>Editorial 杂志风</h2>
+        <p>纸感白底 + 衬线大标题 + 编号式文章索引 + 单点橙色强调。内容优先、气质高级，把"技术写作者"的身份做到极致。</p>
+        <span class="open">打开原型 →</span>
+      </div>
+    </a>
+    <a class="opt" href="v3-bento-os.html">
+      <div class="thumb t3"><b>▤ Bento OS</b></div>
+      <div class="body">
+        <span class="tag t3n">方案 C · 明快卡片</span>
+        <h2>Bento 个人主页</h2>
+        <p>浅灰底 + 混合尺寸 Bento 网格 + 状态/统计/终端/时间轴小部件。信息密度高、活泼现代，个人操作系统般的浏览体验。</p>
+        <span class="open">打开原型 →</span>
+      </div>
+    </a>
+  </div>
+  <p class="note">说明：三版均为静态 HTML 原型（无外部依赖，项目封面引用真实站点资源）。选定方向后，会基于该设计语言重构全部页面（首页 / 文章列表 / 文章详情 / 项目 / 关于 / 后台），并保留现有管理后台与数据格式。</p>
+</div>
+</body>
+</html>

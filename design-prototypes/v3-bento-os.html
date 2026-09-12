@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethan ViBlog — AI Agent Engineer 的数字花园</title>
+<meta name="description" content="AI Agent 开发工程师的博客与作品集：RAG、工作流编排、工具调用与可复用工程实践。">
+<style>
+/* ============ Design Tokens ============ */
+:root{
+  --bg:#f4f4f6;
+  --card:#ffffff;
+  --card-2:#fafafb;
+  --ink:#17171c;
+  --ink-2:#55555f;
+  --ink-3:#94949e;
+  --line:#e9e9ee;
+  --line-2:#dcdce3;
+  --indigo:#5b5bd6;
+  --indigo-soft:#eeeefc;
+  --blue:#0e7ae6;
+  --blue-soft:#e7f2fd;
+  --orange:#e8590c;
+  --orange-soft:#fdeee4;
+  --green:#0f9d58;
+  --green-soft:#e6f5ec;
+  --pink:#d6409f;
+  --pink-soft:#fceef8;
+  --dark:#17171c;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"SF Mono","JetBrains Mono","Cascadia Code",ui-monospace,Consolas,monospace;
+  --r:22px;
+  --r-sm:14px;
+  --shadow:0 1px 2px rgba(23,23,28,.04),0 8px 24px rgba(23,23,28,.05);
+  --shadow-hover:0 2px 4px rgba(23,23,28,.05),0 18px 44px rgba(23,23,28,.10);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15.5px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(91,91,214,.18)}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+/* ============ Header ============ */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(244,244,246,.82);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(23,23,28,.06);
+}
+.nav-inner{max-width:1120px;margin:0 auto;padding:0 22px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+.logo .mark{
+  width:30px;height:30px;border-radius:9px;
+  background:linear-gradient(135deg,#5b5bd6,#9b7bf0 60%,#e879a8);
+  display:grid;place-items:center;color:#fff;font-size:13px;font-weight:800;
+  box-shadow:0 3px 10px rgba(91,91,214,.32);
+}
+.logo .beta{font-size:10.5px;font-weight:600;color:var(--indigo);background:var(--indigo-soft);border-radius:99px;padding:2px 8px;letter-spacing:.04em}
+.nav-right{display:flex;align-items:center;gap:4px}
+.nav-right a.n{padding:8px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--ink-2);transition:background .2s,color .2s}
+.nav-right a.n:hover{background:rgba(23,23,28,.055);color:var(--ink)}
+.nav-right .gh{
+  margin-left:8px;display:inline-flex;align-items:center;gap:8px;
+  background:var(--dark);color:#fff;font-size:13.5px;font-weight:600;
+  padding:9px 17px;border-radius:99px;transition:transform .2s var(--ease),opacity .2s;
+}
+.nav-right .gh:hover{transform:translateY(-1.5px)}
+.nav-right .gh svg{width:15px;height:15px}
+@media(max-width:680px){.nav-right a.n{display:none}}
+
+/* ============ Bento grid ============ */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;padding:34px 0 0}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow);padding:26px;position:relative;overflow:hidden;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .3s;
+}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.span3{grid-column:span 3}.span4{grid-column:span 4}.span5{grid-column:span 5}
+.span6{grid-column:span 6}.span7{grid-column:span 7}.span8{grid-column:span 8}.span12{grid-column:span 12}
+@media(max-width:960px){
+  .span3,.span4,.span5{grid-column:span 6}
+  .span6,.span7,.span8{grid-column:span 12}
+}
+@media(max-width:600px){.span3,.span4,.span5{grid-column:span 12}}
+
+.card-label{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:14px;
+}
+.card-label .dot{width:7px;height:7px;border-radius:50%}
+
+/* ============ Hero card (dark) ============ */
+.hero-card{
+  background:var(--dark);color:#fff;border:none;
+  display:flex;flex-direction:column;justify-content:space-between;min-height:330px;
+}
+.hero-card::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(420px 260px at 88% -20%,rgba(139,123,255,.4),transparent 62%),
+    radial-gradient(320px 240px at -8% 110%,rgba(14,122,230,.32),transparent 60%);
+}
+.hero-card>*{position:relative}
+.hero-card .card-label{color:rgba(255,255,255,.55)}
+.hero-card h1{
+  font-size:clamp(30px,3.6vw,42px);line-height:1.28;font-weight:800;letter-spacing:-.02em;margin:2px 0 16px;
+}
+.hero-card h1 .hl{
+  background:linear-gradient(100deg,#a99bff,#5ad7ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-card p{color:rgba(255,255,255,.68);font-size:15.5px;max-width:32em}
+.hero-card .acts{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+.btn-light{
+  display:inline-flex;align-items:center;gap:8px;background:#fff;color:#17171c;
+  font-size:14px;font-weight:650;padding:11px 20px;border-radius:12px;transition:transform .2s var(--ease);
+}
+.btn-light:hover{transform:translateY(-2px)}
+.btn-light svg{width:15px;height:15px}
+.btn-dim{
+  display:inline-flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:600;
+  padding:11px 20px;border-radius:12px;border:1px solid rgba(255,255,255,.22);transition:border-color .2s,background .2s;
+}
+.btn-dim:hover{border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.07)}
+
+/* ============ Profile / status ============ */
+.profile-card{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.avatar-row{display:flex;align-items:center;gap:14px}
+.avatar{width:64px;height:64px;border-radius:20px;object-fit:cover;box-shadow:0 4px 14px rgba(23,23,28,.14)}
+.avatar-row .who b{display:block;font-size:17px;font-weight:700}
+.avatar-row .who span{font-size:12.5px;color:var(--ink-3);font-family:var(--mono)}
+.presence{
+  display:inline-flex;align-items:center;gap:8px;background:var(--green-soft);color:var(--green);
+  font-size:12.5px;font-weight:600;border-radius:99px;padding:6px 13px;
+}
+.presence .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);position:relative}
+.presence .pulse::after{content:"";position:absolute;inset:-3.5px;border-radius:50%;border:1.5px solid var(--green);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{transform:scale(.5);opacity:.8}100%{transform:scale(1.4);opacity:0}}
+.profile-card .bio{font-size:14px;color:var(--ink-2)}
+.social-row{display:flex;gap:9px;margin-top:auto}
+.social-row a{
+  width:38px;height:38px;border-radius:11px;border:1px solid var(--line);
+  display:grid;place-items:center;color:var(--ink-2);transition:all .2s;background:var(--card-2);
+}
+.social-row a:hover{color:var(--ink);border-color:var(--line-2);transform:translateY(-2px);background:#fff}
+.social-row svg{width:17px;height:17px}
+
+/* ============ Stat cards ============ */
+.stat-card{display:flex;flex-direction:column;gap:4px}
+.stat-card .num{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat-card .num em{font-style:normal;font-size:18px}
+.stat-card .lbl{font-size:13px;color:var(--ink-3)}
+.stat-card .spark{margin-top:auto;padding-top:14px}
+.stat-card.c-indigo .num{color:var(--indigo)}
+.stat-card.c-blue .num{color:var(--blue)}
+.stat-card.c-orange .num{color:var(--orange)}
+.mini-bars{display:flex;align-items:flex-end;gap:4px;height:30px}
+.mini-bars i{flex:1;border-radius:3px 3px 0 0;background:currentColor;opacity:.85}
+
+/* ============ Terminal mini ============ */
+.term-card{background:#16161a;color:#e6e6ec;border:none;font-family:var(--mono);font-size:12.8px}
+.term-card:hover{transform:translateY(-4px)}
+.term-card .card-label{color:rgba(255,255,255,.45)}
+.term-card .ln{display:flex;gap:10px;padding:3.5px 0;white-space:nowrap;overflow:hidden}
+.term-card .p{color:#8b7bff}
+.term-card .k{color:#7c7c88}
+.term-card .v{color:#e6e6ec}
+.term-card .g{color:#4ade80}
+.term-card .c{color:#5ad7ff}
+.cursor{display:inline-block;width:7px;height:14px;background:#5ad7ff;vertical-align:-2px;animation:blink 1.05s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ============ Now building ============ */
+.now-card{background:linear-gradient(150deg,var(--indigo-soft),#f6f0ff 55%,var(--pink-soft))}
+.now-card .card-label{color:var(--indigo)}
+.now-card h3{font-size:17px;font-weight:700;margin-bottom:10px}
+.now-card p{font-size:14px;color:var(--ink-2)}
+.progress{margin-top:18px}
+.progress .bar{height:8px;border-radius:99px;background:rgba(91,91,214,.15);overflow:hidden}
+.progress .fill{height:100%;width:72%;border-radius:99px;background:linear-gradient(90deg,#5b5bd6,#9b7bf0);animation:grow 1.4s var(--ease)}
+@keyframes grow{from{width:0}}
+.progress .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:8px}
+
+/* ============ Article cards ============ */
+.post-card{display:flex;flex-direction:column;gap:10px}
+.post-card .top{display:flex;align-items:center;justify-content:space-between}
+.post-card .type{
+  font-size:11.5px;font-weight:650;border-radius:99px;padding:4px 11px;letter-spacing:.02em;
+}
+.type.t-notes{background:var(--blue-soft);color:var(--blue)}
+.type.t-tut{background:var(--orange-soft);color:var(--orange)}
+.post-card time{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.post-card h3{font-size:16.5px;font-weight:700;line-height:1.5;letter-spacing:-.01em}
+.post-card p{font-size:13.5px;color:var(--ink-2);flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.post-card .tags{display:flex;gap:6px;flex-wrap:wrap}
+.post-card .tags i{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--ink-3);background:var(--card-2);border:1px solid var(--line);border-radius:99px;padding:3px 9px}
+
+/* ============ Project cards ============ */
+.proj-card{padding:0;display:flex;flex-direction:column}
+.proj-card .cover{aspect-ratio:16/9;overflow:hidden;background:var(--card-2);position:relative}
+.proj-card .cover img{width:100%;height:100%;object-fit:cover;transition:transform .55s var(--ease)}
+.proj-card:hover .cover img{transform:scale(1.045)}
+.proj-card .cover .badge{
+  position:absolute;top:14px;left:14px;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);
+  font-size:11px;font-weight:700;border-radius:99px;padding:5px 12px;color:var(--indigo);
+  box-shadow:0 2px 10px rgba(23,23,28,.12);
+}
+.proj-card .body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:9px;flex:1}
+.proj-card h3{font-size:17.5px;font-weight:750;letter-spacing:-.01em}
+.proj-card p{font-size:13.5px;color:var(--ink-2);flex:1}
+.proj-card .foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.proj-card .foot .stack{display:flex;gap:6px;flex-wrap:wrap}
+.proj-card .foot .stack i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);border:1px solid var(--line);border-radius:99px;padding:2.5px 8px}
+.proj-card .foot .go{
+  font-size:13px;font-weight:650;color:var(--indigo);display:inline-flex;align-items:center;gap:5px;
+}
+.proj-card .foot .go svg{width:14px;height:14px;transition:transform .25s}
+.proj-card:hover .foot .go svg{transform:translate(2.5px,-2.5px)}
+
+/* ============ Stack chips ============ */
+.stack-card .chip-flow{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:600;border-radius:11px;padding:8px 13px;
+  background:var(--card-2);border:1px solid var(--line);color:var(--ink-2);
+  transition:all .2s;cursor:default;
+}
+.chip:hover{transform:translateY(-2px);border-color:var(--line-2);color:var(--ink);background:#fff}
+.chip i{width:8px;height:8px;border-radius:3px;font-style:normal}
+
+/* ============ Timeline ============ */
+.tl-card ol{list-style:none;display:flex;flex-direction:column}
+.tl-card li{display:flex;gap:16px;position:relative;padding:10px 0 10px 26px}
+.tl-card li::before{
+  content:"";position:absolute;left:5.5px;top:22px;bottom:-6px;width:1.5px;background:var(--line-2);
+}
+.tl-card li:last-child::before{display:none}
+.tl-card li::after{
+  content:"";position:absolute;left:0;top:17px;width:12.5px;height:12.5px;border-radius:50%;
+  background:#fff;border:2.5px solid var(--indigo);
+}
+.tl-card .d{font-family:var(--mono);font-size:11px;color:var(--ink-3);display:block;margin-bottom:1px}
+.tl-card b{font-size:14.5px;font-weight:700;display:block}
+.tl-card span{font-size:12.5px;color:var(--ink-2)}
+
+/* ============ Section between bentos ============ */
+.sec-title{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:56px 0 4px;gap:16px;flex-wrap:wrap;
+}
+.sec-title h2{font-size:clamp(21px,2.6vw,27px);font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:12px}
+.sec-title h2 .n{
+  font-family:var(--mono);font-size:12px;font-weight:700;color:var(--indigo);
+  background:var(--indigo-soft);border-radius:8px;padding:4px 10px;
+}
+.sec-title a{font-size:13.5px;font-weight:600;color:var(--ink-3);transition:color .2s}
+.sec-title a:hover{color:var(--indigo)}
+
+/* ============ Footer ============ */
+footer{margin-top:80px;padding:44px 0 42px}
+.foot-card{
+  background:var(--dark);border-radius:var(--r);color:#fff;padding:38px 40px;
+  display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:center;
+  position:relative;overflow:hidden;
+}
+.foot-card::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(400px 200px at 85% 0%,rgba(139,123,255,.3),transparent 60%);
+}
+.foot-card>*{position:relative}
+.foot-card .big{font-size:clamp(20px,2.6vw,27px);font-weight:800;letter-spacing:-.02em;line-height:1.4}
+.foot-card .big span{background:linear-gradient(100deg,#a99bff,#5ad7ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.foot-card .say{
+  display:inline-flex;align-items:center;gap:9px;background:#fff;color:#17171c;
+  font-size:14px;font-weight:650;padding:12px 22px;border-radius:99px;transition:transform .2s var(--ease);
+}
+.foot-card .say:hover{transform:translateY(-2px)}
+.foot-card .say svg{width:15px;height:15px}
+.foot-meta{
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:22px 8px 0;font-family:var(--mono);font-size:12px;color:var(--ink-3);
+}
+
+/* ============ Reveal ============ */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.presence .pulse::after{animation:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a class="logo" href="#">
+      <span class="mark">E</span> ViBlog <span class="beta">BETA</span>
+    </a>
+    <nav class="nav-right">
+      <a class="n" href="#articles">文章</a>
+      <a class="n" href="#projects">项目</a>
+      <a class="n" href="#lab">实验室</a>
+      <a class="gh" href="https://github.com/EthanAIDev" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.26 5.66.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.67.8.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+        Follow
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ============ BENTO 1：身份区 ============ -->
+  <div class="bento">
+    <section class="card hero-card span7 reveal">
+      <div>
+        <span class="card-label"><span class="dot" style="background:#4ade80"></span>AI AGENT ENGINEER · 长沙 / 远程</span>
+        <h1>把 AI Agent 做成<span class="hl">可运行、可复用</span>的系统。</h1>
+        <p>你好，我是 Ethan。专注 RAG、工作流编排与工具调用，持续把原型推进到可上线、可迭代的产品形态。</p>
+      </div>
+      <div class="acts">
+        <a class="btn-light" href="#projects">查看项目
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn-dim" href="#articles">阅读文章</a>
+      </div>
+    </section>
+
+    <section class="card profile-card span5 reveal">
+      <div class="avatar-row">
+        <img class="avatar" src="../assets/avatars/about_avatar_1778227616150_bolgpic.jpg" alt="Ethan 头像">
+        <div class="who">
+          <b>Ethan</b>
+          <span>@EthanAIDev</span>
+        </div>
+      </div>
+      <span class="presence"><span class="pulse"></span>正在构建 · Agentic BI 平台</span>
+      <p class="bio">技术创作者 / AI 构建者。相信好的技术不仅要能工作，还要能被理解。写实战文章，做可演示的项目。</p>
+      <div class="social-row">
+        <a href="https://github.com/EthanAIDev" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.26 5.66.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.67.8.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+        </a>
+        <a href="#" aria-label="Bilibili">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5 4.5 8M17 4.5 19.5 8"/><rect x="2.5" y="8" width="19" height="12" rx="3"/><path d="M9 12.5v2m6-2v2"/></svg>
+        </a>
+        <a href="#" aria-label="QQ">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 13.5c-1 .8-1.6 1.8-1.2 2.7.5 1.1 2.4 1.3 4.7 1.3s4.2-.2 4.7-1.3c.4-.9-.2-1.9-1.2-2.7M12 13c2.8 0 4.5-1.6 4.5-4S14.8 5 12 5 7.5 6.6 7.5 9s1.7 4 4.5 4Z"/></svg>
+        </a>
+        <a href="mailto:ethandev@qq.com" aria-label="邮箱">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- 数据行 -->
+    <section class="card stat-card span3 c-indigo reveal">
+      <span class="card-label">文章</span>
+      <div class="num">06<em> 篇</em></div>
+      <div class="lbl">持续更新中</div>
+      <div class="spark">
+        <div class="mini-bars" style="color:#5b5bd6">
+          <i style="height:30%"></i><i style="height:45%"></i><i style="height:38%"></i><i style="height:60%"></i><i style="height:52%"></i><i style="height:78%"></i><i style="height:100%"></i>
+        </div>
+      </div>
+    </section>
+    <section class="card stat-card span3 c-blue reveal">
+      <span class="card-label">项目</span>
+      <div class="num">03<em> 个</em></div>
+      <div class="lbl">可演示 · 可复用</div>
+      <div class="spark">
+        <div class="mini-bars" style="color:#0e7ae6">
+          <i style="height:55%"></i><i style="height:70%"></i><i style="height:48%"></i><i style="height:88%"></i><i style="height:64%"></i><i style="height:92%"></i><i style="height:76%"></i>
+        </div>
+      </div>
+    </section>
+    <section class="card stat-card span3 c-orange reveal">
+      <span class="card-label">运行天数</span>
+      <div class="num">400<em>+ 天</em></div>
+      <div class="lbl">自 2025.07 起</div>
+      <div class="spark">
+        <div class="mini-bars" style="color:#e8590c">
+          <i style="height:40%"></i><i style="height:52%"></i><i style="height:66%"></i><i style="height:58%"></i><i style="height:80%"></i><i style="height:90%"></i><i style="height:100%"></i>
+        </div>
+      </div>
+    </section>
+    <section class="card stat-card span3 c-green reveal" style="justify-content:space-between">
+      <span class="card-label">构建方式</span>
+      <div class="num" style="color:var(--green);font-size:26px;line-height:1.3">Vibe<br>Coding</div>
+      <div class="lbl">100% 人机协作开发</div>
+    </section>
+
+    <!-- 终端 + 正在构建 -->
+    <section class="card term-card span6 reveal">
+      <span class="card-label">ETHAN@VIBLOG — ZSH</span>
+      <div class="ln"><span class="p">$</span><span class="c">profile --status</span></div>
+      <div class="ln"><span class="k">role</span>&nbsp;&nbsp;&nbsp;: <span class="v">AI Agent Engineer</span></div>
+      <div class="ln"><span class="k">focus</span>&nbsp;&nbsp;: <span class="v">RAG · Workflow · Tool Calling</span></div>
+      <div class="ln"><span class="k">mode</span>&nbsp;&nbsp;: <span class="g">稳扎稳打，深度思考</span></div>
+      <div class="ln"><span class="p">$</span><span class="c">writing.next</span>() <span class="cursor"></span></div>
+    </section>
+
+    <section class="card now-card span6 reveal">
+      <span class="card-label">NOW BUILDING · 正在构建</span>
+      <h3>面向中文场景的 AI 知识应用</h3>
+      <p>把检索、知识与对话编排成一个可解释的分析闭环，当前进度：</p>
+      <div class="progress">
+        <div class="bar"><div class="fill"></div></div>
+        <div class="row"><span>MVP → 可演示</span><span>72%</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ 文章 ============ -->
+  <div class="sec-title reveal" id="articles">
+    <h2><span class="n">01</span>最新文章</h2>
+    <a href="#">全部文章 →</a>
+  </div>
+  <div class="bento" style="padding-top:14px">
+    <a class="card post-card span4 reveal" href="#">
+      <div class="top"><span class="type t-notes">实地笔记</span><time>2026.04.22</time></div>
+      <h3>从 Token 到 Softmax：大模型生成全过程解析笔记</h3>
+      <p>拆解 LLM 从输入到输出的完整流程，五个核心阶段，术语与通俗比喻对照。</p>
+      <div class="tags"><i>Token</i><i>大模型</i></div>
+    </a>
+    <a class="card post-card span4 reveal" href="#">
+      <div class="top"><span class="type t-tut">教程</span><time>2026.04.18</time></div>
+      <h3>DeepSeek + LoRA + FastAPI：微调大模型并暴露接口</h3>
+      <p>从数据准备到接口部署，一篇可跟着操作的模型微调实践，快速跑通 demo。</p>
+      <div class="tags"><i>DeepSeek</i><i>LoRA</i><i>FastAPI</i></div>
+    </a>
+    <a class="card post-card span4 reveal" href="#">
+      <div class="top"><span class="type t-tut">教程</span><time>2026.03.06</time></div>
+      <h3>近年 AI 应用技术串讲：Agent、Skill、Harness……</h3>
+      <p>技术名词层出不穷，一份帮你建立全局认知的 AI 应用技术地图。</p>
+      <div class="tags"><i>Agent</i><i>Skill</i><i>Harness</i></div>
+    </a>
+  </div>
+
+  <!-- ============ 项目 ============ -->
+  <div class="sec-title reveal" id="projects">
+    <h2><span class="n">02</span>精选项目</h2>
+    <a href="#">全部项目 →</a>
+  </div>
+  <div class="bento" style="padding-top:14px">
+    <a class="card proj-card span8 reveal" href="#">
+      <div class="cover"><img src="../projects/p001/images/cover.svg" alt="企业经营分析 AI Agent 平台"><span class="badge">★ Featured</span></div>
+      <div class="body">
+        <h3>企业经营分析 AI Agent 平台</h3>
+        <p>Agentic BI Copilot：自然语言提问 → 意图识别 → 分析计划 → SQL/RAG 混合分析 → 图表与下钻，SSE 实时展示每一步执行 Trace，做成可解释的分析闭环。</p>
+        <div class="foot">
+          <div class="stack"><i>Next.js 15</i><i>FastAPI</i><i>SQL 治理</i><i>SSE</i></div>
+          <span class="go">查看案例 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        </div>
+      </div>
+    </a>
+    <div class="bento span4 reveal" style="padding:0;gap:16px;grid-template-columns:1fr;display:grid;align-content:stretch">
+      <a class="card proj-card reveal" href="#" style="flex:1">
+        <div class="cover" style="aspect-ratio:16/7"><img src="../projects/p002/images/cover.svg" alt="ChatBI 股票查询助手"></div>
+        <div class="body">
+          <h3 style="font-size:15.5px">ChatBI 股票查询助手</h3>
+          <div class="foot" style="margin-top:2px"><div class="stack"><i>LLM</i><i>ARIMA</i></div>
+          <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div>
+        </div>
+      </a>
+      <a class="card proj-card reveal" href="#" style="flex:1">
+        <div class="cover" style="aspect-ratio:16/7"><img src="../projects/p003/images/cover.svg" alt="ViBlog 个人技术博客"></div>
+        <div class="body">
+          <h3 style="font-size:15.5px">ViBlog 个人技术博客</h3>
+          <div class="foot" style="margin-top:2px"><div class="stack"><i>Node.js</i><i>Vanilla</i></div>
+          <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ============ 实验室 ============ -->
+  <div class="sec-title reveal" id="lab">
+    <h2><span class="n">03</span>技术栈与轨迹</h2>
+  </div>
+  <div class="bento" style="padding-top:14px">
+    <section class="card stack-card span7 reveal">
+      <span class="card-label">STACK · 日常武器库</span>
+      <div class="chip-flow">
+        <span class="chip"><i style="background:#5b5bd6"></i>Python</span>
+        <span class="chip"><i style="background:#0e7ae6"></i>FastAPI</span>
+        <span class="chip"><i style="background:#e8590c"></i>Next.js 15</span>
+        <span class="chip"><i style="background:#0f9d58"></i>TypeScript</span>
+        <span class="chip"><i style="background:#d6409f"></i>React 19</span>
+        <span class="chip"><i style="background:#5b5bd6"></i>SQLAlchemy</span>
+        <span class="chip"><i style="background:#e8590c"></i>pandas</span>
+        <span class="chip"><i style="background:#0e7ae6"></i>ECharts</span>
+        <span class="chip"><i style="background:#0f9d58"></i>向量检索</span>
+        <span class="chip"><i style="background:#d6409f"></i>提示词工程</span>
+        <span class="chip"><i style="background:#5b5bd6"></i>Qwen3</span>
+        <span class="chip"><i style="background:#e8590c"></i>SSE</span>
+      </div>
+    </section>
+    <section class="card tl-card span5 reveal">
+      <span class="card-label">TIMELINE · 轨迹</span>
+      <ol>
+        <li><div><span class="d">2026 — 至今</span><b>个人内容与项目体系化</b><span>持续迭代网站、项目库与文章方法论</span></div></li>
+        <li><div><span class="d">2024 — 2025</span><b>AI 应用开发实践</b><span>RAG · Prompt 工程 · 上线项目</span></div></li>
+        <li><div><span class="d">2022 — 2023</span><b>工程基础与表达沉淀</b><span>能运行、能理解、能复盘</span></div></li>
+      </ol>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-card reveal">
+      <div class="big">有想法想聊聊？<br><span>欢迎邮件或 GitHub 上找我。</span></div>
+      <a class="say" href="mailto:ethandev@qq.com">
+        ethandev@qq.com
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <div class="foot-meta">
+      <span>© 2025-2026 ETHAN · CC BY-NC 4.0</span>
+      <span>DESIGNED WITH VIBE · 长沙</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+var io=new IntersectionObserver(function(es){
+  es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}});
+},{threshold:.1,rootMargin:"0px 0px -5% 0px"});
+document.querySelectorAll(".reveal").forEach(function(el,i){
+  el.style.transitionDelay=(Math.min(i%6,5)*50)+"ms";
+  io.observe(el);
+});
+</script>
+</body>
+</html>

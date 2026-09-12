@@ -1,98 +1,58 @@
 # Ethan ViBlog 个人技术博客
 
-一个静态的个人技术博客系统，全程使用Vibe Coding，基于个人审美和纯前端技术栈构建，支持文章管理、项目展示和响应式设计。
+一个**纯静态**的个人技术博客系统，基于 Dark AI Lab 设计语言（方案 A）构建，
+支持 Markdown 文章管理、项目展示、动效交互与响应式设计。
+无数据库、无后台、无写接口 —— 内容维护直接编辑文件，或让 AI Agent 代劳（见 [docs/内容维护指南.md](docs/内容维护指南.md)）。
 
 ## 功能特性
 
-- 📝 文章管理：支持 Markdown 格式文章，自动化生成文章列表和详情页
-- 💼 项目展示：灵活的项目展示页面，支持自定义项目详情
-- 🎨 响应式设计：适配各种设备，从桌面到移动端
-- ⚡ 轻量高效：纯静态页面，无需复杂后端支持
-- 🖼️ 多媒体支持：支持文章内图片展示
-
-## 技术栈
-
-- HTML5 + CSS3 + JavaScript
-- Markdown 内容管理
-- Node.js 服务端（用于开发环境）
+- 📝 文章管理：Markdown 文章 + 自动索引，支持代码高亮、数学公式、Mermaid 图表、提示块
+- 💼 项目展示：项目详情页（概述 / 技术栈 / 实现方案 / 图片画廊）
+- 🎨 Dark AI Lab 设计系统：深色玻璃质感、紫青渐变、终端美学
+- ✨ 动效引擎：打字机终端、数字滚动、滚动渐入、3D 卡片倾斜、磁性按钮、鼠标光斑、阅读进度条
+- 🔍 文章过滤：搜索 + 分类 + 标签 + 分页
+- ⚡ 纯静态：任何静态托管平台可直接部署（含 Cloudflare Pages `_headers`）
 
 ## 快速开始
 
-### 安装依赖
-
 ```bash
-npm install
+npm install   # 实际上无运行时依赖，仅备用
+npm start     # http://localhost:3000
+npm run build-manifest  # 新增/修改文章或项目后重建索引
 ```
 
-### 启动开发服务器
+| 页面 | 访问路径 |
+|---|---|
+| 首页 | http://localhost:3000/ |
+| 文章列表 | http://localhost:3000/posts.html |
+| 文章详情 | http://localhost:3000/article.html?id=10000001 |
+| 项目列表 | http://localhost:3000/projects.html |
+| 项目详情 | http://localhost:3000/project.html?id=p001 |
+| 关于我 | http://localhost:3000/about.html |
 
-```bash
-npm start
-```
+## 内容维护（Agent 工作流）
 
-启动后，在浏览器访问以下地址：
-
-#### 前台（面向访客）
-
-| 页面 | 说明 | 访问路径 |
-|---|---|---|
-| 首页 | 博客主页（Hero + 最新文章 + 项目展示） | http://localhost:3000/ |
-| 文章列表 | 所有文章列表 | http://localhost:3000/posts.html |
-| 文章详情 | 查看文章正文 | http://localhost:3000/article.html?id=10000001 |
-| 项目列表 | 所有项目展示 | http://localhost:3000/projects.html |
-| 项目详情 | 查看项目细节 | http://localhost:3000/project.html?id=p001 |
-| 关于我 | 个人介绍页 | http://localhost:3000/about.html |
-
-#### 后台（管理者使用）
-
-访问 http://localhost:3000/admin/ 进入管理后台，支持以下功能：
-- **站点设置**：配置站点标题、首页内容、关于我页面、社交链接、时间轴等
-- **文章管理**：增删改查文章，支持 Markdown 编辑器（EasyMDE）和图片上传
-- **项目管理**：增删改查项目，支持图片上传
-
-### 构建文章索引
-
-```bash
-npm run build-manifest
-```
+需要新增文章或项目时，直接对 AI Agent 说"帮我加一篇文章/项目"即可。
+手动操作方式、meta.json / detail.json 格式、正文扩展语法
+（公式 / Mermaid / 提示块 / 图片）见 **[docs/内容维护指南.md](docs/内容维护指南.md)**。
 
 ## 项目结构
 
 ```
 ViBlog/
 ├── index.html          # 首页
-├── about.html          # 关于页面
-├── article.html        # 文章详情页
-├── posts.html          # 文章列表页
-├── project.html        # 项目详情页
-├── projects.html       # 项目列表页
-├── articles/           # 文章内容目录
-├── projects/           # 项目配置目录
-├── assets/             # 静态资源（图片、图标等）
-└── server.js           # Node.js 服务器
-```
-
-## 文章管理
-
-在 `articles/` 目录下创建文件夹来添加新文章：
-
-```
-articles/
-└── [文章ID]/
-    ├── index.md        # 文章正文
-    ├── meta.json       # 文章元数据
-    └── *.png           # 文章图片
-```
-
-## 项目展示
-
-在 `projects/` 目录下创建文件夹来添加新项目：
-
-```
-projects/
-└── [项目ID]/
-    ├── detail.json     # 项目详情配置
-    └── images/        # 项目图片
+├── posts.html          # 文章列表
+├── article.html        # 文章详情
+├── projects.html       # 项目列表
+├── project.html        # 项目详情
+├── about.html          # 关于我
+├── articles/           # 文章内容（manifest.json 自动生成）
+├── projects/           # 项目内容（manifest.json 自动生成）
+├── assets/             # 静态资源
+├── styles.css          # Dark AI Lab 设计系统
+├── script.js           # 前端逻辑 + 动效引擎
+├── server.js           # 纯静态文件服务器（只读）
+└── build-manifest.js   # 内容索引构建器
 ```
 
 ## License
