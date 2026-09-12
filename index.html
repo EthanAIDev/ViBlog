@@ -10,8 +10,10 @@
   <meta property="og:type" content="website">
   <script>document.documentElement.classList.add("js");
     document.documentElement.setAttribute("data-theme", (function () { try { return localStorage.getItem("viblog-theme") || "dark"; } catch (e) { return "dark"; } })());</script>
-  <link rel="icon" type="image/png" href="assets/avatars/site-favicon_1778245171979_blog.png">
-  <link rel="stylesheet" href="./styles.css?v=20260918">
+  <link rel="icon" type="image/svg+xml" href="assets/logo/logo-mark.svg">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/logo/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/logo/favicon-256.png">
+  <link rel="stylesheet" href="./styles.css?v=20260919">
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
@@ -23,7 +25,7 @@
   <header class="topbar">
     <div class="topbar-inner">
       <a class="brand" href="index.html" aria-label="返回首页">
-        <span class="brand-mark">E</span>
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="vlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B7BFF"/><stop offset="1" stop-color="#3DDCFF"/></linearGradient></defs><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#101014" stroke="rgba(255,255,255,0.10)"/><path d="M10 16 L26.2 48 L33.8 48 L49 16 L40.4 16 L30 37.2 L19.6 16 Z" fill="url(#vlg)"/><rect x="51" y="40" width="9" height="8" rx="1.6" fill="#3DDCFF"/></svg>
         ViBlog <em>/ ethan.dev</em>
       </a>
       <nav class="nav">
@@ -137,7 +139,7 @@
   <footer>
     <div class="foot-inner">
       <div class="foot-brand">
-        <a class="brand" href="index.html"><span class="brand-mark">E</span> ViBlog</a>
+        <a class="brand" href="index.html"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="vlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B7BFF"/><stop offset="1" stop-color="#3DDCFF"/></linearGradient></defs><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#101014" stroke="rgba(255,255,255,0.10)"/><path d="M10 16 L26.2 48 L33.8 48 L49 16 L40.4 16 L30 37.2 L19.6 16 Z" fill="url(#vlg)"/><rect x="51" y="40" width="9" height="8" rx="1.6" fill="#3DDCFF"/></svg> ViBlog</a>
         <p>用感觉编码，用日志留下痕迹。记录 AI 应用开发中的实现细节、踩坑过程与可复用方法。</p>
         <div class="socials">
           <a href="https://github.com/EthanAIDev" target="_blank" rel="noopener" aria-label="GitHub">
@@ -186,6 +188,6 @@
     <div class="noscript-banner">JavaScript 已关闭：文章与项目列表需要 JS 渲染，其余内容仍可正常阅读。</div>
   </noscript>
 
-  <script src="./script.js?v=20260918"></script>
+  <script src="./script.js?v=20260919"></script>
 </body>
 </html>

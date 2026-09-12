@@ -162,15 +162,11 @@ button { font-family: inherit; cursor: pointer; }
   letter-spacing: 0.2px;
 }
 .brand-mark {
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  background: var(--gradient);
-  display: grid;
-  place-items: center;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 700;
-  color: #0a0a0c;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: block;
+  flex: none;
   box-shadow: 0 3px 14px rgba(139, 123, 255, 0.35);
 }
 .brand em {
