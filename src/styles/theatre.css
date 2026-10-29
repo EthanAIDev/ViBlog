@@ -1,17 +1,24 @@
 @layer base {
- :root{color-scheme:dark;--paper:#080b11;--paper-light:#10151e;--ink:#ede7dc;--muted:#a0a6b0;--line:#303742;--accent:#96b5e8;--accent-ink:#b9d2fa;--dark:#080b11;--on-dark:#ede7dc;--muted-dark:#a0a6b0;--display:'Cormorant Garamond','Noto Serif SC Variable',serif;--body:'Manrope Variable','Noto Sans SC Variable',sans-serif;--serif:'Noto Serif SC Variable',serif;--gutter:clamp(22px,3.8vw,72px)}
+ :root{color-scheme:dark;--paper:#080b11;--paper-light:#10151e;--ink:#ede7dc;--muted:#a0a6b0;--line:#303742;--accent:#96b5e8;--accent-ink:#b9d2fa;--dark:#080b11;--on-dark:#ede7dc;--muted-dark:#a0a6b0;--display:'Cormorant Garamond','Noto Serif SC Variable',serif;--body:'Manrope Variable','Noto Sans SC Variable',sans-serif;--serif:'Noto Serif SC Variable',serif;--gutter:clamp(22px,3.8vw,72px);--header-height:82px;--ease-out:cubic-bezier(.16,1,.3,1)}
+ html{scroll-padding-top:calc(var(--header-height) + 24px)}body{padding-top:var(--header-height)}body.page-home{padding-top:0}
  html{scrollbar-color:#525d6d var(--paper)}body{font-weight:400}::selection{background:#324c76;color:#fff}a:hover{color:var(--accent-ink)}
  .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 }
 @layer components {
- .site-header{height:82px;gap:30px;border-bottom-color:#222a35}.page-home .site-header{position:absolute;inset:0 0 auto;z-index:10;border:0;height:82px}
+ .site-header,.page-home .site-header{position:fixed;inset:0 0 auto;z-index:30;height:var(--header-height);gap:30px;border-bottom:1px solid #222a35;background:#080b11f5;transition:background-color 180ms ease,border-color 180ms ease}
+ .page-home .site-header{background:transparent;border-bottom-color:transparent}
+ .page-home .no-script-note{margin-top:var(--header-height)}
+ html[data-scrolled=true] .site-header{background:#080b11f5;border-bottom-color:#222a35}
+ .case-nav{top:calc(var(--header-height) + 24px)}
  .wordmark{font-family:var(--body);font-size:21px;font-weight:500;letter-spacing:.22em;line-height:1}.header-role{font-size:12px;color:#a9adb5;padding-left:30px;border-left:1px solid #535660;line-height:1.2}
  .primary-nav{margin:0 0 0 auto;gap:clamp(28px,3.6vw,62px)}.primary-nav a{font-size:13px;min-height:44px}.primary-nav a[aria-current]::after{height:1px;width:100%;bottom:6px;background:var(--ink)}
  .theatre{height:47.16vw;min-height:590px;max-height:920px;position:relative;isolation:isolate;overflow:clip;background:#060a10}
  .theatre-environment,.theatre-poster,.theatre-canvas{position:absolute;inset:0}
  .theatre-environment{background:var(--theatre-environment) center/cover no-repeat;z-index:-2}
  .theatre-poster{background:var(--theatre-poster) center/100% 100% no-repeat;z-index:-1}
- .theatre[data-renderer=ready] .theatre-poster{visibility:hidden}
+ .theatre-poster{transition:opacity 180ms ease}
+ .theatre[data-renderer=ready] .theatre-poster{opacity:0;visibility:hidden;transition:opacity 180ms ease,visibility 0s 180ms}
+ .theatre-canvas{opacity:0;transition:opacity 180ms ease}.theatre[data-renderer=ready] .theatre-canvas{opacity:1}
  .theatre-canvas canvas{display:block;width:100%!important;height:100%!important;touch-action:pan-y;cursor:grab}
  .theatre-copy{position:absolute;left:var(--gutter);top:57%;z-index:3;pointer-events:none}
  .theatre-copy h1{font-family:var(--serif);font-size:clamp(40px,4.35vw,72px);font-weight:400;line-height:1.42;letter-spacing:-.025em;text-wrap:nowrap;color:#efe7d7;text-shadow:0 3px 18px #03070bdd}
@@ -39,11 +46,15 @@
  @media(min-width:1700px){.theatre{max-height:none}}
  @media(max-width:1100px){.header-role{padding-left:24px}.theatre{min-height:570px}.theatre-copy h1{font-size:clamp(38px,4.35vw,56px)}.theatre-copy{top:56%}.featured-work,.featured-work:nth-child(even){gap:6%;grid-template-columns:1.2fr 1fr}.featured-copy p{font-size:13px}}
  @media(max-width:760px){
-  .site-header,.page-home .site-header{height:76px;gap:12px}.wordmark{font-size:18px;letter-spacing:.15em}.header-role{display:none}.primary-nav{gap:23px;margin-left:auto}.primary-nav a{font-size:12px}
+  :root{--header-height:76px}.site-header,.page-home .site-header{height:var(--header-height);gap:12px}.wordmark{font-size:18px;letter-spacing:.15em}.header-role{display:none}.primary-nav{gap:23px;margin-left:auto}.primary-nav a{font-size:12px}
   .theatre{height:820px;min-height:0;max-height:92svh;min-height:700px}.theatre-environment{background-image:var(--theatre-environment-mobile);background-position:62% center}.theatre-copy{top:auto;bottom:110px;right:var(--gutter)}.theatre-copy h1{font-size:clamp(29px,7.6vw,46px);line-height:1.65}.theatre-enter{font-size:13px;margin-top:18px;gap:20px}
-  .theatre-canvas{bottom:150px;top:10px}.theatre-poster{bottom:150px;top:10px;background-image:var(--theatre-poster-mobile);background-size:cover;background-position:center}.theatre-fallback-note{bottom:75px;font-size:10px;left:var(--gutter)}
+  .theatre-canvas{bottom:150px;top:10px}.theatre-poster{bottom:150px;top:10px;background-image:var(--theatre-poster-mobile);background-size:100% 100%;background-position:center}.theatre-fallback-note{bottom:75px;font-size:10px;left:var(--gutter)}
   .selected-work{padding-top:28px}.selected-work>h2,.theatre-section-title>h2{font-size:37px}.theatre-paths{gap:28px;margin-top:24px}.theatre-paths a>span{font-size:19px;gap:12px}.theatre-paths p{font-size:11px;line-height:1.9}.featured-works{padding-top:65px}.featured-work,.featured-work:nth-child(even){grid-template-columns:1fr;gap:25px;padding-bottom:60px}.featured-work:nth-child(even)>.featured-image{order:0}.featured-copy h3{font-size:43px;margin-top:10px}.featured-copy p{font-size:13px;margin-top:15px}.featured-copy .text-link{margin-top:10px}.theatre-writing{padding-block:20px 55px}.theatre-section-title{margin-bottom:24px;align-items:flex-end}.theatre-section-title>.text-link{font-size:11px;white-space:nowrap;gap:7px}.home-note-list>a{grid-template-columns:1fr 28px}.home-note-list h3{font-size:16px}
   .theatre-about{grid-template-columns:1fr;gap:30px;padding-block:45px 65px}.theatre-about h2{font-size:43px}.theatre-about p{font-size:13px}.site-footer{padding-top:40px}.footer-name{font-size:60px;width:auto}.footer-top>div{width:100%}.footer-top{gap:25px}.footer-back{margin-left:0}.collection-heading h1,.about-heading h1{font-size:clamp(40px,10vw,65px)}.collection-heading{padding-block:45px 35px}.prose{font-size:15px}.article-heading h1{font-size:27px}.article-shell{padding-inline:22px}.contact-email{font-size:31px}
  }
  @media(prefers-reduced-motion:reduce){.featured-image img,.theatre-enter svg{transition:none}}
 }
+@keyframes page-exit{to{opacity:0}}
+@keyframes page-enter{from{opacity:0}to{opacity:1}}
+::view-transition-old(site-header){display:none}
+::view-transition-new(site-header){animation:none}

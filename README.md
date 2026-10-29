@@ -6,6 +6,8 @@ Astro 生成完整静态 HTML；React 管理雕塑状态和文章筛选；Three.
 
 首页的三组开放圆环表达推理、行动与反馈：持续自动循环，拖动改变观察角度且不暂停自转，点击只聚焦，自然滚动展开。光标靠近时，附近金属表面泛起柔和银白反光，移开后 0.3 秒淡出；周围粒子随光标避让、旋绕和变亮。不显示底部控件、悬停文字卡或点击卡片，不绘制环间连线和脉冲球。保留键盘探索与系统减少动态效果偏好，触屏纵向滑动保留页面滚动。雕塑不连接模型服务；真实项目在独立内容区呈现。
 
+全站通过 Astro ClientRouter 在同一文档中切换内容，顶栏固定并跨页面保留；页面内容使用短淡入，链接在悬停时预取。代码复制、画廊和图表按页面初始化并在离页时清理。加载占位图为桌面与手机分别截取的透明雕塑，不含导航或标题，避免刷新时文字重影。
+
 ## 本地运行
 
 需要 Node.js 22.23.4+（当前验证环境为 Node.js 24）与 npm 9.6.5+。
@@ -65,6 +67,8 @@ scripts/
   inspect-release.mjs      # 发布环境、搜索分享与图片体积检查
   inspect-lab.mjs          # Playwright 浏览器验收与截图
   inspect-theatre.mjs      # 实际像素变化、拾取、聚焦、触屏、滚动、离屏与降级验收
+  inspect-navigation.mjs   # 同文档导航、固定顶栏、页面生命周期与透明占位图验收
+  capture-theatre-poster.mjs # 只截取真实 canvas，重新生成透明占位图
 build-manifest.cjs         # 内容索引构建器
 ```
 
@@ -78,6 +82,7 @@ public/articles、public/projects、public/assets 是自动生成的镜像，不
 npx playwright install chromium   # 本机尚无 Playwright 浏览器时运行一次
 node scripts/inspect-lab.mjs
 node scripts/inspect-theatre.mjs
+node scripts/inspect-navigation.mjs
 ```
 
 默认访问 3000；可用 PREVIEW_URL 指定其他预览地址，用 BROWSER_PATH 指定已有 Chromium 可执行文件。截图和验收 JSON 写入 .impeccable/review/，不提交到仓库。

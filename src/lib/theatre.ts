@@ -59,10 +59,12 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
       for(const side of [-1,1]){const screw=addMesh(clamp,new THREE.CylinderGeometry(.045,.045,.2,12),chrome);screw.rotation.x=Math.PI/2;screw.position.x=side*.13;}
     }
     // Broad invisible picking band makes the thin sculpture usable by mouse and touch.
-    const target=addMesh(ring,new THREE.TorusGeometry(radius-.17,.2,8,80,5.8),new THREE.MeshBasicMaterial({visible:false}));target.userData.ring=index;
+    const target=addMesh(ring,new THREE.TorusGeometry(radius-.24,.3,8,80,5.58),new THREE.MeshBasicMaterial({visible:false}));target.rotation.z=index*.8+.22;target.userData.ring=index;
     return {ring,radius,target};
   });
   const pickingTargets=ringGroups.map(({target})=>target);
+  const selectionSurfaces:THREE.Object3D[]=[];
+  ringGroups.forEach(({ring,target})=>ring.traverse(object=>{if(object instanceof THREE.Mesh&&object!==target)selectionSurfaces.push(object);}));
   // A restrained mirrored echo grounds the sculpture without a full-screen reflection pass.
   const reflection=world.clone(true);reflection.position.y=-5.8;reflection.scale.y=-.24;
   reflection.traverse(object=>{if(object instanceof THREE.Mesh){const original=object.material as THREE.Material;const material=original.clone();material.transparent=true;material.opacity=.065;material.depthWrite=false;object.material=material;}});scene.add(reflection);
@@ -73,10 +75,10 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
   const particlePointer=new THREE.Vector2();
   const reflectionSurface=new THREE.Vector3(),reflectionPosition=new THREE.Vector3(),lightDirection=new THREE.Vector3(),reflectionNormal=new THREE.Vector3(),reflectionNormalMatrix=new THREE.Matrix3();
   let reflectionPointerInside=false,reflectionStrength=0,reflectionFrom=0,reflectionTarget=0,reflectionStarted=0,reflectionSettling=false;
-  const cameraAim=new THREE.Vector3(0,.2,0),neutralPointer=new THREE.Vector2();
+  const cameraAim=new THREE.Vector3(0,.2,0),neutralPointer=new THREE.Vector2(),aim=new THREE.Vector3(),projectedPoint=new THREE.Vector3(),hitCoordinates=new THREE.Vector2();
   const clamp=THREE.MathUtils.clamp;
   const project=()=>{
-    const point=new THREE.Vector3();callbacks.project(ringGroups.map(({ring,radius},index)=>{
+    const point=projectedPoint;callbacks.project(ringGroups.map(({ring,radius},index)=>{
       point.set(Math.cos(.7+index*1.9)*radius,Math.sin(.7+index*1.9)*radius,0);ring.localToWorld(point).project(camera);
       return {x:Math.round(clamp((point.x+1)*width/2,45,width-45)),y:Math.round(clamp((-point.y+1)*height/2,90,height-95))};
     }));
@@ -84,7 +86,7 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
   const resize=new ResizeObserver(()=>{const rect=host.getBoundingClientRect();if(!rect.width||!rect.height)return;width=rect.width;height=rect.height;camera.aspect=width/height;camera.fov=width<760?44:35;camera.position.z=width<760?17:13.5;world.position.x=width<760?.2:1.25;particles.resize(width<760);camera.updateProjectionMatrix();renderer.setSize(width,height);dirty=true;});resize.observe(host);
   const visibility=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;dirty=true;},{rootMargin:'60px'});visibility.observe(host);
   const canvas=renderer.domElement;
-  function hit(event:PointerEvent){const rect=canvas.getBoundingClientRect();const coordinates=new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(coordinates,camera);let object:THREE.Object3D|null=raycaster.intersectObjects(ringGroups.map(({ring})=>ring),true)[0]?.object||null;while(object&&object.userData.ring===undefined)object=object.parent;return object?Number(object.userData.ring):null;}
+  function hit(event:PointerEvent,precise=false){const rect=canvas.getBoundingClientRect();hitCoordinates.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(hitCoordinates,camera);let object:THREE.Object3D|null=raycaster.intersectObjects(precise?selectionSurfaces:pickingTargets,false)[0]?.object||null;while(object&&object.userData.ring===undefined)object=object.parent;return object?Number(object.userData.ring):null;}
   function down(event:PointerEvent){if(event.button!==0)return;downX=lastX=event.clientX;downY=lastY=event.clientY;pending=true;dragging=false;velocityX=velocityY=0;pointer.copy(follow);}
   function move(event:PointerEvent){
     dirty=true;
@@ -98,7 +100,7 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
     const rect=canvas.getBoundingClientRect();pointer.set((event.clientX-rect.left)/rect.width-.5,(event.clientY-rect.top)/rect.height-.5);
     const index=hit(event);if(hovered!==index){hovered=index;callbacks.hover(index);}canvas.style.cursor=index===null?'grab':'pointer';
   }
-  function up(event:PointerEvent){if(pending&&!dragging&&Math.hypot(event.clientX-downX,event.clientY-downY)<6){const index=hit(event);if(index!==null)callbacks.select(index);}pending=false;dragging=false;if(!state.motion)velocityX=velocityY=0;if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);canvas.style.cursor='grab';}
+  function up(event:PointerEvent){if(pending&&!dragging&&Math.hypot(event.clientX-downX,event.clientY-downY)<6){const index=hit(event,true);if(index!==null)callbacks.select(index);}pending=false;dragging=false;if(!state.motion)velocityX=velocityY=0;if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);canvas.style.cursor='grab';}
   const cancel=()=>{pending=false;dragging=false;velocityX=velocityY=0;hovered=null;callbacks.hover(null);};
   const leave=()=>{if(!dragging){pointer.set(0,0);hovered=null;callbacks.hover(null);dirty=true;}};
   canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',cancel);canvas.addEventListener('pointerleave',leave);canvas.style.touchAction='pan-y';
@@ -106,6 +108,8 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
   const fieldMove=(event:PointerEvent)=>{const rect=canvas.getBoundingClientRect();particlePointer.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);particlePointerInside=Math.abs(particlePointer.x)<=1&&Math.abs(particlePointer.y)<=1;reflectionPointerInside=particlePointerInside&&event.pointerType!=='touch';dirty=true;};
   const fieldLeave=()=>{particlePointerInside=false;reflectionPointerInside=false;dirty=true;};
   stage.addEventListener('pointermove',fieldMove,{passive:true});stage.addEventListener('pointerleave',fieldLeave);stage.addEventListener('pointercancel',fieldLeave);
+  // Compile while the clean poster is visible, before interactive playback begins.
+  try{await renderer.compileAsync(scene,camera);}catch(error){dispose();throw error;}
   renderer.setAnimationLoop(()=>{
     if(disposed)return;const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;
     if(!visible||document.hidden)return;
@@ -133,7 +137,7 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
       ring.updateMatrix();
     });
     // Each selection gets its own camera aim without adding UI over the sculpture.
-    const aim=new THREE.Vector3(0,.2,0);
+    aim.set(0,.2,0);
     if(state.selected!==null){const {ring,radius}=ringGroups[state.selected];const angle=.9+state.selected*2.1;aim.set(Math.cos(angle)*radius*.22,Math.sin(angle)*radius*.22,0);ring.localToWorld(aim);aim.x*=.35;aim.y*=.35;}
     cameraAim.lerp(aim,state.motion?.1:1);camera.lookAt(cameraAim);settling=settling||cameraAim.distanceTo(aim)>.0001;
     camera.updateMatrixWorld();
@@ -175,5 +179,6 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
     host.dataset.reflectionStrength=reflectionStrength.toFixed(3);
     dirty=false;
   });
-  return {backend,update(next){if(!next.motion)velocityX=velocityY=0;state=next;dirty=true;settling=true;},dispose(){disposed=true;renderer.setAnimationLoop(null);resize.disconnect();visibility.disconnect();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',cancel);canvas.removeEventListener('pointerleave',leave);stage.removeEventListener('pointermove',fieldMove);stage.removeEventListener('pointerleave',fieldLeave);stage.removeEventListener('pointercancel',fieldLeave);particles.dispose();const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>();scene.traverse(object=>{if(object instanceof THREE.Mesh){geometries.add(object.geometry);(Array.isArray(object.material)?object.material:[object.material]).forEach(material=>materials.add(material));}});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());chrome.dispose();pmrem.dispose();environmentMap.dispose();renderer.dispose();canvas.remove();}};
+  function dispose(){disposed=true;renderer.setAnimationLoop(null);resize.disconnect();visibility.disconnect();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',cancel);canvas.removeEventListener('pointerleave',leave);stage.removeEventListener('pointermove',fieldMove);stage.removeEventListener('pointerleave',fieldLeave);stage.removeEventListener('pointercancel',fieldLeave);particles.dispose();const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>();scene.traverse(object=>{if(object instanceof THREE.Mesh){geometries.add(object.geometry);(Array.isArray(object.material)?object.material:[object.material]).forEach(material=>materials.add(material));}});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());chrome.dispose();pmrem.dispose();environmentMap.dispose();renderer.dispose();canvas.remove();}
+  return {backend,update(next){if(!next.motion)velocityX=velocityY=0;state=next;dirty=true;settling=true;},dispose};
 }

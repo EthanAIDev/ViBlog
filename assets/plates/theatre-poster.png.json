@@ -1,1 +1,6 @@
-{"source":"Origin: screenshot of the project's actual procedural Three.js cognitive sculpture, captured transparently with Playwright. Used only while WebGPU/WebGL is loading or unavailable.","generator":"local renderer capture","created":"2026-10-28"}
+{
+  "source": "src/lib/theatre.ts",
+  "prompt": "Transparent capture of the real sculpture and particles only. All HTML, environment and fallback layers were hidden.",
+  "width": 1586,
+  "height": 748
+}

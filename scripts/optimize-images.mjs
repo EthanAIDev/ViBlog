@@ -36,7 +36,7 @@ async function optimize(relative){
     images[`/${relative}`]={...dimensions,src:largest.src,variants};
     originalBytes+=bytes.length;largestBytes+=largest.bytes;
 }
-const sources=new Set(['assets/plates/environment.png','assets/plates/theatre-poster.png','assets/avatars/about-avatar.jpg']);
+const sources=new Set(['assets/plates/environment.png','assets/plates/theatre-poster.png','assets/plates/theatre-poster-mobile.png','assets/avatars/about-avatar.jpg']);
 async function collectContentImages(directory){
   for(const entry of await readdir(path.join(root,directory),{withFileTypes:true})){
     const relative=path.posix.join(directory,entry.name);
