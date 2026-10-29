@@ -1,29 +1,20 @@
 {
   "tool": "image_gen",
-  "intent": "independent-generation-with-reference",
-  "prompt": "Use case: stylized-concept\nAsset type: independently authored opaque photographic environment plate for a contemporary exhibition scene; not a website image and not a page mockup.\nPrimary request: Generate ONE new ultra-wide cinematic dark exhibition environment, 2560 x 1200 pixels, approximately 2.13:1. Use the reference ONLY for the environment's mood, palette, materials, relative framing and camera; independently author the scene. The reference's sculpture and interface must be completely absent.\nScene/backdrop: an empty almost-black navy contemporary gallery or underground exhibition hall. A large low rough dark basalt bank enters only at the extreme left edge and slopes down toward the left-of-center background. A separate smaller rugged basalt outcrop enters only from the far right lower edge. Keep both rock formations dark and low, cropped naturally at the side edges. A tall dark charcoal concrete wall occupies only the far right 18% of the frame, extending beyond the top edge; faint tactile concrete grain and one very subtle vertical edge are enough. The rest of the distant background is deep nearly black navy negative space.\nSubject: empty atmospheric architectural space ONLY. There is no sculpture or centerpiece. All central and left foreground space remains clear for separately rendered real 3D geometry and real HTML typography.\nStyle/medium: photorealistic high-end exhibition architectural photography with believable basalt texture, quiet rough concrete and a barely reflective black floor; refined physical materials, subtle filmic low-light exposure, no painterly illustration.\nComposition/framing: ultra-wide landscape 2.13:1, fixed low front view, broad empty middle from x=20% through x=82%. The dark floor runs across only the lower 20% of the image, with fine, dim, horizontal natural reflections and no bright reflected source. The lower left foreground is almost black and visually quiet. No objects or vertical structures cross the center. Match the reference's dark environmental framing rather than its sculpture or page layout.\nLighting/mood: extremely restrained blue rim light skims a few irregular ridges on the two edge rock banks. Overall almost-black ink-navy exposure, around #080b12, with charcoal shadows, the faintest muted steel-blue reflections and low-contrast concrete at the far right. Blue highlights are physical edge light, sparse and never neon. No extra light sources are visible.\nText (verbatim): \"\"\nConstraints: environment only, opaque full-frame image, independent new pixels. Exclude ALL text, letters, logos, wordmarks, navigation, buttons, controls, lines, dividers, sliders, captions, interface and watermarks. Exclude ALL rings, circles, hoops, wires, glass structures, metal objects, sculpture, plinths, pedestals, people and furniture. No central pillars or arches. No added spotlights, glow orbs, beams, starfield, cosmic sky, fog clouds, colored gradients, decorative grids or patterned wall lights. Do not copy the reference image's actual pixels. Keep the center empty and dark.",
-  "promptFile": "assets/plates/environment.prompt.txt",
-  "reference": "design-prototypes/2026-10-28-main-visual/b-cognitive-theatre.png",
-  "source": "assets/plates/source/environment-native.png",
-  "nativeDimensions": {
+  "intent": "lighting-edit",
+  "prompt": "Use case: lighting-weather.\nAsset: opaque photographic ENVIRONMENT PLATE for an existing interactive three-dimensional exhibition homepage.\nImage 1 is the EDIT TARGET: an empty navy-black exhibition room, rough basalt banks only at the left and right edges, concrete architectural slab at far right, and a wet dark floor across the bottom 20%.\nImage 2 is a LIGHTING REFERENCE ONLY: use its silver-blue / champagne-warm lighting balance and the natural warm reflection on the floor. Do not include ANY of its brain, sculpture, cage, letters, typography, navigation or webpage content.\nEdit ONLY the lighting of image 1. Keep its geometry, camera, rock placement and silhouettes, empty central region, right concrete wall and dark background essentially unchanged. Deliver the SAME wide approximately 2.13:1 frame as image 1.\nAdd one very natural, localized, champagne-gold reflected light pool in the existing wet floor, centered around x=63% of the frame and confined to y=79% through the lower edge. The virtual light source is above the floor at the future sculpture location, but the source itself and the sculpture are NOT visible in this environment plate. The reflection should be an irregular vertically elongated streak made of many broken short horizontal glints following the existing photographic micro-ripples. Softer, broader and warmer nearer the foreground. It must have organic photographic variation and believable specular falloff, not evenly spaced sinusoidal lines, a grid, a glowing circle or a painted golden patch. Keep enough black between reflection fragments. Keep the lower-left headline area dark and quiet. The brightest champagne reflections should remain moderate and never blow out to white.\nPreserve the original cold, muted blue rim highlights on the basalt edges, and slightly warm the existing grazing light on the far-right concrete surface. Overall stay very dark ink navy, cinematic restrained exposure, realistic rough stone and thin glossy water film. Warm gold is a local reflected accent; it must not flood the whole room or recolor the blue rocks.\nABSOLUTE INVARIANTS: Environment ONLY, fully opaque. Empty center. No brain, no rings, no sculpture, no machinery, no pedestal, no people, no UI, no text or symbols, no added objects or light fixtures, no stars, no fog beams, no decorative patterns. This is a clean background texture for separately rendered real geometry and real HTML, not a finished webpage. Preserve all existing architecture and space.\n",
+  "promptFile": "assets/plates/environment-warm.prompt.txt",
+  "reference": "Previous environment plate and the user-selected neural-weave concept lighting; environment geometry retained, concept brain excluded.",
+  "generationSource": "C:/Users/Ethan/.codex/generated_images/01a17868-9f37-7b43-892b-da2e8c1fa673/exec-5fba8c79-449e-4d9e-9835-c58acc6476bf.png",
+  "opaque": true,
+  "independentlyGenerated": false,
+  "referencePixelsUsed": true,
+  "previousSha256": "833d82a757196f6cab80e1b80e66b58b1ac650287a4973e3b8e975638a4408ea",
+  "outputDimensions": {
     "width": 1832,
     "height": 859
   },
-  "generationSource": "C:/Users/Ethan/.codex/generated_images/01a182fe-5b37-7e61-9925-a4aa5024b38f/exec-cd6d627f-f1ce-4924-8f71-73e69abe81d1.png",
-  "opaque": true,
-  "independentlyGenerated": true,
-  "referencePixelsUsed": false,
-  "promptEmbeddedBy": "impeccable embed-prompt",
-  "outputDimensions": {
-    "width": 2560,
-    "height": 1200
-  },
   "processing": {
-    "converter": "installed sharp",
-    "operation": "resize",
-    "kernel": "lanczos3",
-    "fit": "fill",
-    "note": "Native 1832x859 output enlarged 1.397x. Aspect difference is under 0.03 percent; no reference image pixels copied."
+    "operation": "Native image-generation output preserved without resizing"
   },
-  "sha256": "833d82a757196f6cab80e1b80e66b58b1ac650287a4973e3b8e975638a4408ea"
+  "sha256": "dbc80805cb0e055368d217052458001912712c169a69446d175b7c93541e07a9"
 }

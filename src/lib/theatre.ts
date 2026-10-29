@@ -10,7 +10,7 @@ type Callbacks={select:(index:number)=>void;hover:(index:number|null)=>void;proj
 export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promise<TheatreHandle>{
   const renderer=new THREE.WebGPURenderer({alpha:true,antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<760?1.25:1.5));
-  renderer.setClearColor(0,0);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.8;
+  renderer.setClearColor(0,0);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.85;
   try{await renderer.init();}catch(error){renderer.dispose();throw error;}
   host.appendChild(renderer.domElement);
   const backend='isWebGPUBackend' in renderer.backend?'WebGPU':'WebGL 2';
@@ -20,21 +20,25 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
   // Black exhibition walls and narrow softboxes give metal a dark/light reflection,
   // rather than the uniformly white finish of the default studio environment.
   environment.traverse(object=>{
-    if(object instanceof THREE.Mesh && object.material instanceof THREE.MeshStandardMaterial)object.material.color.set(0x626c7a);
+    if(object instanceof THREE.Mesh && object.material instanceof THREE.MeshStandardMaterial)object.material.color.set(0x454d59);
     if(object instanceof THREE.PointLight)object.intensity=350;
-    if(object instanceof THREE.Mesh && object.material instanceof THREE.MeshLambertMaterial){object.material.emissiveIntensity*=.35;object.scale.multiplyScalar(1.5);}
+    if(object instanceof THREE.Mesh && object.material instanceof THREE.MeshLambertMaterial){
+      object.material.emissive.set(object.position.z>8?0xffd7a4:object.position.y>19?0xffebd3:object.position.x>10?0xaec9ea:0xe9edf5);
+      object.material.emissiveIntensity*=.35;object.scale.multiplyScalar(1.5);
+    }
   });
   const pmrem=new THREE.PMREMGenerator(renderer);const environmentMap=pmrem.fromScene(environment,.025);
-  scene.environment=environmentMap.texture;scene.environmentIntensity=1.1;scene.environmentRotation.set(.35,.7,.15);environment.dispose();
-  const key=new THREE.DirectionalLight(0xffe9ce,2);key.position.set(-4,5,5);scene.add(key);
-  const rim=new THREE.DirectionalLight(0x517dff,3);rim.position.set(5,2,-2);scene.add(rim);
+  scene.environment=environmentMap.texture;scene.environmentIntensity=.95;scene.environmentRotation.set(.35,.7,.15);environment.dispose();
+  const key=new THREE.DirectionalLight(0xffddb0,2.5);key.position.set(-4,5,5);scene.add(key);
+  const rim=new THREE.DirectionalLight(0x82adcf,2.2);rim.position.set(5,2,-2);scene.add(rim);
   const fill=new THREE.DirectionalLight(0xc7d9ff,.7);fill.position.set(-5,-2,2);scene.add(fill);
+  const coreLight=new THREE.PointLight(0xffca8b,8,9,2);coreLight.position.set(1,.2,1.1);scene.add(coreLight);
   // A small white source catches nearby bevels without recoloring an entire ring.
   const pointerLight=new THREE.PointLight(0xf4f6ff,0,1.65,2);pointerLight.name='pointer-reflection';scene.add(pointerLight);
   const world=new THREE.Group();world.position.set(1.25,.25,0);world.rotation.z=-.16;scene.add(world);
   const chrome=new THREE.MeshPhysicalMaterial({color:0xd6dfeb,metalness:1,roughness:.19,clearcoat:1,clearcoatRoughness:.12,envMapIntensity:1.5});
   const glass=new THREE.MeshPhysicalMaterial({color:0x8799b0,metalness:0,roughness:.12,transmission:.65,thickness:.12,ior:1.46,transparent:true,opacity:.72,clearcoat:1,side:THREE.DoubleSide});
-  const wire=new THREE.MeshStandardMaterial({color:0xc7c3ba,metalness:1,roughness:.29});
+  const wire=new THREE.MeshStandardMaterial({color:0xc7c3ba,metalness:1,roughness:.29,emissive:0xffc88c,emissiveIntensity:.32});
   const joint=new THREE.MeshStandardMaterial({color:0x646a73,metalness:1,roughness:.24});
   function addMesh(parent:THREE.Object3D,geometry:THREE.BufferGeometry,material:THREE.Material){const mesh=new THREE.Mesh(geometry,material);parent.add(mesh);return mesh;}
   function band(radius:number,width:number,start:number,end:number){
@@ -67,7 +71,7 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
   ringGroups.forEach(({ring,target})=>ring.traverse(object=>{if(object instanceof THREE.Mesh&&object!==target)selectionSurfaces.push(object);}));
   // A restrained mirrored echo grounds the sculpture without a full-screen reflection pass.
   const reflection=world.clone(true);reflection.position.y=-5.8;reflection.scale.y=-.24;
-  reflection.traverse(object=>{if(object instanceof THREE.Mesh){const original=object.material as THREE.Material;const material=original.clone();material.transparent=true;material.opacity=.065;material.depthWrite=false;object.material=material;}});scene.add(reflection);
+  reflection.traverse(object=>{if(object instanceof THREE.Mesh){const original=object.material as THREE.Material;const material=original.clone();material.transparent=true;material.opacity=.085;material.depthWrite=false;object.material=material;}});scene.add(reflection);
   const particles=createParticleField(scene,camera);
   let state:TheatreState={motion:!matchMedia('(prefers-reduced-motion: reduce)').matches,selected:null,hovered:null,scroll:0};
   const arrivalDuration=1.16,arrivalStagger=.07,arrivalTotal=arrivalDuration+arrivalStagger*2;
