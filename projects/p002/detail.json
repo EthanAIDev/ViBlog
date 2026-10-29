@@ -32,5 +32,14 @@
       "alt": "04-后台配置页",
       "caption": "04-后台配置页"
     }
+  ],
+  "displayName": "ChatBI",
+  "focus": "Conversational intelligence",
+  "cardSummary": "用自然语言探索股票数据，把查询、分析与可视化连接在一次对话里。",
+  "technologies": [
+    "React",
+    "LangGraph",
+    "ChromaDB",
+    "ECharts"
   ]
 }

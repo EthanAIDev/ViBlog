@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Theatre from '../components/Theatre';
+import Icon from '../components/Icon.astro';
+import ResponsiveImage from '../components/ResponsiveImage.astro';
+import {imageVariant} from '../lib/images';
+import {getPosts,getProjects} from '../lib/content';
+const projects=getProjects();const posts=getPosts();
+const sceneImages={environment:{desktop:imageVariant('/assets/plates/environment.png',1920),mobile:imageVariant('/assets/plates/environment.png',960)},poster:{desktop:imageVariant('/assets/plates/theatre-poster.png',1920),mobile:imageVariant('/assets/plates/theatre-poster.png',960)}};
+---
+<Layout>
+ <Theatre client:load images={sceneImages}/>
+ <section id="selected-work" class="selected-work page-shell">
+  <h2>Selected work</h2>
+  <div class="theatre-paths"><a href="/projects/"><span>Agent 系统 <Icon name="arrow" size={20}/></span><p>将想法落地为可运行的 AI Agent 应用。</p></a><a href="/posts/"><span>技术笔记 <Icon name="arrow" size={20}/></span><p>记录在开发与实践中的思考与方法。</p></a></div>
+  <div class="featured-works">{projects.slice(0,2).map((project,index)=><article class="featured-work"><a class="featured-image" href={project.href}><ResponsiveImage src={project.cover} alt={`${project.name} 实际界面`} sizes="(max-width: 760px) 90vw, 50vw"/></a><div class="featured-copy"><span class="work-number">{String(index+1).padStart(2,'0')}</span><h3><a href={project.href}>{project.name}</a></h3><p>{project.shortSummary}</p><a class="text-link" href={project.href}>进入项目 <Icon name="diagonal" size={18}/></a></div></article>)}</div>
+ </section>
+ <section class="theatre-writing page-shell"><div class="theatre-section-title"><h2>Notes & thoughts</h2><a class="text-link" href="/posts/">全部文章 <Icon name="arrow" size={18}/></a></div><div class="home-note-list">{posts.map(post=><a href={post.href}><div class="note-meta"><time datetime={post.date}>{post.displayDate}</time><span>{post.type}</span></div><h3>{post.title}</h3><span class="note-arrow"><Icon name="diagonal" size={23}/></span></a>)}</div></section>
+ <section class="theatre-about page-shell"><h2>A curious mind.<br/>A builder at heart.</h2><div><p>我是 Ethan，AI Agent 开发工程师。关注智能体、知识检索与工具调用，也关心技术最终如何成为清晰、可用的体验。</p><a class="text-link" href="/about/">关于我 <Icon name="arrow" size={18}/></a></div></section>
+</Layout>

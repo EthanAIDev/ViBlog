@@ -1,0 +1,17 @@
+export const iconPaths: Record<string, string> = {
+  arrow: 'M4 12h16m-6-6 6 6-6 6',
+  diagonal: 'M6 18 18 6M6 6h12v12',
+  search: 'm20 20-5-5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0',
+  close: 'm6 6 12 12M6 18 18 6',
+  plus: 'M12 4v16M4 12h16',
+  minus: 'M4 12h16',
+  back: 'M20 12H4m6-6-6 6 6 6',
+  up: 'M12 20V4m-6 6 6-6 6 6',
+  down: 'M12 4v16m-6-6 6 6 6-6',
+  check: 'm5 12 4 4L19 6',
+  layers: 'm4 7 8-4 8 4-8 4-8-4zm0 5 8 4 8-4M4 17l8 4 8-4',
+  play: 'm8 5 11 7-11 7V5z',
+  pause: 'M8 5v14M16 5v14',
+  reset: 'M3 10a9 9 0 1 1 1 8M3 4v6h6',
+  motion: 'M3 8h10M3 16h10M17 4l5 8-5 8M6 12h10',
+};

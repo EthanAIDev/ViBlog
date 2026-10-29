@@ -32,5 +32,14 @@
       "alt": "图表钻取",
       "caption": "图表钻取"
     }
+  ],
+  "displayName": "Agentic BI Copilot",
+  "focus": "Agent engineering",
+  "cardSummary": "从一个经营问题，到一条可解释的分析路径。让 SQL、知识检索与工具调用协同工作。",
+  "technologies": [
+    "Next.js",
+    "FastAPI",
+    "RAG",
+    "SSE"
   ]
 }

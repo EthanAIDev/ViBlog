@@ -1,0 +1,31 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import GalleryDialog from '../../components/GalleryDialog.astro';
+import ResponsiveImage from '../../components/ResponsiveImage.astro';
+import {getProjects,renderMarkdown} from '../../lib/content';
+import 'katex/dist/katex.min.css';
+export function getStaticPaths() {return getProjects().map((project) => ({params:{id:project.id},props:{project}}));}
+const {project}=Astro.props;
+const assetBase=`/projects/${project.id}/`;
+const overview=await renderMarkdown(project.overviewMd,assetBase);
+const technologies=await renderMarkdown(project.techStackMd,assetBase);
+const implementation=await renderMarkdown(project.implementationMd,assetBase);
+const next=getProjects()[(getProjects().findIndex((item)=>item.id===project.id)+1)%getProjects().length];
+---
+<Layout title={`${project.name} — Ethan`} description={project.shortSummary} page="project">
+  <div class="page-shell project-detail">
+    <a class="back-link" href="/projects/"><Icon name="back" size={18}/>全部项目</a>
+    <header class="project-detail-heading"><h1>{project.name}</h1><div class="project-record"><span>{project.id.toUpperCase()}</span><span>{project.focus}</span></div><div class="project-detail-summary"><p>{project.shortSummary}</p><a class="button button-dark" href={project.links.github} target="_blank" rel="noopener noreferrer">查看源码 <Icon name="diagonal" size={18}/></a></div></header>
+    <div class="detail-cover"><ResponsiveImage src={project.cover} alt={project.title+'主界面'} loading="eager" fetchpriority="high" sizes="92vw"/></div>
+    <div class="case-layout"><aside class="case-nav"><p>{project.title}</p><nav aria-label="项目内容"><a href="#overview">项目概述</a><a href="#technology">技术选型</a><a href="#implementation">实现过程</a><a href="#gallery">界面档案</a></nav><div class="technology-list">{project.technologies.map((item)=><span>{item}</span>)}</div></aside><div class="case-content">
+      {project.id==='p003' && <div class="version-note">本网站现采用 Astro、React 与 Three.js 构建。下方文档与截图保留原版 ViBlog 的实现记录，当前源码以仓库为准。</div>}
+      <section id="overview"><h2>项目概述</h2><div class="prose" set:html={overview}/></section>
+      <section id="technology"><h2>技术选型</h2><div class="prose" set:html={technologies}/></section>
+      <section id="implementation"><h2>实现过程</h2><div class="prose" set:html={implementation}/></section>
+    </div></div>
+    <section id="gallery" class="project-gallery"><div class="section-heading"><h2>界面档案。</h2><span>点击图片，查看细节</span></div><div class="gallery-grid">{project.gallery.map((image) => <figure><button type="button" data-gallery-image={assetBase+image.src} data-caption={image.caption||image.alt} aria-label={`放大查看：${image.alt}`}><ResponsiveImage src={assetBase+image.src} alt={image.alt} sizes="(max-width: 760px) 90vw, 45vw"/><Icon name="plus"/></button><figcaption>{image.caption||image.alt}</figcaption></figure>)}</div></section>
+    <a class="next-project" href={next.href} aria-label={`继续探索：${next.name}`}><h2>{next.name}</h2><Icon name="diagonal" size={40}/></a>
+  </div>
+  <GalleryDialog/>
+</Layout>

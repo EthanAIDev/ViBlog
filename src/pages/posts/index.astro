@@ -1,0 +1,9 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArticleIndex from '../../components/ArticleIndex';
+import { getPosts } from '../../lib/content';
+const posts = getPosts();
+---
+<Layout title="文章 — Ethan" page="posts">
+  <div class="page-shell"><header class="collection-heading"><h1>Notes from<br/>the lab<span>.</span></h1><div><p>技术笔记与未完成的思考。</p><p>写下怎么做，也记录为什么。</p></div></header><ArticleIndex posts={posts} client:load/></div>
+</Layout>

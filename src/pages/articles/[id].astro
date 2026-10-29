@@ -1,0 +1,24 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import GalleryDialog from '../../components/GalleryDialog.astro';
+import {getPosts,getArticleMarkdown,renderMarkdown,getTableOfContents} from '../../lib/content';
+import 'katex/dist/katex.min.css';
+export function getStaticPaths() {return getPosts().map((post) => ({params:{id:post.id},props:{post}}));}
+const {post}=Astro.props;
+const html=await renderMarkdown(getArticleMarkdown(post.id),`/articles/${post.id}/`);
+const toc=getTableOfContents(html);
+const others=getPosts().filter((item) => item.id!==post.id);
+---
+<Layout title={`${post.title} — Ethan`} description={post.summary} page="article">
+  <article class="article-shell">
+    <a class="back-link" href="/posts/"><Icon name="back" size={18}/>全部文章</a>
+    <header class="article-heading"><div class="article-meta"><time datetime={post.date}>{post.displayDate}</time><span>{post.type}</span><span>约 {post.minutes} 分钟</span></div><h1>{post.title}</h1><div class="writing-tags">{post.tags.map((tag) => <span>{tag}</span>)}</div></header>
+    <div class="article-author"><span class="author-initial">E</span><div><a href="/about/">Ethan</a><span>AI Agent 开发工程师 · 技术创作者</span></div></div>
+    {toc.length>0 && <details class="article-toc"><summary>文章目录 <span>{toc.length} 个章节</span></summary><nav aria-label="文章目录"><ol>{toc.map((heading)=><li class:list={[heading.depth===3&&'toc-subheading']}><a href={'#'+heading.id}>{heading.text}</a></li>)}</ol></nav></details>}
+    <div class="prose" set:html={html}/>
+    <div class="article-end"><span>— End of this thought.</span><a class="text-link" href="/posts/">回到笔记 <Icon/></a></div>
+  </article>
+  <section class="related-reading page-shell"><h2>顺着这条思路。</h2>{others.slice(0,2).map((item) => <a href={item.href}><span>{item.type}</span><h3>{item.title}</h3><Icon name="diagonal"/></a>)}</section>
+  <GalleryDialog/>
+</Layout>

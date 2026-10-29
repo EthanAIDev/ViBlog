@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-28T16:16:40.655Z",
+  "title": "Design System: Ethan / ViBlog — 认知剧场",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "展厅蓝黑",
+        "canonical": "#080b11",
+        "tonalRamp": [
+          "oklch(15% 0.0064 263.2)",
+          "oklch(27% 0.0105 263.2)",
+          "oklch(38% 0.0130 263.2)",
+          "oklch(49% 0.0140 263.2)",
+          "oklch(60% 0.0133 263.2)",
+          "oklch(72% 0.0108 263.2)",
+          "oklch(84% 0.0068 263.2)",
+          "oklch(95% 0.0022 263.2)"
+        ]
+      },
+      "paper-light": {
+        "role": "neutral",
+        "displayName": "近黑蓝",
+        "canonical": "#10151e",
+        "tonalRamp": [
+          "oklch(15% 0.0090 262.0)",
+          "oklch(27% 0.0149 262.0)",
+          "oklch(38% 0.0185 262.0)",
+          "oklch(49% 0.0199 262.0)",
+          "oklch(60% 0.0189 262.0)",
+          "oklch(72% 0.0153 262.0)",
+          "oklch(84% 0.0096 262.0)",
+          "oklch(95% 0.0031 262.0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "暖象牙",
+        "canonical": "#ede7dc",
+        "tonalRamp": [
+          "oklch(15% 0.0073 82.8)",
+          "oklch(27% 0.0121 82.8)",
+          "oklch(38% 0.0149 82.8)",
+          "oklch(49% 0.0161 82.8)",
+          "oklch(60% 0.0153 82.8)",
+          "oklch(72% 0.0124 82.8)",
+          "oklch(84% 0.0077 82.8)",
+          "oklch(95% 0.0025 82.8)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "灰蓝说明",
+        "canonical": "#a0a6b0",
+        "tonalRamp": [
+          "oklch(15% 0.0073 260.7)",
+          "oklch(27% 0.0120 260.7)",
+          "oklch(38% 0.0149 260.7)",
+          "oklch(49% 0.0160 260.7)",
+          "oklch(60% 0.0152 260.7)",
+          "oklch(72% 0.0123 260.7)",
+          "oklch(84% 0.0077 260.7)",
+          "oklch(95% 0.0025 260.7)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "结构线",
+        "canonical": "#303742",
+        "tonalRamp": [
+          "oklch(15% 0.0098 259.4)",
+          "oklch(27% 0.0163 259.4)",
+          "oklch(38% 0.0202 259.4)",
+          "oklch(49% 0.0217 259.4)",
+          "oklch(60% 0.0206 259.4)",
+          "oklch(72% 0.0167 259.4)",
+          "oklch(84% 0.0104 259.4)",
+          "oklch(95% 0.0034 259.4)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "浅蓝信号",
+        "canonical": "#96b5e8",
+        "tonalRamp": [
+          "oklch(15% 0.0368 260.2)",
+          "oklch(27% 0.0608 260.2)",
+          "oklch(38% 0.0754 260.2)",
+          "oklch(49% 0.0810 260.2)",
+          "oklch(60% 0.0771 260.2)",
+          "oklch(72% 0.0625 260.2)",
+          "oklch(84% 0.0391 260.2)",
+          "oklch(95% 0.0127 260.2)"
+        ]
+      },
+      "accent-ink": {
+        "role": "primary",
+        "displayName": "亮浅蓝",
+        "canonical": "#b9d2fa",
+        "tonalRamp": [
+          "oklch(15% 0.0282 259.8)",
+          "oklch(27% 0.0466 259.8)",
+          "oklch(38% 0.0578 259.8)",
+          "oklch(49% 0.0621 259.8)",
+          "oklch(60% 0.0591 259.8)",
+          "oklch(72% 0.0479 259.8)",
+          "oklch(84% 0.0299 259.8)",
+          "oklch(95% 0.0097 259.8)"
+        ]
+      },
+      "button-surface": {
+        "role": "neutral",
+        "displayName": "浅灰按钮面",
+        "canonical": "#e4e7ed",
+        "tonalRamp": [
+          "oklch(15% 0.0040 264.5)",
+          "oklch(27% 0.0065 264.5)",
+          "oklch(38% 0.0081 264.5)",
+          "oklch(49% 0.0087 264.5)",
+          "oklch(60% 0.0083 264.5)",
+          "oklch(72% 0.0067 264.5)",
+          "oklch(84% 0.0042 264.5)",
+          "oklch(95% 0.0014 264.5)"
+        ]
+      },
+      "button-ink": {
+        "role": "neutral",
+        "displayName": "深蓝按钮字",
+        "canonical": "#131b29",
+        "tonalRamp": [
+          "oklch(15% 0.0136 261.3)",
+          "oklch(27% 0.0225 261.3)",
+          "oklch(38% 0.0279 261.3)",
+          "oklch(49% 0.0300 261.3)",
+          "oklch(60% 0.0286 261.3)",
+          "oklch(72% 0.0232 261.3)",
+          "oklch(84% 0.0145 261.3)",
+          "oklch(95% 0.0047 261.3)"
+        ]
+      },
+      "prose-ink": {
+        "role": "neutral",
+        "displayName": "阅读灰白",
+        "canonical": "#d2d6df",
+        "tonalRamp": [
+          "oklch(15% 0.0059 266.7)",
+          "oklch(27% 0.0098 266.7)",
+          "oklch(38% 0.0122 266.7)",
+          "oklch(49% 0.0131 266.7)",
+          "oklch(60% 0.0125 266.7)",
+          "oklch(72% 0.0101 266.7)",
+          "oklch(84% 0.0063 266.7)",
+          "oklch(95% 0.0020 266.7)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "中文主视觉",
+        "purpose": "首页中文分句标题。"
+      },
+      "headline": {
+        "displayName": "英文集合标题",
+        "purpose": "文章、项目与关于的集合页大标题。"
+      },
+      "section": {
+        "displayName": "展览章节",
+        "purpose": "首页作品与文章章节。"
+      },
+      "title": {
+        "displayName": "列表标题",
+        "purpose": "文章索引的主要入口标题。"
+      },
+      "article-title": {
+        "displayName": "文章主标题",
+        "purpose": "中文长文标题。"
+      },
+      "body": {
+        "displayName": "界面正文",
+        "purpose": "说明、导航与基础内容文字。"
+      },
+      "reading": {
+        "displayName": "长文正文",
+        "purpose": "桌面文章阅读列；手机缩为15px。"
+      },
+      "control": {
+        "displayName": "实心按钮",
+        "purpose": "明确操作的按钮文字。"
+      },
+      "label": {
+        "displayName": "辅助标签",
+        "purpose": "主题筛选与局部辅助信息。"
+      },
+      "code": {
+        "displayName": "代码与数据",
+        "purpose": "代码、日期及内容标识。"
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "control-transition",
+        "value": ".2s",
+        "purpose": "实心按钮背景和位置反馈。"
+      },
+      {
+        "name": "text-link-transition",
+        "value": ".25s",
+        "purpose": "普通文字入口的箭头移动。"
+      },
+      {
+        "name": "work-image-transition",
+        "value": ".5s cubic-bezier(.16,1,.3,1)",
+        "purpose": "真实作品截图轻微放大。"
+      },
+      {
+        "name": "sculpture-angular-speed",
+        "value": ".055, -.04, .07 rad/s",
+        "purpose": "圆环自转始终继续，与拖拽观察角度独立；尊重系统减少动态效果，离屏停止绘制。"
+      },
+      {
+        "name": "cursor-particle-field",
+        "value": "280 desktop / 125 mobile; 1 instanced sprite draw",
+        "purpose": "柔光粒子缓慢漂浮，光标附近避让、旋绕和提亮；减少动态效果时保持静态。"
+      },
+      {
+        "name": "pointer-reflection",
+        "value": "120ms in / 300ms out",
+        "purpose": "局部银白光源随光标滑过金属边缘，移开后淡出；不改变整环底色或粗糙度。"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-desktop",
+        "value": "1100px"
+      },
+      {
+        "name": "mobile",
+        "value": "760px"
+      },
+      {
+        "name": "wide-stage",
+        "value": "1700px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "实心操作按钮",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "清除筛选、查看源码等明确动作；当前两个源代码变体共享外观。",
+      "html": "<button type=\"button\" class=\"ds-button\">清除筛选</button>",
+      "css": ".ds-button{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:12px 23px;border:0;border-radius:3px;background:#e4e7ed;color:#131b29;font:550 14px var(--body,'Manrope Variable','Noto Sans SC Variable',sans-serif);cursor:pointer;transition:background .2s,transform .2s}.ds-button:hover{background:var(--accent-ink,#b9d2fa);transform:translateY(-2px)}.ds-button:focus-visible{outline:2px solid var(--accent-ink,#b9d2fa);outline-offset:5px}.ds-button:disabled{opacity:.4;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}"
+    },
+    {
+      "name": "文字入口",
+      "kind": "button",
+      "refersTo": "text-link",
+      "description": "作品、文章与关于的轻量内容入口。",
+      "html": "<a href=\"/projects/\" class=\"ds-text-link\">进入项目 <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 12h16m-6-6 6 6-6 6\"></path></svg></a>",
+      "css": ".ds-text-link{display:inline-flex;align-items:center;gap:20px;padding:10px 0;color:var(--ink,#ede7dc);font:400 14px/1.8 var(--body,'Manrope Variable','Noto Sans SC Variable',sans-serif);text-decoration:none}.ds-text-link svg{display:block;transition:transform .25s}.ds-text-link:hover{color:var(--accent-ink,#b9d2fa)}.ds-text-link:hover svg{transform:translate(3px,-2px)}.ds-text-link:focus-visible{outline:2px solid var(--accent-ink,#b9d2fa);outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-text-link svg{transition:none}}"
+    },
+    {
+      "name": "文章搜索",
+      "kind": "input",
+      "refersTo": "search-input",
+      "description": "可见标签、搜索图标与原生 search 输入，使用下划线边界。",
+      "html": "<div class=\"ds-search\"><label for=\"ds-article-search\">搜索文章</label><div><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m20 20-5-5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0\"></path></svg><input id=\"ds-article-search\" type=\"search\" placeholder=\"标题、主题或一个关键词\"></div></div>",
+      "css": ".ds-search{color:var(--ink,#ede7dc);font-family:var(--body,'Manrope Variable','Noto Sans SC Variable',sans-serif)}.ds-search label{display:block;font-size:12px;font-weight:550;margin-bottom:10px}.ds-search>div{display:flex;align-items:center;gap:12px;min-height:50px;border-bottom:1px solid #4b5668}.ds-search svg{flex:none}.ds-search input{width:100%;background:transparent;border:0;padding:9px 0;color:var(--ink,#ede7dc);caret-color:var(--accent-ink,#b9d2fa);font:400 15px/1.8 var(--body,'Manrope Variable','Noto Sans SC Variable',sans-serif)}.ds-search input::placeholder{color:var(--muted,#a0a6b0);opacity:1}.ds-search input:hover{color:var(--accent-ink,#b9d2fa)}.ds-search input:focus-visible{outline:2px solid var(--accent-ink,#b9d2fa);outline-offset:5px}"
+    },
+    {
+      "name": "主题筛选",
+      "kind": "chip",
+      "refersTo": "topic-selected",
+      "description": "原生按钮与 aria-pressed 表达文章主题选中状态。",
+      "html": "<div class=\"ds-topics\" role=\"group\" aria-label=\"按主题筛选\"><button type=\"button\" aria-pressed=\"true\">所有主题</button><button type=\"button\" aria-pressed=\"false\">AI Agent</button></div>",
+      "css": ".ds-topics{display:flex;flex-wrap:wrap;gap:5px 10px}.ds-topics button{min-height:38px;padding:5px 12px;border:0;border-radius:3px;background:transparent;color:var(--ink,#ede7dc);font:400 12px/1.8 var(--body,'Manrope Variable','Noto Sans SC Variable',sans-serif);cursor:pointer}.ds-topics button[aria-pressed=true]{background:var(--ink,#ede7dc);color:var(--paper,#080b11)}.ds-topics button:hover{background:#253249;color:var(--ink,#ede7dc)}.ds-topics button:focus-visible{outline:2px solid var(--accent-ink,#b9d2fa);outline-offset:5px}"
+    },
+    {
+      "name": "主导航",
+      "kind": "nav",
+      "refersTo": "navigation-link",
+      "description": "直接呈现文章、项目、关于，当前页用与文字等宽的细线标记。",
+      "html": "<nav class=\"ds-nav\" aria-label=\"主导航\"><a href=\"/posts/\" aria-current=\"page\">文章</a><a href=\"/projects/\">项目</a><a href=\"/about/\">关于</a></nav>",
+      "css": ".ds-nav{display:flex;gap:clamp(28px,3.6vw,62px);font-family:var(--body,'Manrope Variable','Noto Sans SC Variable',sans-serif)}.ds-nav a{display:flex;align-items:baseline;position:relative;min-height:44px;padding:14px 0;color:var(--ink,#ede7dc);font-size:13px;line-height:1.8;text-decoration:none}.ds-nav a[aria-current]::after{content:'';position:absolute;bottom:6px;left:0;height:1px;width:100%;background:var(--ink,#ede7dc)}.ds-nav a:hover{color:var(--accent-ink,#b9d2fa)}.ds-nav a:focus-visible{outline:2px solid var(--accent-ink,#b9d2fa);outline-offset:5px}@media(max-width:760px){.ds-nav{gap:23px}.ds-nav a{font-size:12px}}"
+    },
+    {
+      "name": "文章条目",
+      "kind": "card",
+      "refersTo": "article-row",
+      "description": "开放内容行；日期、正文和阅读入口按字段语义分列。",
+      "html": "<article class=\"ds-entry\"><div class=\"ds-entry-date\"><span>日期</span><span>技术笔记</span></div><div class=\"ds-entry-copy\"><h2><a href=\"/posts/\">文章标题</a></h2><p>文章摘要在标题之后，说明读者将理解的主题。</p></div><a class=\"ds-entry-open\" href=\"/posts/\" aria-label=\"阅读文章\"><svg width=\"25\" height=\"25\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 18 18 6M6 6h12v12\"></path></svg></a></article>",
+      "css": ".ds-entry{display:grid;grid-template-columns:150px 1fr 50px;gap:40px;border-top:1px solid var(--line,#303742);padding:35px 0;color:var(--ink,#ede7dc);font-family:var(--body,'Manrope Variable','Noto Sans SC Variable',sans-serif)}.ds-entry-date{display:flex;flex-direction:column;gap:8px;color:var(--muted,#a0a6b0);font-size:11px;line-height:1.8}.ds-entry-copy h2{margin:0;font-size:23px;font-weight:550;line-height:1.6}.ds-entry a{color:inherit;text-decoration:none}.ds-entry-copy p{margin:12px 0 0;color:var(--muted,#a0a6b0);font-size:13px;line-height:1.9}.ds-entry-open{display:grid;place-items:center;width:44px;height:44px}.ds-entry a:hover{color:var(--accent-ink,#b9d2fa)}.ds-entry a:focus-visible{outline:2px solid var(--accent-ink,#b9d2fa);outline-offset:5px}@media(max-width:760px){.ds-entry{grid-template-columns:1fr 30px;gap:12px;padding:25px 0}.ds-entry-date{grid-column:1/-1;flex-direction:row;gap:18px}.ds-entry-copy h2{font-size:18px}.ds-entry-copy p{font-size:12px}.ds-entry-open{width:30px}}"
+    },
+    {
+      "name": "雕塑部件入口",
+      "kind": "button",
+      "refersTo": "theatre-part",
+      "description": "三维位置投影对应的原生按钮；只在键盘焦点或图形不可用的回退中显示，鼠标悬停不弹出文字。",
+      "html": "<button type=\"button\" class=\"ds-part\" aria-label=\"探索推理环\" aria-pressed=\"false\">推理</button>",
+      "css": ".ds-part{min-width:64px;min-height:44px;padding:8px 16px;border:1px solid #6b82a6;border-radius:3px;background:#0d1726ec;color:#e6efff;font:400 12px/1.8 var(--body,'Manrope Variable','Noto Sans SC Variable',sans-serif);cursor:pointer;opacity:0;pointer-events:none}.ds-part[aria-pressed=true]{background:#d4e4fa;color:#101a29}.ds-part:focus-visible{opacity:1;pointer-events:auto;outline:2px solid var(--accent-ink,#b9d2fa);outline-offset:5px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "认知剧场",
+    "overview": "以嵌套环形雕塑把推理、行动与反馈变成可探索的空间。深蓝黑展厅承托银色金属、烟色玻璃和暖象牙文字；浅蓝只承担交互反馈与链接。中文衬线标题与英文展示字形成安静、开放的展览气质。\n\n视觉强度随任务收放：作品展示保留大图、留白和材质，索引依靠细线与对齐组织信息，文章回到稳定的阅读列。标题、导航、作品与文字内容使用真实 HTML，始终与三维资源独立。",
+    "keyCharacteristics": [
+      "深蓝黑底面、暖象牙文字与浅蓝交互信号。",
+      "中文 Noto Serif SC 与英文 Cormorant Garamond 分工，正文使用 Manrope / Noto Sans SC。",
+      "真实三维金属与玻璃承担主视觉；真实项目截图承担作品内容。",
+      "开放图文、细线列表和窄阅读列共享同一视觉语言。",
+      "自然滚动、原生控件、可见焦点与减少动态效果共同保留内容入口。"
+    ],
+    "rules": [
+      {
+        "name": "The Quiet Signal Rule",
+        "body": "浅蓝用于链接、焦点与局部交互反馈；大面积底面仍由深蓝黑承担。",
+        "section": "colors"
+      },
+      {
+        "name": "The Bilingual Type Rule",
+        "body": "中文主视觉与文章主标题使用中文衬线；英文展示标题使用 Cormorant Garamond；正文与操作文字使用无衬线。",
+        "section": "typography"
+      },
+      {
+        "name": "The Material Rule",
+        "body": "雕塑的金属、玻璃与反射由真实几何、物理材质和受光关系表达，不用界面卡片、CSS 模糊或静态整张概念图替代交互主体。",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do 复用深蓝黑、暖象牙与浅蓝的角色，以及现有本地字体与共享 SVG 图标。",
+      "Do 让真实截图、项目说明和文章内容决定版面比例，保留列表字段与表单起点的对齐。",
+      "Do 保持导航、文字和作品入口独立于三维加载，并保留静态视图与原生操作路径。",
+      "Do 在手机、键盘、触屏和减少动态效果条件下验收布局与关键交互。"
+    ],
+    "donts": [
+      "Don't 把旧样式中的残留颜色、未加载字体或一次性局部值提升为新页面的设计令牌。",
+      "Don't 在阅读页加入持续运行的三维场景，或让大幅展示字替代正文层级。",
+      "Don't 将认知雕塑描述为真实 Agent 请求、线上追踪数据、性能基准或产品能力背书。",
+      "Don't 增加无任务作用的副标签、编号和说明，让布局、标题与真实内容承担解释。"
+    ]
+  }
+}

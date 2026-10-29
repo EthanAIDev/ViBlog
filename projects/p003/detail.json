@@ -47,5 +47,14 @@
       "alt": "07-后台-项目管理",
       "caption": "07-后台-项目管理"
     }
+  ],
+  "displayName": "ViBlog",
+  "focus": "Personal web / creative coding",
+  "cardSummary": "一个持续生长的个人空间。收藏做过的项目，也记录把想法变成现实的过程。",
+  "technologies": [
+    "Astro",
+    "React",
+    "Three.js",
+    "TypeScript"
   ]
 }

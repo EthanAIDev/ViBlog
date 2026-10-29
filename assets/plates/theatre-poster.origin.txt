@@ -1,0 +1,1 @@
+Origin: transparent screenshot of the project's actual procedural Three.js cognitive sculpture, captured with Playwright at 1586 x 748 pixels. Used as the loading and no-GPU fallback over an independently generated environment. No AI image generation or comp cropping was used for this poster.

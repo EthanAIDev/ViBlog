@@ -1,0 +1,20 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import ResponsiveImage from '../../components/ResponsiveImage.astro';
+const stack = ['Python', 'FastAPI', 'Pydantic', 'Next.js 15', 'React 19', 'TypeScript', 'Agent 编排', 'RAG · 向量检索', 'Prompt 工程', 'Tool Calling', 'SQL 生成治理', 'Qwen3', 'Chroma', 'SQLAlchemy', 'pandas', 'ECharts', 'SSE'];
+const history = [
+  {date:'2026 — 至今',title:'个人内容与项目体系化',description:'持续迭代个人网站、项目库和文章方法论，将技术输出拆解为可复用模板与实践清单。'},
+  {date:'2024 — 2025',title:'AI 应用开发实践',description:'围绕 RAG、Prompt 工程和前端展示体验完成多个原型与上线项目，强调可解释性与可维护性。'},
+  {date:'2022 — 2023',title:'工程基础与表达能力沉淀',description:'在技术实现之外强化文档与叙事能力，建立「能运行、能理解、能复盘」的完整交付方式。'},
+];
+---
+<Layout title="关于 Ethan" page="about">
+  <div class="page-shell about-page"><header class="about-heading"><h1>A curious mind.<br/>A builder at heart<span>.</span></h1><p>持续把复杂技术，翻译成清晰体验。</p></header>
+    <section class="about-profile"><div class="portrait-wrap"><ResponsiveImage src="/assets/avatars/about-avatar.jpg" alt="Ethan 的个人头像" sizes="(max-width: 760px) 85vw, 35vw" loading="eager"/><div><span>Ethan</span><span>AI Builder / 技术创作者</span></div></div><div class="profile-copy"><h2>你好，我是 Ethan。</h2><p>一名 AI Agent 开发工程师，也是一名技术创作者。</p><p>我相信，好的技术不仅要能工作，还要能被理解。因此，我关注 RAG 工作流、智能体设计、工具调用，以及它们最终如何成为清晰、可用的产品体验。</p><p>这个网站是我的实验室，也是工作笔记。做过的项目、踩过的坑、刚刚想明白的概念，都慢慢放在这里。</p><a class="text-link" href="/projects/">看看我做过什么 <Icon name="diagonal"/></a></div></section>
+    <section class="working-method"><h2>我的工作方式。</h2><div><article><h3>先抓住问题。</h3><p>先理解要解决什么，再选择工具和技术。让实现始终围绕主线展开。</p></article><article><h3>让原型运行。</h3><p>用简洁的页面和原型，把想法尽快变成可以演示、可以讨论的东西。</p></article><article><h3>把过程留下。</h3><p>用文章与文档记录实现细节、选择与复盘，让一次实践能够被理解和复用。</p></article></div></section>
+    <section class="about-background"><h2>一路构建，<br/>一路积累。</h2><div><div class="background-stack"><h3>常用的工具与方法</h3><ul>{stack.map((item)=><li>{item}</li>)}</ul></div><ol class="background-history">{history.map((entry)=><li><time>{entry.date}</time><div><h3>{entry.title}</h3><p>{entry.description}</p></div></li>)}</ol></div></section>
+    <section class="about-focus"><h2>最近的关注点。</h2><div><a href="/projects/p001/"><span>AI Agent</span><p>规划、工具调用与可解释的工作流。</p><Icon name="diagonal"/></a><a href="/posts/"><span>RAG & Knowledge</span><p>让检索、知识与生成更好地协作。</p><Icon name="diagonal"/></a><a href="/"><span>Creative coding</span><p>把技术表达，做成可以探索的体验。</p><Icon name="diagonal"/></a></div></section>
+    <section class="about-contact"><h2>交换一个想法？</h2><a class="contact-email" href="mailto:ethandev@qq.com">ethandev@qq.com <Icon name="diagonal" size={32}/></a><div class="contact-links"><a href="https://github.com/EthanAIDev" target="_blank" rel="noopener noreferrer">GitHub <Icon name="diagonal" size={15}/></a><a href="https://space.bilibili.com/32848155" target="_blank" rel="noopener noreferrer">Bilibili <Icon name="diagonal" size={15}/></a><button type="button" data-copy="208600679" aria-live="polite">复制 QQ 号</button></div></section>
+  </div>
+</Layout>

@@ -26,3 +26,14 @@ build/
 # 临时文件
 *.tmp
 *.bak
+
+# Astro generated content and browser evidence
+.astro/
+public/assets/
+public/articles/
+public/projects/
+public/*.html
+public/_headers
+public/media/
+output/
+.impeccable/review/
