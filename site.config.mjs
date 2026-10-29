@@ -21,4 +21,4 @@ export function resolveSite(environment){
   return {siteUrl:url.origin,indexable:production};
 }
 
-export const site=resolveSite(process.env);
+export const site=resolveSite({...process.env,SITE_URL:process.env.SITE_URL||'https://exl.qzz.io'});

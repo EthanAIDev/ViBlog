@@ -26,7 +26,7 @@ npm run verify:release # 类型检查、构建与搜索分享/图片产物检查
 
 静态托管的构建命令为 `npm run build`，发布目录为 `dist`。字体、公式样式和前端依赖均随构建自托管。Three.js 与 Mermaid 按需加载，普通内容页不加载 3D 渲染器。
 
-默认构建为禁止搜索收录的预览版。正式发布时，在托管平台设置 `SITE_ENV=production` 和 `SITE_URL=https://你的正式域名`；构建会校验地址，并生成 canonical、分享绝对地址、robots.txt 与站点地图。支持复制 `.env.example` 为本地 `.env`；文件不提交。未设置域名时不会生成指向 localhost 的搜索地址。完整发布检查见 [上线清单](docs/launch-checklist.md)。
+默认构建为禁止搜索收录的预览版，正式地址已确认为 `https://exl.qzz.io`。正式发布时，在托管平台设置 `SITE_ENV=production`；`SITE_URL` 可覆盖仓库内的正式地址。构建会校验地址，并生成 canonical、分享绝对地址、robots.txt 与站点地图。支持复制 `.env.example` 为本地 `.env`；文件不提交。不会生成指向 localhost 的搜索地址。完整发布检查见 [上线清单](docs/launch-checklist.md)。
 
 `npm run assets` 自动生成带内容哈希的响应式 WebP。首屏使用压缩后的桌面/移动图片；项目、文章与头像使用 srcset 和实际尺寸。放大查看仍读取原始图片。原始素材继续存放在原目录，无需手动维护压缩版本。`public/media` 是生成目录，`public/social/cover.jpg` 是当前真实首页的分享截图。
 
