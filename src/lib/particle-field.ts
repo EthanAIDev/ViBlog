@@ -30,19 +30,22 @@ export function createParticleField(scene:THREE.Scene,camera:THREE.Camera){
   cloud.geometry.setAttribute('particlePosition',positionAttribute);cloud.geometry.setAttribute('particleColor',colorAttribute);cloud.geometry.setAttribute('particleSize',sizeAttribute);
   cloud.count=capacity;cloud.frustumCulled=false;scene.add(cloud);
   const ray=new THREE.Raycaster(),plane=new THREE.Plane(new THREE.Vector3(0,0,1),-.5),cursor=new THREE.Vector3();
+  let initialized=false;
   return {
     get count(){return cloud.count;},
     resize(mobile:boolean){cloud.count=mobile?125:capacity;},
-    update(time:number,dt:number,pointer:THREE.Vector2,active:boolean,motion:boolean){
+    update(time:number,dt:number,pointer:THREE.Vector2,active:boolean,motion:boolean,arrival:number){
       const interacting=active&&motion;
       if(interacting){ray.setFromCamera(pointer,camera);if(!ray.ray.intersectPlane(plane,cursor))cursor.set(100,100,0);}
-      const blend=motion?1-Math.exp(-dt*7):1;
+      const blend=initialized&&motion?1-Math.exp(-dt*7):1;
+      const spread=motion?Math.pow(1-arrival,3):0;
+      initialized=true;
       let response=0;
       for(let index=0;index<cloud.count;index++){
         const offset=index*3,phase=phases[index];
-        let x=base[offset]+Math.sin(time*.18+phase)*.22;
-        let y=base[offset+1]+Math.sin(time*.12+phase*1.7)*.18;
-        const z=base[offset+2]+Math.cos(time*.15+phase)*.12;
+        let x=(base[offset]+Math.sin(time*.18+phase)*.22)*(1+spread*2);
+        let y=(base[offset+1]+Math.sin(time*.12+phase*1.7)*.18)*(1+spread*2);
+        const z=base[offset+2]+Math.cos(time*.15+phase)*.12-spread*8;
         const dx=x-cursor.x,dy=y-cursor.y,distance=Math.hypot(dx,dy);
         const influence=interacting?Math.max(0,1-distance/1.65):0;
         if(influence>0){
@@ -56,7 +59,7 @@ export function createParticleField(scene:THREE.Scene,camera:THREE.Camera){
         colors[offset]=shimmer*(.55+influence*.9);colors[offset+1]=shimmer*(.78+influence*.8);colors[offset+2]=shimmer*(1+influence*.65);
       }
       positionAttribute.needsUpdate=true;colorAttribute.needsUpdate=true;
-      material.opacity=motion?.8:.35;
+      material.opacity=(motion?.8:.35)*Math.min(1,arrival*1.6);
       return response;
     },
     dispose(){scene.remove(cloud);cloud.geometry.dispose();material.dispose();}

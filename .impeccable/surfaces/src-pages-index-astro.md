@@ -15,7 +15,7 @@ THESIS: An interactive kinetic sculpture makes reasoning, action and feedback ta
 
 OWN-WORLD: Navy-black exhibition space, chrome, smoked glass, warm ivory Chinese serif, calm English display serif and restrained blue activation.
 
-STORY: Observe slowly moving rings surrounded by drifting light motes. A cursor-following silver-white reflection catches only nearby metal, fading out in 300ms; no whole-ring blue selection fill. Drag to rotate without pausing the rings; the cursor also gently repels, swirls and brightens nearby particles. Click only changes focus, with no card. No inter-ring lines or pulse spheres. Natural scrolling expands the object before reaching independent projects and articles.
+STORY: On arrival, three rings fly in from different directions and decelerate into the sculpture over 1.3 seconds, with light motes gathering from the perimeter. The entrance composes with ongoing rotation and dragging; reduced motion starts assembled. A cursor-following silver-white reflection catches only nearby metal, fading out in 300ms; no whole-ring blue selection fill. Drag to rotate without pausing the rings; the cursor also gently repels, swirls and brightens nearby particles. Click only changes focus, with no card. No inter-ring lines or pulse spheres. Natural scrolling expands the object before reaching independent projects and articles.
 
 FIRST VIEWPORT: Small ETHAN wordmark and three navigation links; dominant open-ring sculpture toward the right; low left Chinese headline and an underlined work entrance. No bottom controls or text cards. Projected part controls appear only for keyboard focus. Mobile places the sculpture above the headline and uses fewer light particles. No-GPU devices show a static poster.
 

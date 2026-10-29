@@ -54,7 +54,7 @@ const pageAnimation={old:{name:'page-exit',duration:'90ms',easing:'ease-out'},ne
         <a href="/about/" aria-current={page === 'about' ? 'page' : undefined}>关于</a>
       </nav>
     </header>
-    <noscript><p class="no-script-note">文章与项目仍可直接阅读；装置交互和筛选需要启用 JavaScript。</p></noscript>
+    <noscript><style is:inline>.theatre[data-renderer=loading] .theatre-poster{opacity:1;visibility:visible;animation:none}</style><p class="no-script-note">文章与项目仍可直接阅读；装置交互和筛选需要启用 JavaScript。</p></noscript>
     <main id="main" transition:name="page-content" transition:animate={{forwards:pageAnimation,backwards:pageAnimation}}><slot /></main>
     <footer class="site-footer">
       <div class="footer-top"><a href="/" class="footer-name">Keep<br/>making.</a><div><p>让想法继续发生。</p><a class="text-link" href="mailto:ethandev@qq.com">ethandev@qq.com <Icon name="diagonal" size={18}/></a></div><a class="footer-back" href="#main" aria-label="返回页面顶部">回到顶部 <Icon name="up" size={16}/></a></div>

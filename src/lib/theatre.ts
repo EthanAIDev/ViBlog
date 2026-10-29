@@ -60,7 +60,7 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
     }
     // Broad invisible picking band makes the thin sculpture usable by mouse and touch.
     const target=addMesh(ring,new THREE.TorusGeometry(radius-.24,.3,8,80,5.58),new THREE.MeshBasicMaterial({visible:false}));target.rotation.z=index*.8+.22;target.userData.ring=index;
-    return {ring,radius,target};
+    return {ring,radius,target,focusOffset:new THREE.Vector3()};
   });
   const pickingTargets=ringGroups.map(({target})=>target);
   const selectionSurfaces:THREE.Object3D[]=[];
@@ -70,6 +70,10 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
   reflection.traverse(object=>{if(object instanceof THREE.Mesh){const original=object.material as THREE.Material;const material=original.clone();material.transparent=true;material.opacity=.065;material.depthWrite=false;object.material=material;}});scene.add(reflection);
   const particles=createParticleField(scene,camera);
   let state:TheatreState={motion:!matchMedia('(prefers-reduced-motion: reduce)').matches,selected:null,hovered:null,scroll:0};
+  const arrivalDuration=1.16,arrivalStagger=.07,arrivalTotal=arrivalDuration+arrivalStagger*2;
+  const arrivalOrigins=[new THREE.Vector3(-14,10,-4),new THREE.Vector3(14,8,-7),new THREE.Vector3(2,-14,2)];
+  const arrivalTilts=[new THREE.Euler(.4,-.5,-.65),new THREE.Euler(-.35,.6,.8),new THREE.Euler(.6,.25,-.7)];
+  let arrivalTime=state.motion?0:arrivalTotal;
   let disposed=false,visible=true,dirty=true,settling=true,width=1,height=1,last=performance.now(),time=0,dragging=false,pending=false,downX=0,downY=0,lastX=0,lastY=0,velocityX=0,velocityY=0,userYaw=0,userPitch=0,hovered:number|null=null,particlePointerInside=false;
   const pointer=new THREE.Vector2(),follow=new THREE.Vector2(),raycaster=new THREE.Raycaster();
   const particlePointer=new THREE.Vector2();
@@ -108,8 +112,13 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
   const fieldMove=(event:PointerEvent)=>{const rect=canvas.getBoundingClientRect();particlePointer.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);particlePointerInside=Math.abs(particlePointer.x)<=1&&Math.abs(particlePointer.y)<=1;reflectionPointerInside=particlePointerInside&&event.pointerType!=='touch';dirty=true;};
   const fieldLeave=()=>{particlePointerInside=false;reflectionPointerInside=false;dirty=true;};
   stage.addEventListener('pointermove',fieldMove,{passive:true});stage.addEventListener('pointerleave',fieldLeave);stage.addEventListener('pointercancel',fieldLeave);
-  // Compile while the clean poster is visible, before interactive playback begins.
+  // Compile before starting the entrance; the exhibition and HTML stay visible.
   try{await renderer.compileAsync(scene,camera);}catch(error){dispose();throw error;}
+  const poster=stage.querySelector<HTMLElement>('.theatre-poster');
+  // A slow/failed-script recovery may already have shown the assembled poster.
+  // Continue that composition instead of taking it apart for a late entrance.
+  if(poster&&getComputedStyle(poster).visibility==='visible')arrivalTime=arrivalTotal;
+  last=performance.now();
   renderer.setAnimationLoop(()=>{
     if(disposed)return;const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;
     if(!visible||document.hidden)return;
@@ -117,23 +126,28 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
     const kinetic=state.motion&&!dragging&&(Math.abs(velocityX)+Math.abs(velocityY)>.0001);
     if(!dirty&&!settling&&!autonomous&&!kinetic&&!reflectionSettling)return;
     if(autonomous)time+=dt;
+    arrivalTime=state.motion?Math.min(arrivalTotal,arrivalTime+dt):arrivalTotal;
+    const arrivalProgress=arrivalTime/arrivalTotal;
     if(kinetic){userYaw+=velocityX;userPitch=clamp(userPitch+velocityY,-.6,.6);velocityX*=.88;velocityY*=.88;}
     const followTarget=state.motion?pointer:neutralPointer;
-    if(!dragging)follow.lerp(followTarget,1-Math.exp(-dt*5));
+    if(!state.motion)follow.copy(neutralPointer);
+    else if(!dragging)follow.lerp(followTarget,1-Math.exp(-dt*5));
     const expansion=state.motion?state.scroll:0;
     world.rotation.y=.15+userYaw+follow.x*.12;
     world.rotation.x=.2+userPitch+follow.y*.09;
     const scale=(width<760?1.1:1.32)*(1-expansion*.09);world.scale.set(scale,scale*.9,scale);
     const desiredZoom=state.selected===null?1:1.1;camera.zoom+=(desiredZoom-camera.zoom)*(state.motion?.12:1);camera.updateProjectionMatrix();
     settling=Math.abs(desiredZoom-camera.zoom)>.0001||(!dragging&&follow.distanceTo(followTarget)>.0001);
-    ringGroups.forEach(({ring},index)=>{
+    ringGroups.forEach(({ring,focusOffset},index)=>{
       const selected=state.selected===index;
-      ring.rotation.z=rotations[index].z+time*[.055,-.04,.07][index];
+      const remaining=Math.pow(1-clamp((arrivalTime-index*arrivalStagger)/arrivalDuration,0,1),3);
+      ring.rotation.set(rotations[index].x+arrivalTilts[index].x*remaining,rotations[index].y+arrivalTilts[index].y*remaining,rotations[index].z+time*[.055,-.04,.07][index]+arrivalTilts[index].z*remaining);
       const offset=state.selected===null?0:selected?.32:(index-state.selected)*.26;
-      ring.position.x+=(offset-ring.position.x)*(state.motion?.15:1);
+      focusOffset.x+=(offset-focusOffset.x)*(state.motion?.15:1);
       const separation=(index-1)*expansion*.6+(state.selected===null?0:selected?.6:-.3);
-      ring.position.z+=(separation-ring.position.z)*(state.motion?.09:1);
-      settling=settling||Math.abs(separation-ring.position.z)>.0001||Math.abs(offset-ring.position.x)>.0001;
+      focusOffset.z+=(separation-focusOffset.z)*(state.motion?.09:1);
+      ring.position.copy(focusOffset).addScaledVector(arrivalOrigins[index],remaining);
+      settling=settling||remaining>0||Math.abs(separation-focusOffset.z)>.0001||Math.abs(offset-focusOffset.x)>.0001;
       ring.updateMatrix();
     });
     // Each selection gets its own camera aim without adding UI over the sculpture.
@@ -141,7 +155,7 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
     if(state.selected!==null){const {ring,radius}=ringGroups[state.selected];const angle=.9+state.selected*2.1;aim.set(Math.cos(angle)*radius*.22,Math.sin(angle)*radius*.22,0);ring.localToWorld(aim);aim.x*=.35;aim.y*=.35;}
     cameraAim.lerp(aim,state.motion?.1:1);camera.lookAt(cameraAim);settling=settling||cameraAim.distanceTo(aim)>.0001;
     camera.updateMatrixWorld();
-    const particleResponse=particles.update(time,dt,particlePointer,particlePointerInside,state.motion);
+    const particleResponse=particles.update(time,dt,particlePointer,particlePointerInside,state.motion,arrivalProgress);
     reflection.rotation.copy(world.rotation);reflection.scale.set(scale,-scale*.24,scale*.8);reflection.visible=width>=760;
     reflection.children.forEach((child,index)=>{child.rotation.copy(ringGroups[index].ring.rotation);child.position.copy(ringGroups[index].ring.position);});
     scene.updateMatrixWorld();
@@ -177,6 +191,10 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
     host.dataset.focus=cameraAim.toArray().map(value=>value.toFixed(3)).join(',');
     host.dataset.particles=String(particles.count);host.dataset.particleResponse=particleResponse.toFixed(3);
     host.dataset.reflectionStrength=reflectionStrength.toFixed(3);
+    if(arrivalProgress<1||host.dataset.entrance!=='1.000'){
+      host.dataset.entrance=arrivalProgress.toFixed(3);
+      host.dataset.ringPositions=ringGroups.map(({ring})=>ring.position.toArray().map(value=>value.toFixed(3)).join(',')).join(';');
+    }
     dirty=false;
   });
   function dispose(){disposed=true;renderer.setAnimationLoop(null);resize.disconnect();visibility.disconnect();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',cancel);canvas.removeEventListener('pointerleave',leave);stage.removeEventListener('pointermove',fieldMove);stage.removeEventListener('pointerleave',fieldLeave);stage.removeEventListener('pointercancel',fieldLeave);particles.dispose();const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>();scene.traverse(object=>{if(object instanceof THREE.Mesh){geometries.add(object.geometry);(Array.isArray(object.material)?object.material:[object.material]).forEach(material=>materials.add(material));}});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());chrome.dispose();pmrem.dispose();environmentMap.dispose();renderer.dispose();canvas.remove();}

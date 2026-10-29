@@ -68,6 +68,7 @@ scripts/
   inspect-lab.mjs          # Playwright 浏览器验收与截图
   inspect-theatre.mjs      # 实际像素变化、拾取、聚焦、触屏、滚动、离屏与降级验收
   inspect-navigation.mjs   # 同文档导航、固定顶栏、页面生命周期与透明占位图验收
+  inspect-entrance.mjs     # 多方向入场、加载回退、减少动态效果和中途操作验收
   capture-theatre-poster.mjs # 只截取真实 canvas，重新生成透明占位图
 build-manifest.cjs         # 内容索引构建器
 ```
@@ -83,6 +84,7 @@ npx playwright install chromium   # 本机尚无 Playwright 浏览器时运行�
 node scripts/inspect-lab.mjs
 node scripts/inspect-theatre.mjs
 node scripts/inspect-navigation.mjs
+node scripts/inspect-entrance.mjs
 ```
 
 默认访问 3000；可用 PREVIEW_URL 指定其他预览地址，用 BROWSER_PATH 指定已有 Chromium 可执行文件。截图和验收 JSON 写入 .impeccable/review/，不提交到仓库。
