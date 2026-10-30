@@ -42,7 +42,7 @@ await check('share image is a real 1200 by 630 JPEG',async()=>{
 await check('responsive display assets exist and meet the hero budget',async()=>{
   const manifest=JSON.parse(await fs.readFile(path.join(directory,'media/manifest.json'),'utf8'));
   let heroBytes=0;
-  for(const source of ['/assets/plates/environment.png','/assets/plates/theatre-poster.png']){
+    for(const source of ['/assets/plates/environment.png','/assets/plates/theatre-poster.png','/assets/plates/theatre-arrival-assembled.png',...Array.from({length:3},(_,index)=>`/assets/plates/theatre-arrival-${index}.png`)]){
     const image=manifest[source];const variant=image.variants.at(-1);heroBytes+=variant.bytes;
   }
   assert.ok(heroBytes<600000,`Hero images total ${heroBytes} bytes`);

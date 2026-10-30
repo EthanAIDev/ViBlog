@@ -6,9 +6,9 @@ import ResponsiveImage from '../components/ResponsiveImage.astro';
 import {imageVariant} from '../lib/images';
 import {getPosts,getProjects} from '../lib/content';
 const projects=getProjects();const posts=getPosts();
-const sceneImages={environment:{desktop:imageVariant('/assets/plates/environment.png',1920),mobile:imageVariant('/assets/plates/environment.png',960)},poster:{desktop:imageVariant('/assets/plates/theatre-poster.png',1920),mobile:imageVariant('/assets/plates/theatre-poster-mobile.png',960)}};
+const sceneImages={environment:{desktop:imageVariant('/assets/plates/environment.png',1920),mobile:imageVariant('/assets/plates/environment.png',960)},poster:{desktop:imageVariant('/assets/plates/theatre-poster.png',1920),mobile:imageVariant('/assets/plates/theatre-poster-mobile.png',960)},arrival:Array.from({length:3},(_,index)=>({desktop:imageVariant(`/assets/plates/theatre-arrival-${index}.png`,1600),mobile:imageVariant(`/assets/plates/theatre-arrival-${index}-mobile.png`,960)})),assembled:{desktop:imageVariant('/assets/plates/theatre-arrival-assembled.png',1600),mobile:imageVariant('/assets/plates/theatre-arrival-assembled-mobile.png',960)}};
 ---
-<Layout>
+<Layout heroPreloads={[...sceneImages.arrival,sceneImages.assembled]}>
  <Theatre client:load images={sceneImages}/>
  <section id="selected-work" class="selected-work page-shell">
   <h2>Selected work</h2>

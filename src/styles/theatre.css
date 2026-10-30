@@ -13,13 +13,29 @@
  .wordmark{font-family:var(--body);font-size:21px;font-weight:500;letter-spacing:.22em;line-height:1}.header-role{font-size:12px;color:#a9adb5;padding-left:30px;border-left:1px solid #535660;line-height:1.2}
  .primary-nav{margin:0 0 0 auto;gap:clamp(28px,3.6vw,62px)}.primary-nav a{font-size:13px;min-height:44px}.primary-nav a[aria-current]::after{height:1px;width:100%;bottom:6px;background:var(--ink)}
  .theatre{height:47.16vw;min-height:590px;max-height:920px;position:relative;isolation:isolate;overflow:clip;background:#060a10}
- .theatre-environment,.theatre-poster,.theatre-canvas{position:absolute;inset:0}
+ .theatre-environment,.theatre-poster,.theatre-canvas,.theatre-arrival,.theatre-ambient{position:absolute;inset:0}
  .theatre-environment{background:var(--theatre-environment) center/cover no-repeat;z-index:-2}
  .theatre-poster{background:var(--theatre-poster) center/100% 100% no-repeat;z-index:-1}
  .theatre-poster{opacity:0;visibility:hidden;animation:theatre-poster-recovery 1ms 12s forwards;transition:opacity 180ms ease}
  .theatre[data-renderer=fallback] .theatre-poster{opacity:1;visibility:visible;animation:none}
  .theatre[data-renderer=ready] .theatre-poster{opacity:0;visibility:hidden;animation:none;transition:opacity 180ms ease,visibility 0s 180ms}
- .theatre-canvas{opacity:0;transition:opacity 120ms ease}.theatre[data-renderer=ready] .theatre-canvas{opacity:1}
+ .theatre-canvas{opacity:0;transition:opacity 160ms ease}.theatre[data-renderer=ready] .theatre-canvas{opacity:1}
+ .theatre-ambient{pointer-events:none;transition:opacity 400ms ease,visibility 0s 400ms}
+ .theatre[data-renderer=ready] .theatre-ambient,.theatre[data-renderer=fallback] .theatre-ambient{opacity:0;visibility:hidden}
+ .theatre[data-renderer=ready] .theatre-ambient circle,.theatre[data-renderer=fallback] .theatre-ambient circle{animation-play-state:paused}
+ .theatre-ambient svg{position:absolute;left:50%;height:100%;width:auto;max-width:none;transform:translateX(-50%)}
+ .theatre-motes-mobile{display:none}
+ .theatre-ambient circle{animation:theatre-mote-drift var(--mote-duration) ease-in-out var(--mote-delay) infinite alternate}
+ .theatre-arrival{pointer-events:none;transition:opacity 200ms ease,visibility 0s 200ms;animation:theatre-arrival-recovery 1ms 12s forwards}
+ .theatre[data-renderer=ready] .theatre-arrival{animation:none}
+ .theatre[data-renderer=ready][data-arrived=true] .theatre-arrival,.theatre[data-renderer=fallback] .theatre-arrival{opacity:0;visibility:hidden}
+ .theatre-arrival-piece,.theatre-assembled{position:absolute;inset:0;display:block}
+ .theatre-arrival-piece{animation:theatre-ring-arrive 2440ms cubic-bezier(.33,1,.68,1) var(--arrival-delay,0ms) both,theatre-ring-recede 2600ms ease both}
+ .theatre-assembled{animation:theatre-assembled 2600ms ease both}
+ .theatre-arrival img{display:block;position:absolute;left:50%;width:auto;height:100%;max-width:none;transform:translateX(-50%)}
+ .theatre-arrival-0{--arrival-x:-48%;--arrival-y:-65%;--arrival-angle:-24deg}
+ .theatre-arrival-1{--arrival-x:60%;--arrival-y:-55%;--arrival-angle:28deg;--arrival-delay:80ms}
+ .theatre-arrival-2{--arrival-x:4%;--arrival-y:85%;--arrival-angle:-30deg;--arrival-delay:160ms}
  .theatre-canvas canvas{display:block;width:100%!important;height:100%!important;touch-action:pan-y;cursor:grab}
  .theatre-copy{position:absolute;left:var(--gutter);top:57%;z-index:3;pointer-events:none}
  .theatre-copy h1{font-family:var(--serif);font-size:clamp(40px,4.35vw,72px);font-weight:400;line-height:1.42;letter-spacing:-.025em;text-wrap:nowrap;color:#efe7d7;text-shadow:0 3px 18px #03070bdd}
@@ -49,12 +65,17 @@
  @media(max-width:760px){
   :root{--header-height:76px}.site-header,.page-home .site-header{height:var(--header-height);gap:12px}.wordmark{font-size:18px;letter-spacing:.15em}.header-role{display:none}.primary-nav{gap:23px;margin-left:auto}.primary-nav a{font-size:12px}
   .theatre{height:820px;min-height:0;max-height:92svh;min-height:700px}.theatre-environment{background-image:var(--theatre-environment-mobile);background-position:62% center}.theatre-copy{top:auto;bottom:110px;right:var(--gutter)}.theatre-copy h1{font-size:clamp(29px,7.6vw,46px);line-height:1.65}.theatre-enter{font-size:13px;margin-top:18px;gap:20px}
-  .theatre-canvas{bottom:150px;top:10px}.theatre-poster{bottom:150px;top:10px;background-image:var(--theatre-poster-mobile);background-size:100% 100%;background-position:center}.theatre-fallback-note{bottom:75px;font-size:10px;left:var(--gutter)}
+  .theatre-canvas,.theatre-arrival,.theatre-ambient{bottom:150px;top:10px}.theatre-motes-desktop{display:none}.theatre-motes-mobile{display:block}.theatre-poster{bottom:150px;top:10px;background-image:var(--theatre-poster-mobile);background-size:100% 100%;background-position:center}.theatre-fallback-note{bottom:75px;font-size:10px;left:var(--gutter)}
   .selected-work{padding-top:28px}.selected-work>h2,.theatre-section-title>h2{font-size:37px}.theatre-paths{gap:28px;margin-top:24px}.theatre-paths a>span{font-size:19px;gap:12px}.theatre-paths p{font-size:11px;line-height:1.9}.featured-works{padding-top:65px}.featured-work,.featured-work:nth-child(even){grid-template-columns:1fr;gap:25px;padding-bottom:60px}.featured-work:nth-child(even)>.featured-image{order:0}.featured-copy h3{font-size:43px;margin-top:10px}.featured-copy p{font-size:13px;margin-top:15px}.featured-copy .text-link{margin-top:10px}.theatre-writing{padding-block:20px 55px}.theatre-section-title{margin-bottom:24px;align-items:flex-end}.theatre-section-title>.text-link{font-size:11px;white-space:nowrap;gap:7px}.home-note-list>a{grid-template-columns:1fr 28px}.home-note-list h3{font-size:16px}
   .theatre-about{grid-template-columns:1fr;gap:30px;padding-block:45px 65px}.theatre-about h2{font-size:43px}.theatre-about p{font-size:13px}.site-footer{padding-top:40px}.footer-name{font-size:60px;width:auto}.footer-top>div{width:100%}.footer-top{gap:25px}.footer-back{margin-left:0}.collection-heading h1,.about-heading h1{font-size:clamp(40px,10vw,65px)}.collection-heading{padding-block:45px 35px}.prose{font-size:15px}.article-heading h1{font-size:27px}.article-shell{padding-inline:22px}.contact-email{font-size:31px}
  }
- @media(prefers-reduced-motion:reduce){.featured-image img,.theatre-enter svg{transition:none}.theatre[data-renderer=loading] .theatre-poster{opacity:1;visibility:visible;animation:none}}
+ @media(prefers-reduced-motion:reduce){.featured-image img,.theatre-enter svg{transition:none}.theatre[data-renderer=loading] .theatre-poster{opacity:1;visibility:visible;animation:none}.theatre-arrival{display:none}.theatre-arrival-piece{animation:none}.theatre-ambient{display:none;transition:none}.theatre[data-renderer=ready] .theatre-canvas{opacity:1;transition:none}}
 }
+@keyframes theatre-mote-drift{from{transform:translate(-3px,-4px)}to{transform:translate(4px,5px)}}
+@keyframes theatre-ring-recede{0%,76%{opacity:1}100%{opacity:0}}
+@keyframes theatre-assembled{0%,76%{opacity:0}100%{opacity:1}}
+@keyframes theatre-ring-arrive{from{transform:translate(var(--arrival-x),var(--arrival-y)) rotate(var(--arrival-angle)) scale(.84)}to{transform:translate(0,0) rotate(0deg) scale(1)}}
+@keyframes theatre-arrival-recovery{to{visibility:hidden}}
 @keyframes theatre-poster-recovery{to{opacity:1;visibility:visible}}
 @keyframes page-exit{to{opacity:0}}
 @keyframes page-enter{from{opacity:0}to{opacity:1}}

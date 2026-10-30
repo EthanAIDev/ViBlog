@@ -1,18 +1,17 @@
 import * as THREE from 'three/webgpu';
 import {instancedBufferAttribute,instancedDynamicBufferAttribute,uv,exp,float,smoothstep,materialOpacity} from 'three/tsl';
+import {particleSeeds} from '../data/particles';
 
 /** One instanced sprite draw: soft light motes with a bounded cursor force. */
 export function createParticleField(scene:THREE.Scene,camera:THREE.Camera){
   const capacity=280;
   const base=new Float32Array(capacity*3),positions=new Float32Array(capacity*3),colors=new Float32Array(capacity*3),sizes=new Float32Array(capacity*2),phases=new Float32Array(capacity);
-  let seed=7183;
-  const random=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
   for(let index=0;index<capacity;index++){
-    const offset=index*3;
-    base[offset]=(random()-.5)*18;base[offset+1]=(random()-.5)*9;base[offset+2]=(random()-.5)*7;
+    const offset=index*3,particle=particleSeeds[index];
+    base.set([particle.x,particle.y,particle.z],offset);
     positions.set(base.subarray(offset,offset+3),offset);
-    colors.set([.45,.65,.95],offset);phases[index]=random()*Math.PI*2;
-    const size=.075+random()*.1;sizes.set([size,size],index*2);
+    colors.set([.45,.65,.95],offset);phases[index]=particle.phase;
+    sizes.set([particle.size,particle.size],index*2);
   }
   const positionAttribute=new THREE.InstancedBufferAttribute(positions,3).setUsage(THREE.DynamicDrawUsage);
   const colorAttribute=new THREE.InstancedBufferAttribute(colors,3).setUsage(THREE.DynamicDrawUsage);
@@ -34,18 +33,17 @@ export function createParticleField(scene:THREE.Scene,camera:THREE.Camera){
   return {
     get count(){return cloud.count;},
     resize(mobile:boolean){cloud.count=mobile?125:capacity;},
-    update(time:number,dt:number,pointer:THREE.Vector2,active:boolean,motion:boolean,arrival:number){
+    update(time:number,dt:number,pointer:THREE.Vector2,active:boolean,motion:boolean){
       const interacting=active&&motion;
       if(interacting){ray.setFromCamera(pointer,camera);if(!ray.ray.intersectPlane(plane,cursor))cursor.set(100,100,0);}
       const blend=initialized&&motion?1-Math.exp(-dt*7):1;
-      const spread=motion?Math.pow(1-arrival,3):0;
       initialized=true;
       let response=0;
       for(let index=0;index<cloud.count;index++){
         const offset=index*3,phase=phases[index];
-        let x=(base[offset]+Math.sin(time*.18+phase)*.22)*(1+spread*2);
-        let y=(base[offset+1]+Math.sin(time*.12+phase*1.7)*.18)*(1+spread*2);
-        const z=base[offset+2]+Math.cos(time*.15+phase)*.12-spread*8;
+        let x=base[offset]+Math.sin(time*.18+phase)*.22;
+        let y=base[offset+1]+Math.sin(time*.12+phase*1.7)*.18;
+        const z=base[offset+2]+Math.cos(time*.15+phase)*.12;
         const dx=x-cursor.x,dy=y-cursor.y,distance=Math.hypot(dx,dy);
         const influence=interacting?Math.max(0,1-distance/1.65):0;
         if(influence>0){
@@ -59,7 +57,7 @@ export function createParticleField(scene:THREE.Scene,camera:THREE.Camera){
         colors[offset]=shimmer*(.55+influence*.9);colors[offset+1]=shimmer*(.78+influence*.8);colors[offset+2]=shimmer*(1+influence*.65);
       }
       positionAttribute.needsUpdate=true;colorAttribute.needsUpdate=true;
-      material.opacity=(motion?.8:.35)*Math.min(1,arrival*1.6);
+      material.opacity=motion?.8:.35;
       return response;
     },
     dispose(){scene.remove(cloud);cloud.geometry.dispose();material.dispose();}

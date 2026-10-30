@@ -29,12 +29,12 @@ try{
     await page.waitForFunction(target=>Number(document.querySelector('.theatre-canvas')?.dataset.entrance)>=target,progress,{timeout:15000});
     await page.screenshot({path:`${evidence}/entrance-${label}-${index}.png`});
    }
-   const frames=await page.evaluate(()=>window.__entranceFrames),first=frames.find(frame=>Number(frame.progress)<.2);
-   assert.ok(first,'must observe the beginning, not a completed model appearing');
+   const frames=await page.evaluate(()=>window.__entranceFrames),first=frames.find(frame=>Number(frame.progress)<1);
+   assert.ok(first,'real graphics should join the first-paint entrance before it completes');
    const positions=first.positions.split(';').map(ring=>ring.split(',').map(Number));
-   assert.ok(positions[0][0]<-4&&positions[0][1]>3,'outer ring flies from upper left');
-   assert.ok(positions[1][0]>4&&positions[1][1]>3,'middle ring flies from upper right');
-   assert.ok(positions[2][1]<-4,'inner ring flies from below');
+   assert.ok(positions[0][0]<0&&positions[0][1]>0,'outer ring continues from upper left');
+   assert.ok(positions[1][0]>0&&positions[1][1]>0,'middle ring continues from upper right');
+   assert.ok(positions[2][1]<0,'inner ring continues from below');
    const final=await page.locator('.theatre-canvas').evaluate(el=>({progress:el.dataset.entrance,positions:el.dataset.ringPositions,pose:el.dataset.pose}));
    assert.equal(final.progress,'1.000');assert.ok(final.positions.split(/[;,]/).every(value=>Math.abs(Number(value))<.001));
    const time=final.pose.split(',')[2];await page.waitForFunction(previous=>document.querySelector('.theatre-canvas').dataset.pose.split(',')[2]!==previous,time);
@@ -42,12 +42,11 @@ try{
    assert.equal(await page.locator('.site-header').count(),1);assert.equal(await page.locator('.theatre-copy h1').count(),1);
   }finally{await page.close();}
  });
- await check('drag responds while assembly and autoplay continue',async()=>{
+ await check('drag responds after the seamless assembly and autoplay continues',async()=>{
   const page=await open({viewport:{width:1440,height:900}});
   try{
-   await page.waitForSelector('.theatre[data-renderer=ready]');
+   await page.waitForSelector('.theatre[data-renderer=ready][data-arrived=true]');await page.waitForTimeout(950);
    await page.mouse.move(800,220);await page.mouse.down();
-   assert.ok(Number(await page.locator('.theatre-canvas').getAttribute('data-entrance'))<1,'drag must begin before arrival completes');
    const before=await page.locator('.theatre-canvas').getAttribute('data-pose');
    await page.mouse.move(950,250,{steps:4});await page.waitForTimeout(150);
    const after=await page.locator('.theatre-canvas').getAttribute('data-pose');

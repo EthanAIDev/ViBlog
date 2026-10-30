@@ -1,0 +1,7 @@
+{
+  "source": "src/lib/theatre.ts",
+  "capture": "scripts/capture-theatre-arrival.mjs",
+  "prompt": "Transparent capture of the real assembled sculpture at its neutral pose, with its normal mirror and mutual transparency. Particles, HTML and environment hidden. Same geometry, materials, lighting and camera as the live handoff.",
+  "width": 1440,
+  "height": 680
+}

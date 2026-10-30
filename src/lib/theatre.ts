@@ -9,7 +9,7 @@ type Callbacks={select:(index:number)=>void;hover:(index:number|null)=>void;proj
 /** Owns rendering and gesture arbitration; React owns the visitor's controls. */
 export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promise<TheatreHandle>{
   const renderer=new THREE.WebGPURenderer({alpha:true,antialias:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<760?1.25:1.5));
+  renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<=760?1.25:1.5));
   renderer.setClearColor(0,0);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.85;
   try{await renderer.init();}catch(error){renderer.dispose();throw error;}
   host.appendChild(renderer.domElement);
@@ -74,11 +74,11 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
   reflection.traverse(object=>{if(object instanceof THREE.Mesh){const original=object.material as THREE.Material;const material=original.clone();material.transparent=true;material.opacity=.085;material.depthWrite=false;object.material=material;}});scene.add(reflection);
   const particles=createParticleField(scene,camera);
   let state:TheatreState={motion:!matchMedia('(prefers-reduced-motion: reduce)').matches,selected:null,hovered:null,scroll:0};
-  const arrivalDuration=1.16,arrivalStagger=.07,arrivalTotal=arrivalDuration+arrivalStagger*2;
+  const arrivalDuration=2.44,arrivalStagger=.08,arrivalTotal=arrivalDuration+arrivalStagger*2;
   const arrivalOrigins=[new THREE.Vector3(-14,10,-4),new THREE.Vector3(14,8,-7),new THREE.Vector3(2,-14,2)];
   const arrivalTilts=[new THREE.Euler(.4,-.5,-.65),new THREE.Euler(-.35,.6,.8),new THREE.Euler(.6,.25,-.7)];
   let arrivalTime=state.motion?0:arrivalTotal;
-  let disposed=false,visible=true,dirty=true,settling=true,width=1,height=1,last=performance.now(),time=0,dragging=false,pending=false,downX=0,downY=0,lastX=0,lastY=0,velocityX=0,velocityY=0,userYaw=0,userPitch=0,hovered:number|null=null,particlePointerInside=false;
+  let disposed=false,visible=true,dirty=true,settling=true,width=1,height=1,last=performance.now(),time=0,ambientTime=0,handoffAt:number|null=null,dragging=false,pending=false,downX=0,downY=0,lastX=0,lastY=0,velocityX=0,velocityY=0,userYaw=0,userPitch=0,hovered:number|null=null,particlePointerInside=false;
   const pointer=new THREE.Vector2(),follow=new THREE.Vector2(),raycaster=new THREE.Raycaster();
   const particlePointer=new THREE.Vector2();
   const reflectionSurface=new THREE.Vector3(),reflectionPosition=new THREE.Vector3(),lightDirection=new THREE.Vector3(),reflectionNormal=new THREE.Vector3(),reflectionNormalMatrix=new THREE.Matrix3();
@@ -91,11 +91,11 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
       return {x:Math.round(clamp((point.x+1)*width/2,45,width-45)),y:Math.round(clamp((-point.y+1)*height/2,90,height-95))};
     }));
   };
-  const resize=new ResizeObserver(()=>{const rect=host.getBoundingClientRect();if(!rect.width||!rect.height)return;width=rect.width;height=rect.height;camera.aspect=width/height;camera.fov=width<760?44:35;camera.position.z=width<760?17:13.5;world.position.x=width<760?.2:1.25;particles.resize(width<760);camera.updateProjectionMatrix();renderer.setSize(width,height);dirty=true;});resize.observe(host);
+  const resize=new ResizeObserver(()=>{const rect=host.getBoundingClientRect();if(!rect.width||!rect.height)return;width=rect.width;height=rect.height;camera.aspect=width/height;camera.fov=width<=760?44:35;camera.position.z=width<=760?17:13.5;world.position.x=width<=760?.2:1.25;particles.resize(width<=760);camera.updateProjectionMatrix();renderer.setSize(width,height);dirty=true;});resize.observe(host);
   const visibility=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;dirty=true;},{rootMargin:'60px'});visibility.observe(host);
   const canvas=renderer.domElement;
   function hit(event:PointerEvent,precise=false){const rect=canvas.getBoundingClientRect();hitCoordinates.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(hitCoordinates,camera);let object:THREE.Object3D|null=raycaster.intersectObjects(precise?selectionSurfaces:pickingTargets,false)[0]?.object||null;while(object&&object.userData.ring===undefined)object=object.parent;return object?Number(object.userData.ring):null;}
-  function down(event:PointerEvent){if(event.button!==0)return;downX=lastX=event.clientX;downY=lastY=event.clientY;pending=true;dragging=false;velocityX=velocityY=0;pointer.copy(follow);}
+  function down(event:PointerEvent){if(event.button!==0||!world.visible)return;downX=lastX=event.clientX;downY=lastY=event.clientY;pending=true;dragging=false;velocityX=velocityY=0;pointer.copy(follow);}
   function move(event:PointerEvent){
     dirty=true;
     if(pending){
@@ -119,6 +119,11 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
   // Compile before starting the entrance; the exhibition and HTML stay visible.
   try{await renderer.compileAsync(scene,camera);}catch(error){dispose();throw error;}
   const poster=stage.querySelector<HTMLElement>('.theatre-poster');
+  // CSS starts at first paint, independently of React, GPU initialization and
+  // shader compilation. Join its clock instead of replaying a delayed entrance.
+  // The last ring includes the 160ms stagger: the first clock ends too early.
+  const arrivalAnimation=stage.querySelector('.theatre-arrival-2')?.getAnimations()[0];
+  if(state.motion&&arrivalAnimation)arrivalTime=clamp(Number(arrivalAnimation.currentTime||0)/1000,0,arrivalTotal);
   // A slow/failed-script recovery may already have shown the assembled poster.
   // Continue that composition instead of taking it apart for a late entrance.
   if(poster&&getComputedStyle(poster).visibility==='visible')arrivalTime=arrivalTotal;
@@ -129,17 +134,24 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
     const autonomous=state.motion;
     const kinetic=state.motion&&!dragging&&(Math.abs(velocityX)+Math.abs(velocityY)>.0001);
     if(!dirty&&!settling&&!autonomous&&!kinetic&&!reflectionSettling)return;
-    if(autonomous)time+=dt;
-    arrivalTime=state.motion?Math.min(arrivalTotal,arrivalTime+dt):arrivalTotal;
+    const assembled=stage.dataset.arrived==='true'||!state.motion;
+    if(assembled&&handoffAt===null)handoffAt=now;
+    const handoff=handoffAt===null?0:THREE.MathUtils.smoothstep(now-handoffAt,220,920);
+    world.visible=assembled;
+    if(autonomous){ambientTime+=dt;time+=dt*handoff;}
+    // Entrance follows the first-paint wall clock, even after a hidden/offscreen
+    // pause or a slow frame. Keep capped dt for rotation and gesture damping.
+    const arrivalClock=arrivalAnimation?Number(arrivalAnimation.currentTime??arrivalTime*1000)/1000:arrivalTime+dt;
+    arrivalTime=state.motion?Math.min(arrivalTotal,Math.max(arrivalTime,arrivalClock)):arrivalTotal;
     const arrivalProgress=arrivalTime/arrivalTotal;
     if(kinetic){userYaw+=velocityX;userPitch=clamp(userPitch+velocityY,-.6,.6);velocityX*=.88;velocityY*=.88;}
-    const followTarget=state.motion?pointer:neutralPointer;
+    const followTarget=state.motion&&handoff===1?pointer:neutralPointer;
     if(!state.motion)follow.copy(neutralPointer);
     else if(!dragging)follow.lerp(followTarget,1-Math.exp(-dt*5));
-    const expansion=state.motion?state.scroll:0;
+    const expansion=state.motion?state.scroll*handoff:0;
     world.rotation.y=.15+userYaw+follow.x*.12;
     world.rotation.x=.2+userPitch+follow.y*.09;
-    const scale=(width<760?1.1:1.32)*(1-expansion*.09);world.scale.set(scale,scale*.9,scale);
+    const scale=(width<=760?1.1:1.32)*(1-expansion*.09);world.scale.set(scale,scale*.9,scale);
     const desiredZoom=state.selected===null?1:1.1;camera.zoom+=(desiredZoom-camera.zoom)*(state.motion?.12:1);camera.updateProjectionMatrix();
     settling=Math.abs(desiredZoom-camera.zoom)>.0001||(!dragging&&follow.distanceTo(followTarget)>.0001);
     ringGroups.forEach(({ring,focusOffset},index)=>{
@@ -159,16 +171,16 @@ export async function createTheatre(host:HTMLElement,callbacks:Callbacks):Promis
     if(state.selected!==null){const {ring,radius}=ringGroups[state.selected];const angle=.9+state.selected*2.1;aim.set(Math.cos(angle)*radius*.22,Math.sin(angle)*radius*.22,0);ring.localToWorld(aim);aim.x*=.35;aim.y*=.35;}
     cameraAim.lerp(aim,state.motion?.1:1);camera.lookAt(cameraAim);settling=settling||cameraAim.distanceTo(aim)>.0001;
     camera.updateMatrixWorld();
-    const particleResponse=particles.update(time,dt,particlePointer,particlePointerInside,state.motion,arrivalProgress);
-    reflection.rotation.copy(world.rotation);reflection.scale.set(scale,-scale*.24,scale*.8);reflection.visible=width>=760;
+    const particleResponse=particles.update(ambientTime,dt,particlePointer,particlePointerInside,state.motion);
+    reflection.rotation.copy(world.rotation);reflection.scale.set(scale,-scale*.24,scale*.8);reflection.visible=width>760&&assembled;
     reflection.children.forEach((child,index)=>{child.rotation.copy(ringGroups[index].ring.rotation);child.position.copy(ringGroups[index].ring.position);});
     scene.updateMatrixWorld();
     let reflectionRing:number|null=null;
-    if(reflectionPointerInside){
+    if(reflectionPointerInside&&handoff===1){
       raycaster.setFromCamera(particlePointer,camera);
       const contact=raycaster.intersectObjects(pickingTargets,false)[0];
       if(contact){reflectionRing=Number(contact.object.userData.ring);reflectionSurface.copy(contact.point);ringGroups[reflectionRing].ring.worldToLocal(reflectionSurface);}
-    }else if(state.hovered!==null){
+    }else if(state.hovered!==null&&handoff===1){
       reflectionRing=state.hovered;const angle=.7+reflectionRing*1.9;reflectionSurface.set(Math.cos(angle),Math.sin(angle),0);
     }
     if(reflectionRing!==null){

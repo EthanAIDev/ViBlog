@@ -1,0 +1,7 @@
+{
+  "source": "src/lib/theatre.ts",
+  "capture": "scripts/capture-theatre-arrival.mjs",
+  "prompt": "Transparent capture of real ring 2 at its assembled, reduced-motion pose. Other rings write depth only, preserving the assembled sculpture's real occlusion. Particles, mirror, HTML and environment hidden. Subject geometry, materials and lighting unchanged.",
+  "width": 780,
+  "height": 1234
+}
