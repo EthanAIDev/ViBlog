@@ -11,7 +11,7 @@ const projects=getProjects();
       <h1>Built to make sense<span>.</span></h1>
       <p>从问题出发，让想法落地为可运行、可复用的工程系统。</p>
     </header>
-    <div class="project-index">{projects.map((project,index) => <article class:list={['project-index-item',`project-tone-${index}`]} data-reveal>
+    <div class="project-index">{projects.map((project,index) => <article class:list={['project-index-item',`project-tone-${index}`]} data-reveal={index > 0 ? '' : undefined}>
       <a class="project-index-image" href={project.href}><ResponsiveImage src={project.cover} alt={project.title + '界面预览'} sizes="(max-width: 760px) 90vw, 50vw" loading={index ? 'lazy':'eager'}/><span class="project-open"><Icon name="diagonal" size={28}/></span></a>
       <div class="project-index-copy"><h2><a href={project.href}>{project.name}</a></h2><h3>{project.title}</h3><div class="project-record"><span>{project.id.toUpperCase()}</span><span>{project.focus}</span></div><p>{project.shortSummary}</p><div class="technology-list">{project.technologies.map((technology) => <span>{technology}</span>)}</div><a class="text-link" href={project.href}>进入项目 <Icon name="diagonal"/></a></div>
     </article>)}</div>

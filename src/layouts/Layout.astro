@@ -27,10 +27,6 @@ const avatarPath = path.join(process.cwd(), 'assets/avatars/about-avatar.jpg');
 const faviconVersion = fs.existsSync(avatarPath)
   ? createHash('sha256').update(fs.readFileSync(avatarPath)).digest('hex').slice(0, 12)
   : '1';
-const pageAnimation = {
-  old: { name: 'page-exit', duration: '110ms', easing: 'cubic-bezier(0.4, 0, 1, 1)' },
-  new: { name: 'page-enter', duration: '240ms', easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-};
 ---
 <!doctype html>
 <html lang="zh-CN" data-theme="dark" data-theme-pref="system" transition:animate="none">
@@ -85,13 +81,13 @@ const pageAnimation = {
 
     <a class="skip-link" href="#main">跳到主要内容</a>
 
-    <header class="site-header" transition:name="site-header" transition:persist="site-header" transition:animate="none">
-      <a class="wordmark" href="/" aria-label="Ethan 首页">ETHAN</a>
+    <header class="site-header" transition:persist="site-header" transition:animate="none">
+      <a class="wordmark" href="/" aria-label="Ethan 首页" data-astro-prefetch="load">ETHAN</a>
       <span class="header-role">AI Agent 开发工程师</span>
       <nav class="primary-nav" aria-label="主导航">
-        <a href="/posts/" aria-current={page === 'posts' || page === 'article' ? 'page' : undefined}>文章</a>
-        <a href="/projects/" aria-current={page === 'projects' || page === 'project' ? 'page' : undefined}>项目</a>
-        <a href="/about/" aria-current={page === 'about' ? 'page' : undefined}>关于</a>
+        <a href="/posts/" data-astro-prefetch="load" aria-current={page === 'posts' || page === 'article' ? 'page' : undefined}>文章</a>
+        <a href="/projects/" data-astro-prefetch="load" aria-current={page === 'projects' || page === 'project' ? 'page' : undefined}>项目</a>
+        <a href="/about/" data-astro-prefetch="load" aria-current={page === 'about' ? 'page' : undefined}>关于</a>
       </nav>
       <div class="theme-switch" role="radiogroup" aria-label="外观主题" data-theme-switch>
         <span class="theme-switch-thumb" aria-hidden="true" />
@@ -134,13 +130,14 @@ const pageAnimation = {
           </svg>
         </button>
       </div>
+      <div class="nav-progress" data-nav-progress aria-hidden="true" />
     </header>
 
     <noscript>
       <p class="no-script-note">文章与项目仍可直接阅读；三维芯片交互、主题切换与筛选需要启用 JavaScript。</p>
     </noscript>
 
-    <main id="main" transition:name="page-content" transition:animate={{ forwards: pageAnimation, backwards: pageAnimation }}>
+    <main id="main" transition:animate="none">
       <slot />
     </main>
 

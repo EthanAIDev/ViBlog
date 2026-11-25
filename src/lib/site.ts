@@ -107,6 +107,21 @@ function ensureGlobalControllers() {
     }
   });
 
+  // Warm top-level nav routes during idle time so first clicks are instant
+  const warmTopRoutes = () => {
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (conn?.saveData) return;
+    for (const route of ['/', '/posts/', '/projects/', '/about/']) {
+      if (route === location.pathname) continue;
+      void fetch(route, { credentials: 'same-origin', priority: 'low' } as RequestInit).catch(() => {});
+    }
+  };
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(warmTopRoutes, { timeout: 1500 });
+  } else {
+    globalThis.setTimeout(warmTopRoutes, 600);
+  }
+
   // Borderless cursor optical light + coordinate grid spotlight
   const root = document.documentElement;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -698,6 +713,37 @@ async function rerenderMermaidForTheme(signal: AbortSignal) {
   }
 }
 
+function syncActiveNavByPath(pathname: string) {
+  document.querySelectorAll<HTMLAnchorElement>('.primary-nav a').forEach((link) => {
+    const active =
+      link.pathname === '/posts/'
+        ? pathname.startsWith('/posts') || pathname.startsWith('/articles')
+        : link.pathname === '/projects/'
+          ? pathname.startsWith('/projects')
+          : pathname.startsWith('/about');
+    if (active) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+}
+
+let navProgressTimer = 0;
+
+// Instant visual response on click: highlight target nav link immediately & pause heavy Home WebGL
+document.addEventListener('astro:before-preparation', (event) => {
+  const target = (event as Event & { to?: URL }).to;
+  if (target) syncActiveNavByPath(target.pathname);
+  window.dispatchEvent(new CustomEvent('viblog:nav-start'));
+
+  const bar = document.querySelector<HTMLElement>('[data-nav-progress]');
+  window.clearTimeout(navProgressTimer);
+  if (bar) {
+    bar.classList.remove('is-finishing');
+    navProgressTimer = window.setTimeout(() => {
+      bar.classList.add('is-loading');
+    }, 120);
+  }
+});
+
 // Preserve active theme & preference cleanly across Astro ClientRouter swaps (zero flash)
 document.addEventListener('astro:before-swap', (event) => {
   event.newDocument.documentElement.dataset.themePref = currentPref();
@@ -711,6 +757,27 @@ document.addEventListener('astro:before-swap', (event) => {
       (error.name === 'InvalidStateError' && /viewport.*chang/i.test(error.message));
     if (!cancelled) throw error;
   });
+});
+
+// Immediately paint subtle 160ms spring entry & initialize page right after swap (zero wait for page-load)
+document.addEventListener('astro:after-swap', () => {
+  window.clearTimeout(navProgressTimer);
+  const bar = document.querySelector<HTMLElement>('[data-nav-progress]');
+  if (bar && bar.classList.contains('is-loading')) {
+    bar.classList.remove('is-loading');
+    bar.classList.add('is-finishing');
+    window.setTimeout(() => bar.classList.remove('is-finishing'), 260);
+  }
+
+  const main = document.querySelector<HTMLElement>('#main');
+  if (main && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    main.classList.remove('is-entering');
+    void main.offsetWidth;
+    main.classList.add('is-entering');
+    main.addEventListener('animationend', () => main.classList.remove('is-entering'), { once: true });
+  }
+
+  initializePage();
 });
 
 document.addEventListener('astro:page-load', initializePage);

@@ -275,6 +275,36 @@
       border-color var(--dur-normal) var(--ease-spring);
   }
 
+  /* Subtle top-bar progress hairline — only appears if a slow network takes > 120ms */
+  .nav-progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--warm) 100%);
+    transform-origin: left center;
+    transform: scaleX(0);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 320ms var(--ease-spring),
+      opacity 160ms var(--ease-press);
+  }
+
+  .nav-progress.is-loading {
+    opacity: 1;
+    transform: scaleX(0.72);
+  }
+
+  .nav-progress.is-finishing {
+    opacity: 0;
+    transform: scaleX(1);
+    transition:
+      transform 140ms var(--ease-spring),
+      opacity 180ms ease 60ms;
+  }
+
   .page-home .site-header {
     background: var(--header-bg-home);
     border-bottom-color: transparent;
@@ -2508,16 +2538,17 @@
   }
 }
 
-@keyframes page-exit {
-  to { opacity: 0; transform: translateY(-4px); }
+main.is-entering {
+  animation: page-enter 160ms var(--ease-spring) both;
 }
+
 @keyframes page-enter {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0.25; transform: translateY(5px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes item-fade-in {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
-::view-transition-old(site-header) { display: none; }
-::view-transition-new(site-header) { animation: none; }
+::view-transition-old(root) { display: none; }
+::view-transition-new(root) { animation: none; }

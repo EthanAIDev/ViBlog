@@ -10,6 +10,6 @@ const posts = getPosts();
       <h1>Notes from the lab<span>.</span></h1>
       <p>技术笔记与工程复盘，写下怎么做，也记录为什么。</p>
     </header>
-    <ArticleIndex posts={posts} client:load />
+    <ArticleIndex posts={posts} client:idle />
   </div>
 </Layout>

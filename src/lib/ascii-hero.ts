@@ -425,6 +425,16 @@ export function createAsciiHero(host: HTMLElement, onInteract?: () => void): Asc
   stage.addEventListener('pointerleave', onLeave);
   stage.addEventListener('pointercancel', onLeave);
 
+  let navigatingAway = false;
+  const onNavStart = () => {
+    navigatingAway = true;
+  };
+  const onNavEnd = () => {
+    navigatingAway = false;
+  };
+  window.addEventListener('viblog:nav-start', onNavStart);
+  document.addEventListener('astro:page-load', onNavEnd);
+
   if (!reducedMotion) activeSurges.push(0.25);
 
   function frame(now: number) {
@@ -432,7 +442,7 @@ export function createAsciiHero(host: HTMLElement, onInteract?: () => void): Asc
     raf = requestAnimationFrame(frame);
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
-    if (!visible || document.hidden) return;
+    if (!visible || document.hidden || navigatingAway) return;
 
     if (!reducedMotion) time += dt;
 
@@ -515,6 +525,8 @@ export function createAsciiHero(host: HTMLElement, onInteract?: () => void): Asc
       window.removeEventListener('pointerup', onUp);
       stage.removeEventListener('pointerleave', onLeave);
       stage.removeEventListener('pointercancel', onLeave);
+      window.removeEventListener('viblog:nav-start', onNavStart);
+      document.removeEventListener('astro:page-load', onNavEnd);
       rig.dispose();
       renderTarget.dispose();
       atlas.dispose();
