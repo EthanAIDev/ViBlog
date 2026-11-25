@@ -2,19 +2,295 @@
 import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
 import ResponsiveImage from '../../components/ResponsiveImage.astro';
-const stack = ['Python', 'FastAPI', 'Pydantic', 'Next.js 15', 'React 19', 'TypeScript', 'Agent 编排', 'RAG · 向量检索', 'Prompt 工程', 'Tool Calling', 'SQL 生成治理', 'Qwen3', 'Chroma', 'SQLAlchemy', 'pandas', 'ECharts', 'SSE'];
+
+const stackGroups = [
+  {
+    label: '01 · AGENT & KNOWLEDGE',
+    title: '智能体编排与知识层',
+    items: ['Agent 编排', 'RAG · 向量检索', 'Prompt 工程', 'Tool Calling', 'SQL 生成治理', 'Qwen3', 'Chroma'],
+  },
+  {
+    label: '02 · BACKEND & DATA',
+    title: '后端服务与数据引擎',
+    items: ['Python', 'FastAPI', 'Pydantic', 'SQLAlchemy', 'pandas', 'SSE'],
+  },
+  {
+    label: '03 · FRONTEND & VISUAL',
+    title: '前端工程与可视化交互',
+    items: ['Next.js 15', 'React 19', 'TypeScript', 'ECharts'],
+  },
+];
+
+const principles = [
+  {
+    index: '01',
+    en: 'DEFINE FIRST',
+    title: '先抓住问题',
+    description: '先理解业务和使用者真正要解决什么，再决定工具与架构，让每一行实现始终围绕主线展开。',
+  },
+  {
+    index: '02',
+    en: 'SHIP WORKING SYSTEMS',
+    title: '让原型运行',
+    description: '用简洁、可交互的系统原型，把抽象想法尽快变成可以演示、可以验证、可以讨论的真实产物。',
+  },
+  {
+    index: '03',
+    en: 'DOCUMENT THE TRACE',
+    title: '把过程留下',
+    description: '用文章、架构图与复盘文档记录实现细节与技术取舍，让一次工程实践能够被清晰理解和长期复用。',
+  },
+];
+
 const history = [
-  {date:'2026 — 至今',title:'个人内容与项目体系化',description:'持续迭代个人网站、项目库和文章方法论，将技术输出拆解为可复用模板与实践清单。'},
-  {date:'2024 — 2025',title:'AI 应用开发实践',description:'围绕 RAG、Prompt 工程和前端展示体验完成多个原型与上线项目，强调可解释性与可维护性。'},
-  {date:'2022 — 2023',title:'工程基础与表达能力沉淀',description:'在技术实现之外强化文档与叙事能力，建立「能运行、能理解、能复盘」的完整交付方式。'},
+  {
+    date: '2026 — 至今',
+    title: '个人内容与项目体系化',
+    description: '持续迭代个人网站、项目库和文章方法论，将技术输出拆解为可复用模板与实践清单。',
+  },
+  {
+    date: '2024 — 2025',
+    title: 'AI 应用开发实践',
+    description: '围绕 RAG、Prompt 工程和前端展示体验完成多个原型与上线项目，强调可解释性与可维护性。',
+  },
+  {
+    date: '2022 — 2023',
+    title: '工程基础与表达能力沉淀',
+    description: '在技术实现之外强化文档与叙事能力，建立「能运行、能理解、能复盘」的完整交付方式。',
+  },
 ];
 ---
-<Layout title="关于 Ethan" page="about">
-  <div class="page-shell about-page"><header class="about-heading"><h1>A curious mind.<br/>A builder at heart<span>.</span></h1><p>持续把复杂技术，翻译成清晰体验。</p></header>
-    <section class="about-profile"><div class="portrait-wrap"><ResponsiveImage src="/assets/avatars/about-avatar.jpg" alt="Ethan 的个人头像" sizes="(max-width: 760px) 85vw, 35vw" loading="eager"/><div><span>Ethan</span><span>AI Builder / 技术创作者</span></div></div><div class="profile-copy"><h2>你好，我是 Ethan。</h2><p>一名 AI Agent 开发工程师，也是一名技术创作者。</p><p>我相信，好的技术不仅要能工作，还要能被理解。因此，我关注 RAG 工作流、智能体设计、工具调用，以及它们最终如何成为清晰、可用的产品体验。</p><p>这个网站是我的实验室，也是工作笔记。做过的项目、踩过的坑、刚刚想明白的概念，都慢慢放在这里。</p><a class="text-link" href="/projects/">看看我做过什么 <Icon name="diagonal"/></a></div></section>
-    <section class="working-method"><h2>我的工作方式。</h2><div><article><h3>先抓住问题。</h3><p>先理解要解决什么，再选择工具和技术。让实现始终围绕主线展开。</p></article><article><h3>让原型运行。</h3><p>用简洁的页面和原型，把想法尽快变成可以演示、可以讨论的东西。</p></article><article><h3>把过程留下。</h3><p>用文章与文档记录实现细节、选择与复盘，让一次实践能够被理解和复用。</p></article></div></section>
-    <section class="about-background"><h2>一路构建，<br/>一路积累。</h2><div><div class="background-stack"><h3>常用的工具与方法</h3><ul>{stack.map((item)=><li>{item}</li>)}</ul></div><ol class="background-history">{history.map((entry)=><li><time>{entry.date}</time><div><h3>{entry.title}</h3><p>{entry.description}</p></div></li>)}</ol></div></section>
-    <section class="about-focus"><h2>最近的关注点。</h2><div><a href="/projects/p001/"><span>AI Agent</span><p>规划、工具调用与可解释的工作流。</p><Icon name="diagonal"/></a><a href="/posts/"><span>RAG & Knowledge</span><p>让检索、知识与生成更好地协作。</p><Icon name="diagonal"/></a><a href="/"><span>Creative coding</span><p>把技术表达，做成可以探索的体验。</p><Icon name="diagonal"/></a></div></section>
-    <section class="about-contact"><h2>交换一个想法？</h2><a class="contact-email" href="mailto:ethandev@qq.com">ethandev@qq.com <Icon name="diagonal" size={32}/></a><div class="contact-links"><a href="https://github.com/EthanAIDev" target="_blank" rel="noopener noreferrer">GitHub <Icon name="diagonal" size={15}/></a><a href="https://space.bilibili.com/32848155" target="_blank" rel="noopener noreferrer">Bilibili <Icon name="diagonal" size={15}/></a><button type="button" data-copy="208600679" aria-live="polite">复制 QQ 号</button></div></section>
+<Layout
+  title="关于 Ethan — AI Agent 开发工程师"
+  description="你好，我是 Ethan，一名 AI Agent 开发工程师与技术创作者，持续把复杂技术翻译成清晰体验。"
+  page="about"
+>
+  <div class="page-shell about-page">
+    <!-- Balanced Hero + Precision Engineer Dossier -->
+    <section class="about-hero">
+      <div class="about-hero-copy">
+        <div class="hero-eyebrow">
+          <span class="hero-status-dot" aria-hidden="true" />
+          <span>ABOUT · ETHAN</span>
+        </div>
+        <h1>
+          持续把复杂技术，
+          <br />
+          翻译成清晰体验<span>。</span>
+        </h1>
+        <p class="about-lead">
+          你好，我是 Ethan，专注智能体编排、RAG 检索与 Text-to-SQL。我相信好的技术不仅要能稳定运行，更要能被清晰理解和掌控。
+        </p>
+        <p class="about-lead-sub">
+          这个网站是我的工程实验室与公开笔记，留着做过的系统、踩过的坑和想明白的事。
+        </p>
+        <div class="about-hero-actions">
+          <a class="btn-primary" href="/projects/">
+            看看我做过什么 <Icon name="arrow" size={16} />
+          </a>
+          <a class="btn-ghost" href="mailto:ethandev@qq.com">
+            发邮件交流 <Icon name="diagonal" size={15} />
+          </a>
+        </div>
+      </div>
+
+      <aside class="dossier-card" aria-label="Ethan 个人档案卡">
+        <div class="dossier-topbar">
+          <span class="dossier-code">ENGINEER DOSSIER</span>
+          <span class="dossier-status">
+            <i aria-hidden="true" />
+            AI AGENT LAB
+          </span>
+        </div>
+
+        <div class="dossier-body">
+          <div class="dossier-head">
+            <div class="dossier-avatar">
+              <ResponsiveImage
+                src="/assets/avatars/about-avatar.jpg"
+                alt="Ethan 的个人头像"
+                sizes="(max-width: 760px) 120px, 140px"
+                loading="eager"
+              />
+            </div>
+            <div class="dossier-identity">
+              <span class="dossier-name">Ethan</span>
+              <span class="dossier-role">AI Agent 开发工程师 · 技术创作者</span>
+              <span class="dossier-tag">A curious mind · A builder at heart</span>
+            </div>
+          </div>
+
+          <dl class="dossier-specs">
+            <div>
+              <dt>DIRECTION</dt>
+              <dd>Agent 编排 · RAG · Text-to-SQL</dd>
+            </div>
+            <div>
+              <dt>DELIVERY</dt>
+              <dd>可运行 · 可解释 · 可观测闭环</dd>
+            </div>
+            <div>
+              <dt>PRACTICE</dt>
+              <dd>工程原型 · 架构拆解 · 公开复盘</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="dossier-foot">
+          <span class="dossier-foot-label">CHANNELS</span>
+          <div class="dossier-channels">
+            <a
+              class="channel-icon-btn"
+              href="https://github.com/EthanAIDev"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              title="GitHub"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z" />
+              </svg>
+            </a>
+
+            <a
+              class="channel-icon-btn"
+              href="https://x.com/EthanAIDev"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X (@EthanAIDev)"
+              title="X (@EthanAIDev)"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+
+            <div class="qr-channel" data-qr-channel>
+              <button
+                type="button"
+                class="channel-icon-btn"
+                data-qr-trigger
+                aria-label="微信公众号「科技插话」二维码"
+                aria-expanded="false"
+                aria-controls="qr-wechat-official"
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="16" rx="4" />
+                  <circle cx="8.5" cy="15.5" r="1.15" fill="currentColor" stroke="none" />
+                  <path d="M8.5 11.6a3.9 3.9 0 0 1 3.9 3.9" />
+                  <path d="M8.5 8.2a7.3 7.3 0 0 1 7.3 7.3" />
+                </svg>
+              </button>
+              <div class="qr-popover" id="qr-wechat-official" role="dialog" aria-label="微信公众号「科技插话」二维码">
+                <div class="qr-popover-frame">
+                  <img
+                    src="/qrcodes/wechat-official.jpg"
+                    alt="微信公众号「科技插话」二维码"
+                    width="144"
+                    height="144"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <span class="qr-popover-title">科技插话</span>
+                <span class="qr-popover-hint">微信公众号 · 扫码关注</span>
+              </div>
+            </div>
+
+            <div class="qr-channel" data-qr-channel>
+              <button
+                type="button"
+                class="channel-icon-btn"
+                data-qr-trigger
+                aria-label="Ethan 微信号二维码"
+                aria-expanded="false"
+                aria-controls="qr-wechat-personal"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M9.2 4C4.95 4 1.5 6.95 1.5 10.6c0 2.08 1.13 3.93 2.9 5.14l-.73 2.18 2.53-1.26c.93.26 1.94.4 3 .4.29 0 .58-.02.86-.05a5.52 5.52 0 0 1-.26-1.66c0-3.38 3.16-6.12 7.06-6.12.27 0 .53.02.79.05C16.95 6.26 13.43 4 9.2 4Zm-2.58 5.2a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm5.16 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" />
+                  <path d="M16.86 10.55c-3.36 0-6.08 2.3-6.08 5.13 0 2.84 2.72 5.14 6.08 5.14.74 0 1.44-.11 2.1-.32l2.06 1.03-.58-1.76c1.52-.97 2.5-2.44 2.5-4.09 0-2.83-2.72-5.13-6.08-5.13Zm-2.06 4.18a.82.82 0 1 1 0-1.64.82.82 0 0 1 0 1.64Zm4.12 0a.82.82 0 1 1 0-1.64.82.82 0 0 1 0 1.64Z" />
+                </svg>
+              </button>
+              <div class="qr-popover" id="qr-wechat-personal" role="dialog" aria-label="Ethan 微信号二维码">
+                <div class="qr-popover-frame">
+                  <img
+                    src="/qrcodes/wechat-personal.png"
+                    alt="Ethan 微信号二维码"
+                    width="144"
+                    height="144"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <span class="qr-popover-title">Ethan 微信</span>
+                <span class="qr-popover-hint">微信扫码添加交流</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Engineering Principles -->
+    <section class="about-section" data-reveal>
+      <div class="section-head about-section-head">
+        <div>
+          <span class="section-kicker">WORKING METHOD</span>
+          <h2>我的工作方式</h2>
+        </div>
+      </div>
+      <div class="principles-grid">
+        {principles.map((item) => (
+          <article class="principle-card">
+            <div class="principle-meta">
+              <span>{item.index}</span>
+              <span>{item.en}</span>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Grouped Tech Stack + Engineering Timeline -->
+    <section class="about-section" data-reveal>
+      <div class="section-head about-section-head">
+        <div>
+          <span class="section-kicker">STACK & JOURNEY</span>
+          <h2>一路构建，一路积累</h2>
+        </div>
+      </div>
+
+      <div class="capability-journey-grid">
+        <div class="stack-groups">
+          {stackGroups.map((group) => (
+            <div class="stack-group-card">
+              <div class="stack-group-head">
+                <span>{group.label}</span>
+                <h3>{group.title}</h3>
+              </div>
+              <ul>
+                {group.items.map((tech) => (
+                  <li>{tech}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <ol class="journey-timeline" aria-label="成长历程">
+          {history.map((entry) => (
+            <li>
+              <time>{entry.date}</time>
+              <div>
+                <h3>{entry.title}</h3>
+                <p>{entry.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
   </div>
 </Layout>
