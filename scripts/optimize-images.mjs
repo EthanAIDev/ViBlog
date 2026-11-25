@@ -3,6 +3,7 @@ import { readFile, writeFile, mkdir, readdir, stat, unlink } from 'node:fs/promi
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { AVATAR_RELATIVE_PATH, syncAvatarFavicons } from './sync-favicon.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.join(root, 'public/media');
@@ -53,7 +54,7 @@ async function optimize(relative) {
   largestBytes += largest.bytes;
 }
 
-const sources = new Set(['assets/avatars/about-avatar.jpg']);
+const sources = new Set([AVATAR_RELATIVE_PATH]);
 
 async function collectContentImages(directory) {
   for (const entry of await readdir(path.join(root, directory), { withFileTypes: true })) {
@@ -74,6 +75,7 @@ for (const project of projects) {
 }
 
 for (const source of sources) await optimize(source);
+await syncAvatarFavicons(root);
 await writeFile(path.join(output, 'manifest.json'), JSON.stringify(images));
 
 for (const entry of await readdir(output, { withFileTypes: true })) {
